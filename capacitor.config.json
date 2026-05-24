@@ -1,0 +1,11 @@
+{
+  "appId": "com.allocafi.app",
+  "appName": "AllocaFi",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "webContentsDebuggingEnabled": true
+  }
+}
