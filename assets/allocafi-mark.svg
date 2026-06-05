@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 260" role="img" aria-labelledby="title desc">
+  <title id="title">AllocaFi A mark</title>
+  <desc id="desc">A neon gradient AllocaFi letter A with a crown.</desc>
+  <defs>
+    <linearGradient id="a" x1="36" y1="18" x2="198" y2="230" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffb545"/>
+      <stop offset=".3" stop-color="#ff3faf"/>
+      <stop offset=".68" stop-color="#7a5cff"/>
+      <stop offset="1" stop-color="#20f0d0"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feColorMatrix in="blur" values="1 0 0 0 1  0 1 0 0 .15  0 0 1 0 .85  0 0 0 .72 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#glow)">
+    <path fill="url(#a)" d="M118 56 218 232h-61l-19-38H82l-18 38H22L102 87h34l-24 48 13 27h-28l-16 33h72L97 80z"/>
+    <path fill="#ffd66d" d="M60 70 83 28l30 42 31-42 22 42-14 34H74z"/>
+    <circle cx="83" cy="28" r="8" fill="#ffe986"/>
+    <circle cx="144" cy="28" r="8" fill="#ffe986"/>
+    <circle cx="60" cy="70" r="7" fill="#ffe986"/>
+    <circle cx="166" cy="70" r="7" fill="#ffe986"/>
+  </g>
+</svg>

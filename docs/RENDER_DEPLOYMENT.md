@@ -1,6 +1,6 @@
 # AllocaFi Render Deployment Guide
 
-This gets the current AllocaFi web app live for testing wallet reads, Solana PYUSD balance checks, Phantom send flow, Virtual Bucket Accounts, Vault export/import, and AI insights.
+This gets the current AllocaFi web app live for testing wallet reads, Solana PYUSD balance checks, Phantom send flow, Virtual Budget Accounts, Vault export/import, and AI insights.
 
 ## What Codex Already Prepared
 
@@ -56,15 +56,17 @@ Set these in Render:
 NODE_ENV=production
 ALLOCAFI_RATE_LIMIT=120
 ALLOCAFI_PUBLIC_ORIGIN=https://your-render-app-name.onrender.com
-SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=your_helius_key
+HELIUS_API_KEY=your_helius_key
+SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}
 ```
 
-Use either Helius or Alchemy for `SOLANA_RPC_URL`.
+Use `HELIUS_API_KEY` with the Helius `SOLANA_RPC_URL`, or use Alchemy for `SOLANA_RPC_URL`.
 
 Helius example:
 
 ```txt
-SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=your_helius_key
+HELIUS_API_KEY=your_helius_key
+SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}
 ```
 
 Alchemy example:
@@ -122,9 +124,9 @@ Then test in this order:
 1. Open Settings and check service readiness.
 2. Add a Solana PYUSD public wallet address.
 3. Refresh wallet balance.
-4. Create/refresh Virtual Bucket Accounts.
+4. Create/refresh Virtual Budget Accounts.
 5. Connect Phantom.
-6. Use Send from a bucket with a tiny test amount.
+6. Use Send from a budget account with a tiny test amount.
 7. Confirm the spend gets recorded.
 8. Refresh AI insights if `OPENAI_API_KEY` is set.
 9. Export a Vault backup.
@@ -135,7 +137,7 @@ Until Supabase is connected, app data is saved in the current browser using loca
 
 That means:
 
-- Wallet/bucket setup on your computer will not automatically appear on your phone.
+- Wallet/budget account setup on your computer will not automatically appear on your phone.
 - Use Vault export/import if you need to move test data between devices.
 - Supabase later will make accounts sync across devices.
 

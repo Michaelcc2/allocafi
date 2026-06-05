@@ -4,48 +4,104 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AllocaFi</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=onboarding-core-payment-flow-20260603a" />
   </head>
   <body>
     <main class="app-shell">
-      <section class="summary-band">
-        <div>
+      <section class="summary-band reference-cover">
+        <img class="hero-reference-art" src="./assets/allocafi-hero-reference.png?v=stablecoin-layer-20260526" alt="AllocaFi non-custodial stablecoin budgeting hero showing one wallet balance flowing into Bills, Spending, Savings, and Investing budget accounts." />
+        <div class="hero-copy">
           <p class="eyebrow">Non-custodial crypto budgeting</p>
-          <h1>AllocaFi</h1>
-          <p class="subtitle">Turn one wallet balance into purpose-based Virtual Bucket Accounts while keeping full custody of your funds.</p>
+          <div class="hero-brand-lockup">
+            <img src="./assets/allocafi-mark.svg" alt="" />
+            <h1><span>Alloca</span><em>Fi</em></h1>
+          </div>
+          <p class="subtitle">Turn one wallet balance into purpose-based Virtual Budget Accounts while keeping full custody of your funds.</p>
+        </div>
+        <div class="hero-flow-visual" aria-hidden="true">
+          <div class="hero-dollar">$</div>
+          <svg class="flow-lines" viewBox="0 0 520 260" preserveAspectRatio="none">
+            <path class="flow-base" d="M28 128 C142 128 184 128 242 128 C310 128 318 36 388 36" />
+            <path class="flow-base flow-purple" d="M28 128 C154 128 190 128 242 128 C308 128 322 100 388 100" />
+            <path class="flow-base flow-cyan" d="M28 128 C154 128 190 128 242 128 C308 128 322 164 388 164" />
+            <path class="flow-base flow-gold" d="M28 128 C154 128 190 128 242 128 C308 128 322 224 388 224" />
+          </svg>
+          <div class="bucket-stack">
+            <span class="bucket-chip bills"><i class="bucket-icon icon-bills"></i>Bills</span>
+            <span class="bucket-chip spending"><i class="bucket-icon icon-spending"></i>Spending</span>
+            <span class="bucket-chip savings"><i class="bucket-icon icon-savings"></i>Savings</span>
+            <span class="bucket-chip investing"><i class="bucket-icon icon-investing"></i>Investing</span>
+          </div>
         </div>
         <div class="total-panel" aria-live="polite">
-          <span>Ready to assign</span>
+          <button id="addHeroWalletAddress" class="hero-add-wallet-button" type="button" aria-label="Add stablecoin wallet address">+</button>
+          <span>Total Net Worth</span>
           <strong id="totalBalance">$0.00</strong>
           <small id="lastUpdated">No refresh yet</small>
-          <button id="assignMoney" class="assign-button" type="button">Assign Money</button>
+          <button id="assignMoney" class="assign-button" type="button">Auto Allocate</button>
+        </div>
+        <div class="brand-definition">
+          <img src="./assets/allocafi-logo.svg" alt="" />
+          <span><strong>AllocaFi</strong> = Allocation + Finance + Freedom</span>
+          <small>One wallet. Every dollar assigned.</small>
+          <i>&#9826;</i>
+          <i>&#9635;</i>
+          <i>&#8599;</i>
+          <i>&#9686;</i>
         </div>
       </section>
 
+      <section class="controls-reference-cover" aria-label="AllocaFi controls">
+        <img class="controls-reference-art" src="./assets/allocafi-controls-reference.png?v=exact-controls-20260526" alt="AllocaFi action and section navigation controls." />
       <section class="toolbar" aria-label="Wallet actions">
-        <button id="connectWallet" class="primary-button" type="button"><span class="icon">◇</span>Connect Wallet</button>
-        <button id="refreshAll" class="primary-button" type="button"><span class="icon">↻</span>Refresh</button>
-        <button id="refreshVbas" class="secondary-button" type="button"><span class="icon">⇄</span>Refresh VBAs</button>
-        <button id="setupWizard" class="primary-button" type="button"><span class="icon">＋</span>Setup</button>
-        <button id="monthlyReport" class="secondary-button" type="button"><span class="icon">▥</span>Report</button>
+        <button id="connectWallet" class="primary-button" type="button">
+          <svg class="fin-icon" viewBox="0 0 96 96" aria-hidden="true">
+            <path class="fin-fill" d="M20 33h42c8 0 14 6 14 14v25H32c-8 0-14-6-14-14V36c0-2 1-3 2-3Z" />
+            <path class="fin-stroke blue" d="M27 33v-8c0-5 4-8 9-8h31c5 0 9 4 9 9v12" />
+            <path class="fin-stroke pink" d="M63 48h19c4 0 7 3 7 7v13H64c-6 0-10-4-10-10s4-10 9-10Z" />
+            <circle class="fin-dot" cx="78" cy="58" r="3" />
+          </svg>
+          <span class="control-label">Add Wallet Address</span>
+        </button>
+        <button id="refreshAll" class="primary-button" type="button">
+          <svg class="fin-icon" viewBox="0 0 96 96" aria-hidden="true">
+            <path class="fin-arc pink" d="M22 50c0-16 13-29 29-29 8 0 15 3 21 9" />
+            <path class="fin-arrow pink" d="M72 19v16H56" />
+            <path class="fin-arc blue" d="M74 46c0 16-13 29-29 29-8 0-15-3-21-9" />
+            <path class="fin-arrow blue" d="M24 77V61h16" />
+          </svg>
+          <span class="control-label">Refresh</span>
+        </button>
+        <button id="openSubscriptionPayments" class="secondary-button" type="button">
+          <svg class="fin-icon" viewBox="0 0 96 96" aria-hidden="true">
+            <rect class="fin-stroke blue" x="18" y="25" width="60" height="42" rx="10" />
+            <path class="fin-stroke pink" d="M18 38h60" />
+            <path class="fin-stroke blue" d="M28 56h17" />
+            <circle class="fin-dot" cx="66" cy="56" r="7" />
+            <path class="fin-stroke pink" d="M71 61 82 72" />
+          </svg>
+          <span class="control-label">Payments</span>
+        </button>
+        <button id="setupWizard" class="primary-button" type="button" hidden><svg class="fin-icon" viewBox="0 0 96 96" aria-hidden="true"><circle class="fin-stroke pink" cx="48" cy="48" r="26" /><path class="fin-stroke blue" d="M48 34v28M34 48h28" /></svg><span class="control-label">Setup</span></button>
       </section>
 
       <nav class="tab-nav" aria-label="AllocaFi sections">
-        <button class="tab-button active" data-tab="overview" type="button"><span class="icon">▦</span>Overview</button>
-        <button class="tab-button" data-tab="wallets" type="button"><span class="icon">▣</span>Wallets</button>
-        <button class="tab-button" data-tab="accounts" type="button"><span class="icon">▤</span>Accounts</button>
-        <button class="tab-button" data-tab="goals" type="button"><span class="icon">◎</span>Goals</button>
-        <button class="tab-button" data-tab="activity" type="button"><span class="icon">☰</span>Activity</button>
-        <button class="tab-button" data-tab="vault" type="button"><span class="icon" aria-hidden="true">◆</span>Vault</button>
-        <button class="tab-button" data-tab="settings" type="button"><span class="icon">⚙</span>Settings</button>
+        <button class="tab-button active" data-tab="overview" type="button"><svg class="fin-icon tab-fin-icon" viewBox="0 0 96 96" aria-hidden="true"><path class="fin-grid" d="M31 20h10v10H31zM45 20h10v10H45zM59 20h10v10H59zM31 34h10v10H31zM45 34h10v10H45zM59 34h10v10H59zM31 48h10v10H31zM45 48h10v10H45zM59 48h10v10H59z" /></svg>Overview</button>
+        <button class="tab-button" data-tab="wallets" type="button"><svg class="fin-icon tab-fin-icon" viewBox="0 0 96 96" aria-hidden="true"><path class="fin-fill" d="M22 36h42c7 0 12 5 12 12v25H32c-7 0-12-5-12-12V39c0-2 1-3 2-3Z" /><path class="fin-stroke blue" d="M29 36v-7c0-5 4-8 8-8h31c4 0 8 3 8 8v12" /><path class="fin-stroke pink" d="M64 50h18c4 0 6 2 6 6v12H64c-5 0-9-4-9-9s4-9 9-9Z" /><circle class="fin-dot" cx="78" cy="59" r="3" /></svg>Wallets</button>
+        <button class="tab-button" data-tab="accounts" type="button"><svg class="fin-icon tab-fin-icon" viewBox="0 0 96 96" aria-hidden="true"><path class="fin-stroke blue" d="M22 35h20l6 8h26c4 0 7 3 7 7v27H19V39c0-2 1-4 3-4Z" /><path class="fin-stroke pink" d="M20 49h58" /></svg>Accounts</button>
+        <button class="tab-button" data-tab="goals" type="button"><svg class="fin-icon tab-fin-icon" viewBox="0 0 96 96" aria-hidden="true"><circle class="fin-stroke pink" cx="48" cy="48" r="27" /><circle class="fin-stroke blue" cx="48" cy="48" r="14" /><path class="fin-stroke pink" d="M48 20v10M48 66v10M20 48h10M66 48h10" /></svg>Goals</button>
+        <button class="tab-button" data-tab="activity" type="button"><svg class="fin-icon tab-fin-icon" viewBox="0 0 96 96" aria-hidden="true"><path class="fin-stroke pink" d="M27 28h4M27 48h4M27 68h4" /><path class="fin-stroke blue" d="M42 28h31M42 48h25M42 68h35" /></svg>Activity</button>
+        <button class="tab-button" data-tab="vault" type="button"><svg class="fin-icon tab-fin-icon" viewBox="0 0 96 96" aria-hidden="true"><rect class="fin-stroke blue" x="22" y="36" width="52" height="38" rx="8" /><path class="fin-stroke pink" d="M32 36v-8c0-8 7-14 16-14s16 6 16 14v8" /><circle class="fin-dot" cx="48" cy="55" r="4" /></svg>Vault</button>
+        <button class="tab-button" data-tab="settings" type="button"><svg class="fin-icon tab-fin-icon" viewBox="0 0 96 96" aria-hidden="true"><path class="fin-gear" d="M48 15l7 5 9-3 7 9-4 9 6 7-5 11-10-1-6 6 2 10-10 7-9-6-9 3-7-9 4-9-6-8 6-10 10 1 6-7-2-9 11-7Z" /><circle class="fin-stroke blue" cx="48" cy="46" r="13" /></svg>Settings</button>
       </nav>
+      </section>
 
       <section class="tab-panel active" data-panel="overview">
-        <section class="dashboard-panel" aria-label="Monthly dashboard">
+        <section class="dashboard-panel" aria-label="Monthly Dashboard">
           <div class="panel-heading">
             <div>
-              <h2>Monthly dashboard</h2>
-              <p>Local summary from tracked wallets and Virtual Bucket Accounts</p>
+              <h2>Monthly Dashboard</h2>
+              <p>Local summary from tracked wallets and Virtual Budget Accounts</p>
             </div>
             <span id="dashboardMonth" class="status-pill live"></span>
           </div>
@@ -62,7 +118,7 @@
                 <h2>Wallets</h2>
                 <p id="walletCount">No wallets yet</p>
               </div>
-              <button id="showWalletForm" class="primary-button" type="button">＋</button>
+              <button id="showWalletForm" class="primary-button" type="button">ï¼‹</button>
             </div>
             <div id="walletSidebarList" class="wallet-sidebar-list"></div>
           </aside>
@@ -70,7 +126,7 @@
           <section class="wallets-panel">
           <div class="panel-heading">
             <div>
-              <h2>Virtual Bucket Accounts</h2>
+              <h2>Virtual Budget Accounts</h2>
               <p>Subaccounts for the selected wallet</p>
             </div>
             <select id="filterNetwork" aria-label="Filter by network">
@@ -79,9 +135,9 @@
           </div>
           <div id="walletList" class="wallet-list"></div>
           <div class="empty-state" hidden>
-            <div class="empty-icon">＋</div>
+            <div class="empty-icon">ï¼‹</div>
             <h3>Add your first wallet</h3>
-            <p>Create a view-only wallet profile, then assign the balance into Virtual Bucket Accounts.</p>
+            <p>Create a view-only wallet profile, then assign the balance into Virtual Budget Accounts.</p>
             <button class="primary-button empty-setup" type="button">Start setup</button>
           </div>
           </section>
@@ -96,7 +152,7 @@
             <button id="closeWalletForm" class="ghost-button" type="button">Close</button>
           </div>
           <label>
-            Bucket name
+            Budget account name
             <input id="walletName" name="walletName" maxlength="32" placeholder="Main Spending Wallet" />
           </label>
           <label>
@@ -125,18 +181,18 @@
       </section>
 
       <section class="tab-panel" data-panel="accounts">
-        <section class="dashboard-panel" aria-label="Virtual Bucket Accounts">
+        <section class="dashboard-panel" aria-label="Virtual Budget Accounts">
           <div class="panel-heading">
             <div>
-              <h2>Virtual Bucket Accounts</h2>
+              <h2>Virtual Budget Accounts</h2>
               <p>Purpose-based accounts layered over your tracked wallets</p>
             </div>
             <div class="dialog-actions">
               <button id="applyTemplateAccounts" class="secondary-button" type="button">Templates</button>
-              <button id="addBucketAccount" class="secondary-button" type="button">Add Bucket</button>
+              <button id="addBucketAccount" class="secondary-button" type="button">Add Budget Account</button>
               <button id="moveMoneyAccounts" class="secondary-button" type="button">Move Money</button>
               <button id="refreshVbasAccounts" class="secondary-button" type="button">Refresh VBAs</button>
-              <button id="assignMoneyAccounts" class="primary-button" type="button">Assign Money</button>
+              <button id="assignMoneyAccounts" class="primary-button" type="button">Auto Allocate</button>
             </div>
           </div>
           <div id="fundingQueue" class="funding-queue"></div>
@@ -161,13 +217,13 @@
         <section class="dashboard-panel" aria-label="Transaction log">
           <div class="panel-heading">
             <div>
-              <h2>Transaction log</h2>
-              <p>Local record of bucket spending and wallet-signed sends</p>
+              <h2>Transaction receipts</h2>
+              <p>Professional money-in, money-out, weekly-cycle, and bill-account records</p>
             </div>
             <button id="suggestCategories" class="secondary-button" type="button">AI Categories</button>
           </div>
           <div class="filter-bar">
-            <input id="transactionSearch" placeholder="Search notes, wallets, buckets" />
+            <input id="transactionSearch" placeholder="Search notes, wallets, budget accounts" />
             <select id="transactionMonth">
               <option value="all">All months</option>
               <option value="current">Current month</option>
@@ -179,7 +235,7 @@
           <div class="panel-heading">
             <div>
               <h2>Address nicknames</h2>
-              <p>Remember recipients and default buckets for faster categorization</p>
+              <p>Remember recipients and default budget accounts for faster categorization</p>
             </div>
             <button id="addAddressBook" class="secondary-button" type="button">Add nickname</button>
           </div>
@@ -197,15 +253,19 @@
             <span class="status-pill live">AES-GCM encrypted</span>
           </div>
           <div id="vaultStats" class="stats-grid"></div>
+          <section id="vault2SecurityView" class="vault2-command-center"></section>
           <div class="vault-layout">
             <section class="overview-card vault-card">
               <div class="overview-card-head">
                 <span>Vault Actions</span>
-                <strong>.afv</strong>
+                <strong>2.0</strong>
               </div>
               <p class="wallet-note">Export a password-protected vault file, or restore one on this browser. AllocaFi never asks for seed phrases or private keys.</p>
               <div class="dialog-actions">
                 <button id="exportVault" class="primary-button" type="button">Export Vault</button>
+                <button id="setVaultOwnerWallet" class="secondary-button" type="button">Set Owner Wallet</button>
+                <button id="verifyVaultOwnerWallet" class="secondary-button" type="button">Verify Access</button>
+                <button id="createVault2Snapshot" class="secondary-button" type="button">Save Vault 2.0 Snapshot</button>
                 <button id="enableAutoVault" class="secondary-button" type="button">Enable Auto Snapshot</button>
                 <button id="restoreAutoVault" class="secondary-button" type="button">Restore Auto Snapshot</button>
                 <label class="import-button">
@@ -220,6 +280,22 @@
                 <strong id="vaultSaved">0%</strong>
               </div>
               <div id="vaultBreakdown" class="overview-list"></div>
+            </section>
+          </div>
+          <div class="vault-layout">
+            <section class="overview-card vault-card">
+              <div class="overview-card-head">
+                <span>AI Asset Ownership</span>
+                <strong id="vault2AssetCount">0</strong>
+              </div>
+              <div id="vault2AssetView" class="overview-list"></div>
+            </section>
+            <section class="overview-card vault-card">
+              <div class="overview-card-head">
+                <span>Trusted Devices</span>
+                <strong id="vault2DeviceCount">0</strong>
+              </div>
+              <div id="vault2DeviceView" class="overview-list"></div>
             </section>
           </div>
           <section class="overview-card vault-card">
@@ -246,6 +322,13 @@
             <div class="stat-tile"><span>Private keys</span><strong>Never stored</strong></div>
             <div class="stat-tile"><span>Wallet connection</span><strong id="walletConnectionStatus">Not connected</strong></div>
           </div>
+          <section class="settings-section vault-owner-warning">
+            <div class="overview-card-head">
+              <span>Owner Wallet Protection</span>
+              <strong>Vault 2.0</strong>
+            </div>
+            <p class="wallet-note">Your Owner Wallet protects access to your encrypted AllocaFi Vault. Keep control of this wallet. You will need it to restore your dashboard, ALFI Credits, subscriptions, generated assets, reports, tax records, and encrypted financial data.</p>
+          </section>
           <div class="walletconnect-panel">
             <div>
               <h3>WalletConnect / Reown</h3>
@@ -259,18 +342,82 @@
           </div>
           <div class="walletconnect-panel">
             <div>
-              <h3>Solana balance provider</h3>
-              <p>Paste a free Helius or Alchemy Solana RPC URL so PYUSD balances load reliably.</p>
+              <h3>Advanced Solana RPC override</h3>
+              <p>Optional. Most users should leave this blank; the live app uses the server RPC automatically.</p>
             </div>
             <label>
-              Solana RPC URL
+              Override RPC URL
               <input id="solanaRpcUrl" spellcheck="false" placeholder="https://mainnet.helius-rpc.com/?api-key=..." />
             </label>
-            <button id="saveSolanaRpcUrl" class="secondary-button" type="button">Save RPC URL</button>
+            <button id="saveSolanaRpcUrl" class="secondary-button" type="button">Save override</button>
           </div>
+          <section class="settings-section demo-mode-section">
+            <div class="overview-card-head">
+              <span>Demo Mode</span>
+              <strong id="demoModeStatus">Sandbox Off</strong>
+            </div>
+            <div class="demo-mode-card">
+              <div class="demo-mode-icon" aria-hidden="true">
+                <svg viewBox="0 0 96 96">
+                  <path d="M24 30c0-7.7 6.3-14 14-14h20c7.7 0 14 6.3 14 14v36c0 7.7-6.3 14-14 14H38c-7.7 0-14-6.3-14-14V30Z" />
+                  <path d="M35 36h26M35 48h16M35 60h22" />
+                  <path d="M67 32l6 6 10-12" />
+                  <circle cx="70" cy="66" r="7" />
+                </svg>
+              </div>
+              <div class="demo-mode-copy">
+                <h3>100K Owner Wallet Sandbox</h3>
+                <p>Start fresh with one $100,000 owner demo wallet so you can test realistic owner-wallet setup, auto allocation, and Virtual Budget Accounts.</p>
+              </div>
+              <div class="demo-mode-actions">
+                <button id="demoMode" class="secondary-button demo-mode-button" type="button">Start Demo</button>
+                <button id="exitDemoMode" class="ghost-button demo-exit-button" type="button" hidden>Exit Demo</button>
+              </div>
+            </div>
+          </section>
+          <section class="settings-section onboarding-test-section">
+            <div class="overview-card-head">
+              <span>New User Tools</span>
+              <strong>Testing</strong>
+            </div>
+            <p class="wallet-note">Open the guided first-run flow and the local account helper without changing production navigation.</p>
+            <div class="settings-launch-grid">
+              <button id="openOnboardingTest" class="settings-launch-card onboarding-launch-card" type="button">
+                <strong>Onboarding</strong>
+                <span>Start the welcome, plan choice, wallet upload, fake funds, and VBA tutorial in demo mode.</span>
+              </button>
+              <button id="openAccountHelper" class="settings-launch-card helper-launch-card" type="button">
+                <strong>Account Helper</strong>
+                <span>Test the rule-based AI guide for wallet setup, plans, budget accounts, sends, and navigation questions.</span>
+              </button>
+            </div>
+          </section>
+          <section class="settings-section vba-settings-section">
+            <div class="overview-card-head">
+              <span>VBA Sync</span>
+              <strong>Refresh</strong>
+            </div>
+            <p class="wallet-note">Refresh Virtual Budget Accounts from Settings when tracked wallet balances need to be reconciled.</p>
+            <div class="dialog-actions">
+              <button id="refreshVbas" class="secondary-button" type="button">Refresh VBAs</button>
+            </div>
+          </section>
+          <section class="settings-section reports-settings-section">
+            <div class="overview-card-head">
+              <span>Reports System</span>
+              <strong>Settings</strong>
+            </div>
+            <p class="wallet-note">Monthly reports, exports, invoices, and planning snapshots now live in Settings so the dashboard stays focused.</p>
+            <div class="dialog-actions">
+              <button id="monthlyReport" class="secondary-button" type="button">Open Reports</button>
+              <button class="ghost-button" type="button" data-open-subscriptions-report>Billing History</button>
+            </div>
+          </section>
+          <section class="settings-section subscriptions-payments-section">
+            <div id="subscriptionPaymentsView"></div>
+          </section>
           <div class="settings-actions">
             <button id="seedExamples" class="secondary-button" type="button">Add examples</button>
-            <button id="demoMode" class="secondary-button" type="button">Demo mode</button>
             <button id="exportData" class="ghost-button" type="button">Export wallets</button>
             <button id="exportCsv" class="ghost-button" type="button">Export CSV</button>
             <button id="backupData" class="ghost-button" type="button">Backup</button>
@@ -306,9 +453,9 @@
         <p class="wallet-note"></p>
         <div class="allocation-panel"></div>
         <div class="card-actions">
-          <button class="primary-button receive-wallet" type="button"><span class="icon">↓</span>Receive</button>
-          <button class="secondary-button send-wallet" type="button"><span class="icon">↑</span>Send</button>
-          <button class="ghost-button more-wallet" type="button"><span class="icon">⋯</span>More</button>
+          <button class="primary-button receive-wallet" type="button"><span class="icon">â†“</span>Receive</button>
+          <button class="secondary-button send-wallet" type="button"><span class="icon">â†‘</span>Send</button>
+          <button class="ghost-button more-wallet" type="button"><span class="icon">â‹¯</span>More</button>
         </div>
         <div class="more-actions" hidden>
           <button class="secondary-button allocate-wallet" type="button">Auto Allocate</button>
@@ -323,13 +470,18 @@
 
     <dialog id="walletDialog" class="wallet-dialog">
       <form method="dialog" class="dialog-panel">
-        <button class="dialog-close" value="close" aria-label="Close" type="submit">x</button>
+        <button class="dialog-close" value="close" aria-label="Close" type="submit">&times;</button>
         <div id="dialogContent"></div>
       </form>
     </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="./app.js"></script>
+    <script type="module" src="./app.js?v=retemplate-auto-allocate-20260604a"></script>
   </body>
 </html>
+
+
+
+
+
 

@@ -1,0 +1,35 @@
+﻿AllocaFi GitHub Upload 6-5-2026
+Created: 2026-06-05 09:35:49
+
+WHAT THIS FOLDER IS:
+This folder contains the files/folders that should live directly at the GitHub repo root.
+
+DO THIS:
+1. Open GitHub Desktop.
+2. Click Repository > Show in Explorer.
+3. Open this folder: C:\Users\cobin\OneDrive\Desktop\AllocaFi GitHub Upload 6-5-2026
+4. Go INSIDE this folder.
+5. Press Ctrl+A, then Ctrl+C.
+6. Paste into the GitHub repo folder that GitHub Desktop opened.
+7. Replace files when Windows asks.
+8. Return to GitHub Desktop.
+9. Commit the changed files.
+10. Push origin.
+
+DO NOT:
+- Do not copy this folder itself into the repo.
+- Do not make the repo contain AllocaFi GitHub Upload 6-5-2026\app.js.
+- The repo root should contain app.js, index.html, styles.css, server.js, package.json, render.yaml, assets\, www\, tests\, scripts\, etc.
+
+Current app cache token:
+retemplate-auto-allocate-20260604a
+
+Integrity:
+Root app.js SHA256: 5EA61B2A0F8F66B69C01086DC7DB49B0366C2299A909B50B1680E8B91A084338
+www/app.js SHA256: 5EA61B2A0F8F66B69C01086DC7DB49B0366C2299A909B50B1680E8B91A084338
+Root and www app files match: True
+
+Counts:
+Directories: 21
+Files: 174
+Approx size: 32.51 MB

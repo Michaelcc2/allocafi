@@ -4,12 +4,12 @@ This project is still a local prototype, but it now has a production foundation 
 
 ## What AllocaFi Already Has
 
-- Local dashboard and Virtual Bucket Accounts.
+- Local dashboard and Virtual Budget Accounts.
 - Crypto wallet tracking and balance refresh.
 - Phantom Solana PYUSD send flow.
 - WalletConnect/Reown project ID settings.
 - Address book and saved destinations.
-- Bucket allocation, templates, bills planner, goals, and monthly overview.
+- Budget account allocation, templates, bills planner, goals, and monthly overview.
 - Local encrypted Vault export/import and auto snapshot.
 - Hidden foundations for bank, family, business, rewards, AI, and admin systems.
 
@@ -50,10 +50,10 @@ Plaid, WalletConnect/Reown, Phantom, MetaMask, Coinbase Wallet, and Trust Wallet
 
 Stripe plan names:
 
-- Free: one crypto wallet, basic buckets, manual tracking.
+- Free: one crypto wallet, basic budget accounts, manual tracking.
 - Plus: multiple wallets, bank connection, monthly budget, AI insights.
 - Family: shared dashboards, family goals, privacy controls.
-- Business: tax bucket, vendor tracking, reports, exports.
+- Business: tax budget account, vendor tracking, reports, exports.
 
 ## Security Rules
 
@@ -72,7 +72,7 @@ The current server returns `501 blueprint-ready` for API routes that are mapped 
 The next real build step is connecting Supabase persistence for:
 
 - wallets
-- buckets
+- budget_accounts
 - transactions
 - bills
 - goals

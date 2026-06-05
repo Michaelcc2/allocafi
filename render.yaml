@@ -16,10 +16,16 @@ services:
         sync: false
       - key: SOLANA_RPC_URL
         sync: false
+      - key: HELIUS_API_KEY
+        sync: false
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_MODEL
         value: gpt-4.1
+      - key: ALFI_REVENUE_USD
+        value: "0.05"
+      - key: ALLOCAFI_AI_CONFIRMATION_THRESHOLD
+        value: "10"
       - key: WALLETCONNECT_PROJECT_ID
         sync: false
       - key: SUPABASE_URL

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" role="img" aria-labelledby="title desc">
+  <title id="title">AllocaFi logo</title>
+  <desc id="desc">AllocaFi wordmark with neon gradient A mark.</desc>
+  <defs>
+    <linearGradient id="mark" x1="12" y1="8" x2="108" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffb545"/>
+      <stop offset=".32" stop-color="#ff3faf"/>
+      <stop offset=".7" stop-color="#7a5cff"/>
+      <stop offset="1" stop-color="#20f0d0"/>
+    </linearGradient>
+    <linearGradient id="word" x1="128" y1="18" x2="398" y2="88" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".72" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#ff3faf"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#mark)" d="M60 12 112 104H82L72 83H43l-10 21H12L52 30h17L56 55l7 14H48l-8 16h37L49 27z"/>
+  <path fill="#ffd66d" d="M30 28 42 7l15 21L72 7l11 21-7 17H37z"/>
+  <text x="128" y="79" fill="url(#word)" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="58" font-weight="900" letter-spacing="-1">AllocaFi</text>
+</svg>

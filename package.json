@@ -2,7 +2,7 @@
   "name": "allocafi",
   "version": "0.1.0",
   "private": true,
-  "description": "AllocaFi non-custodial Virtual Bucket Accounts app.",
+  "description": "AllocaFi non-custodial Virtual Budget Accounts app.",
   "type": "module",
   "engines": {
     "node": ">=20"
@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node server.js",
     "build": "node scripts/copy-web-assets.mjs",
-    "test": "node tests/security.test.mjs",
+    "test": "node tests/budget-template-library.test.mjs && node tests/admin-core-routing.test.mjs && node tests/allocafi-connect.test.mjs && node tests/security.test.mjs && node tests/enterprise-dashboard.test.mjs && node tests/family-treasury.test.mjs && node tests/allocafi-pay.test.mjs && node tests/ledgercore.test.mjs",
     "cap:add:android": "npm run build && npx cap add android",
     "cap:sync": "npm run build && npx cap sync",
     "cap:open:android": "npm run cap:sync && npx cap open android"

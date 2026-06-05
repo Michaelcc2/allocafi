@@ -1,0 +1,42 @@
+{
+  "reference_set": "major-stablecoins-20260528",
+  "source_image": "./assets/reference-icons/major-stablecoins-20260528.png",
+  "purpose": "Canonical AllocaFi stablecoin logo reference for app rendering.",
+  "coins": [
+    {
+      "symbol": "PYUSD",
+      "display_name": "PayPal USD",
+      "issuer": "PayPal",
+      "canonical_class": "pyusd",
+      "logo_image_path": "./assets/reference-icons/stablecoins/pyusd-reference.png"
+    },
+    {
+      "symbol": "USDT",
+      "display_name": "Tether USD",
+      "issuer": "Tether",
+      "canonical_class": "usdt",
+      "logo_image_path": "./assets/reference-icons/stablecoins/usdt-reference.png"
+    },
+    {
+      "symbol": "USDC",
+      "display_name": "USD Coin",
+      "issuer": "Circle",
+      "canonical_class": "usdc",
+      "logo_image_path": "./assets/reference-icons/stablecoins/usdc-reference.png"
+    },
+    {
+      "symbol": "USDS",
+      "display_name": "Sky Dollar",
+      "issuer": "Sky Protocol",
+      "canonical_class": "usds",
+      "logo_image_path": "./assets/reference-icons/stablecoins/usds-reference.png"
+    },
+    {
+      "symbol": "DAI",
+      "display_name": "Dai",
+      "issuer": "MakerDAO",
+      "canonical_class": "dai",
+      "logo_image_path": "./assets/reference-icons/stablecoins/dai-reference.png"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "referenceId": "legal-core-asset-symbol-reference-2026-05-31",
+  "referenceImage": "./legal-core-asset-symbol-reference-2026-05-31.png",
+  "purpose": "Permanent visual reference for AllocaFi Asset Ratio, Virtual Asset Accounts, and Legal Core reserve asset symbols.",
+  "rule": "The same asset symbol mapping must be used anywhere the same reserve asset appears.",
+  "symbols": {
+    "BTC": { "name": "Bitcoin", "accountName": "Bitcoin Reserve", "referenceLabel": "Bitcoin" },
+    "ETH": { "name": "Ethereum", "accountName": "Ethereum Reserve", "referenceLabel": "Ethereum" },
+    "SOL": { "name": "Solana", "accountName": "Solana Reserve", "referenceLabel": "Solana" },
+    "LTC": { "name": "Litecoin", "accountName": "Litecoin Reserve", "referenceLabel": "Litecoin" },
+    "ADA": { "name": "Cardano", "accountName": "Cardano Reserve", "referenceLabel": "Cardano" },
+    "XRP": { "name": "XRP", "accountName": "XRP Reserve", "referenceLabel": "XRP" },
+    "AVAX": { "name": "Avalanche", "accountName": "Avalanche Reserve", "referenceLabel": "Avalanche" },
+    "HBAR": { "name": "Hedera", "accountName": "Hedera Reserve", "referenceLabel": "Hedera" },
+    "BNB": { "name": "BNB", "accountName": "BNB Reserve", "referenceLabel": "BNB" },
+    "POL": { "name": "Polygon", "accountName": "Polygon Reserve", "referenceLabel": "Polygon" },
+    "USDC": { "name": "USD Coin", "accountName": "USD Coin", "referenceLabel": "USD Coin (USDC)" }
+  },
+  "protectedUse": [
+    "Asset Ratio & Legal Core Tracker rows",
+    "Virtual Asset Account cards",
+    "Asset Account detail headers",
+    "Legal Core records",
+    "Tax Ledger asset records",
+    "Vault export asset references"
+  ]
+}

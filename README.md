@@ -1,6 +1,6 @@
 # AllocaFi
 
-AllocaFi is a non-custodial crypto budgeting web app built around Virtual Bucket Accounts.
+AllocaFi is a non-custodial crypto budgeting web app built around Virtual Budget Accounts.
 
 The app helps users organize public wallet balances into purpose-based accounts such as Bills, Food, Gas, Savings, Personal, Emergency Fund, and Goals without giving up custody of funds.
 
@@ -10,9 +10,9 @@ The app helps users organize public wallet balances into purpose-based accounts 
 - Read supported wallet balances.
 - Track Solana PYUSD with a configured Solana RPC provider.
 - Connect Phantom for Solana wallet signing.
-- Send from a selected Virtual Bucket Account through the connected wallet.
-- Record bucket spending after wallet-signed sends.
-- Create and rebalance Virtual Bucket Accounts.
+- Send from a selected Virtual Budget Account through the connected wallet.
+- Record budget account spending after wallet-signed sends.
+- Create and rebalance Virtual Budget Accounts.
 - Use allocation templates.
 - Manage bills, goals, saved recipients, and local transaction activity.
 - Export and import encrypted AllocaFi Vault backups.
@@ -76,8 +76,11 @@ Important Render environment variables for live testing:
 ```txt
 NODE_ENV=production
 ALLOCAFI_PUBLIC_ORIGIN=https://your-render-app-name.onrender.com
-SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=your_key
+HELIUS_API_KEY=your_key
+SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}
 OPENAI_API_KEY=optional
+ALFI_REVENUE_USD=0.05
+ALLOCAFI_AI_CONFIRMATION_THRESHOLD=10
 WALLETCONNECT_PROJECT_ID=optional
 ```
 
