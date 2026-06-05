@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: allocafi-web
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm test && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ALLOCAFI_RATE_LIMIT
+        value: "120"
+      - key: ALLOCAFI_PUBLIC_ORIGIN
+        sync: false
+      - key: SOLANA_RPC_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4.1
+      - key: WALLETCONNECT_PROJECT_ID
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: PLAID_CLIENT_ID
+        sync: false
+      - key: PLAID_SECRET
+        sync: false
+      - key: PLAID_ENV
+        value: sandbox

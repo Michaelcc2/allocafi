@@ -1,0 +1,164 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="95%">
+      <stop offset="0%" stop-color="#173A84"/>
+      <stop offset="42%" stop-color="#08152C"/>
+      <stop offset="100%" stop-color="#050816"/>
+    </radialGradient>
+    <linearGradient id="cta" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#2F80FF"/>
+      <stop offset="0.52" stop-color="#7C4DFF"/>
+      <stop offset="1" stop-color="#FF4FD8"/>
+    </linearGradient>
+    <linearGradient id="pink" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FF4FD8"/>
+      <stop offset="1" stop-color="#7C4DFF"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#10264D"/>
+      <stop offset="1" stop-color="#0A1228"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="28" stdDeviation="40" flood-color="#00091D" flood-opacity="0.72"/>
+    </filter>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="#FF4FD8" flood-opacity="0.42"/>
+    </filter>
+    <style>
+      .font{font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif}
+      .white{fill:#F8FAFF}
+      .muted{fill:#A9B8D8}
+      .subtle{fill:#7585AA}
+      .cyan{fill:#21F5D0}
+      .green{fill:#16D68A}
+      .heavy{font-weight:850}
+      .bold{font-weight:760}
+      .medium{font-weight:620}
+    </style>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <circle cx="1325" cy="150" r="330" fill="#2F80FF" opacity="0.12"/>
+  <circle cx="290" cy="820" r="360" fill="#FF4FD8" opacity="0.08"/>
+  <rect x="54" y="46" width="1492" height="908" rx="44" fill="#071126" fill-opacity="0.87" stroke="#2A4778" stroke-width="2" filter="url(#shadow)"/>
+
+  <g transform="translate(106 92)">
+    <rect x="0" y="0" width="198" height="66" rx="23" fill="#0D1A35" stroke="#2C4976"/>
+    <circle cx="36" cy="33" r="18" fill="url(#cta)"/>
+    <text x="68" y="42" class="font white bold" font-size="25">AllocaFi</text>
+  </g>
+
+  <g transform="translate(138 184)">
+    <text x="0" y="0" class="font white heavy" font-size="56">Choose your budget template</text>
+    <text x="0" y="46" class="font muted medium" font-size="23">Pick the structure you want AllocaFi to build from. Free plans keep the 3 core accounts. Core keeps the full template.</text>
+  </g>
+
+  <g transform="translate(138 270)">
+    <rect x="0" y="0" width="870" height="548" rx="34" fill="#08172F" stroke="#294A78"/>
+    <g transform="translate(24 24)">
+      <rect x="0" y="0" width="822" height="54" rx="22" fill="#061126" stroke="#223E68"/>
+      <text x="30" y="35" class="font muted medium" font-size="20">Search templates</text>
+      <rect x="596" y="8" width="208" height="38" rx="19" fill="#0E2142" stroke="#315983"/>
+      <text x="633" y="33" class="font white bold" font-size="17">All categories</text>
+    </g>
+
+    <g transform="translate(24 100)">
+      <rect x="0" y="0" width="254" height="180" rx="28" fill="url(#card)" stroke="#FF4FD8" stroke-width="2" filter="url(#glow)"/>
+      <rect x="18" y="18" width="218" height="78" rx="20" fill="#132A52"/>
+      <circle cx="62" cy="57" r="28" fill="#FF4FD8" opacity="0.9"/>
+      <path d="M48 62l14-20 16 30" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="22" y="126" class="font white bold" font-size="22">Essential Budget</text>
+      <text x="22" y="154" class="font muted medium" font-size="16">8 accounts • everyday flow</text>
+      <circle cx="220" cy="34" r="17" fill="url(#pink)"/>
+      <path d="M212 34l6 7 12-15" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <g transform="translate(302 100)">
+      <rect x="0" y="0" width="254" height="180" rx="28" fill="url(#card)" stroke="#2B4B78"/>
+      <rect x="18" y="18" width="218" height="78" rx="20" fill="#132A52"/>
+      <circle cx="62" cy="57" r="28" fill="#2F80FF" opacity="0.9"/>
+      <path d="M46 70h34M52 58h22M58 46h10" stroke="white" stroke-width="5" stroke-linecap="round"/>
+      <text x="22" y="126" class="font white bold" font-size="22">Financial Growth</text>
+      <text x="22" y="154" class="font muted medium" font-size="16">7 accounts • build momentum</text>
+    </g>
+
+    <g transform="translate(580 100)">
+      <rect x="0" y="0" width="254" height="180" rx="28" fill="url(#card)" stroke="#2B4B78"/>
+      <rect x="18" y="18" width="218" height="78" rx="20" fill="#132A52"/>
+      <circle cx="62" cy="57" r="28" fill="#7C4DFF" opacity="0.9"/>
+      <path d="M50 62c10-20 28-20 38 0M50 72h38" stroke="white" stroke-width="5" stroke-linecap="round"/>
+      <text x="22" y="126" class="font white bold" font-size="22">Family Essentials</text>
+      <text x="22" y="154" class="font muted medium" font-size="16">7 accounts • household plan</text>
+    </g>
+
+    <g transform="translate(24 308)">
+      <rect x="0" y="0" width="254" height="180" rx="28" fill="url(#card)" stroke="#2B4B78"/>
+      <rect x="18" y="18" width="218" height="78" rx="20" fill="#132A52"/>
+      <circle cx="62" cy="57" r="28" fill="#16D68A" opacity="0.9"/>
+      <path d="M44 72h36l10-22H54z" stroke="white" stroke-width="5" stroke-linejoin="round"/>
+      <text x="22" y="126" class="font white bold" font-size="22">Owner Operator</text>
+      <text x="22" y="154" class="font muted medium" font-size="16">6 accounts • business ready</text>
+    </g>
+
+    <g transform="translate(302 308)">
+      <rect x="0" y="0" width="254" height="180" rx="28" fill="url(#card)" stroke="#2B4B78"/>
+      <rect x="18" y="18" width="218" height="78" rx="20" fill="#132A52"/>
+      <circle cx="62" cy="57" r="28" fill="#FFB84D" opacity="0.95"/>
+      <path d="M46 68h36M52 54h24M58 40h12" stroke="white" stroke-width="5" stroke-linecap="round"/>
+      <text x="22" y="126" class="font white bold" font-size="22">Bitcoin Standard</text>
+      <text x="22" y="154" class="font muted medium" font-size="16">6 accounts • reserve mindset</text>
+    </g>
+
+    <g transform="translate(580 308)">
+      <rect x="0" y="0" width="254" height="180" rx="28" fill="url(#card)" stroke="#2B4B78"/>
+      <rect x="18" y="18" width="218" height="78" rx="20" fill="#132A52"/>
+      <circle cx="62" cy="57" r="28" fill="#21F5D0" opacity="0.9"/>
+      <path d="M48 46h32v32H48zM56 38h16" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="22" y="126" class="font white bold" font-size="22">Custom Build</text>
+      <text x="22" y="154" class="font muted medium" font-size="16">Make your own account set</text>
+    </g>
+  </g>
+
+  <g transform="translate(1042 270)">
+    <rect x="0" y="0" width="420" height="548" rx="34" fill="#08172F" stroke="#E84BD0" stroke-width="2"/>
+    <text x="30" y="48" class="font white heavy" font-size="29">Essential Budget</text>
+    <text x="30" y="82" class="font muted medium" font-size="18">Core everyday budgeting with a clear safety buffer.</text>
+
+    <g transform="translate(92 122)">
+      <circle cx="116" cy="116" r="92" fill="#0B1630" stroke="#263F69"/>
+      <path d="M116 24a92 92 0 0 1 86 59l-86 33z" fill="#7C4DFF"/>
+      <path d="M202 83a92 92 0 0 1-34 106l-52-73z" fill="#2F80FF"/>
+      <path d="M168 189a92 92 0 0 1-116-12l64-61z" fill="#21F5D0"/>
+      <path d="M52 177a92 92 0 0 1-18-105l82 44z" fill="#FFB84D"/>
+      <path d="M34 72a92 92 0 0 1 82-48v92z" fill="#FF4FD8"/>
+      <circle cx="116" cy="116" r="52" fill="#071126"/>
+      <text x="100" y="108" class="font white heavy" font-size="28">8</text>
+      <text x="76" y="134" class="font muted bold" font-size="16">Accounts</text>
+    </g>
+
+    <g transform="translate(34 376)">
+      <text x="0" y="0" class="font white bold" font-size="19">Selected template preview</text>
+      <g transform="translate(0 26)">
+        <circle cx="8" cy="8" r="7" fill="#7C4DFF"/><text x="24" y="14" class="font muted medium" font-size="16">Housing & Bills</text><text x="318" y="14" class="font white bold" font-size="16">32%</text>
+        <circle cx="8" cy="38" r="7" fill="#FFB84D"/><text x="24" y="44" class="font muted medium" font-size="16">Groceries & Home</text><text x="318" y="44" class="font white bold" font-size="16">14%</text>
+        <circle cx="8" cy="68" r="7" fill="#21F5D0"/><text x="24" y="74" class="font muted medium" font-size="16">Emergency Buffer</text><text x="318" y="74" class="font white bold" font-size="16">14%</text>
+        <circle cx="8" cy="98" r="7" fill="#2F80FF"/><text x="24" y="104" class="font muted medium" font-size="16">Savings</text><text x="318" y="104" class="font white bold" font-size="16">12%</text>
+      </g>
+    </g>
+  </g>
+
+  <g transform="translate(96 870)">
+    <rect x="0" y="0" width="1048" height="42" rx="21" fill="#081831" stroke="#1B3D68"/>
+    <text x="28" y="28" class="font muted medium" font-size="18">Next: choose plan.</text>
+  </g>
+
+  <g transform="translate(1172 870)">
+    <rect x="0" y="0" width="332" height="42" rx="21" fill="#081A36" stroke="#294A78"/>
+    <text x="22" y="28" class="font white bold" font-size="16">Setup Progress</text>
+    <circle cx="180" cy="21" r="7" fill="#1A2B4F" stroke="#334C76"/>
+    <circle cx="210" cy="21" r="8" fill="url(#cta)"/>
+    <circle cx="240" cy="21" r="7" fill="#1A2B4F" stroke="#334C76"/>
+    <circle cx="270" cy="21" r="7" fill="#1A2B4F" stroke="#334C76"/>
+    <circle cx="300" cy="21" r="7" fill="#1A2B4F" stroke="#334C76"/>
+  </g>
+</svg>

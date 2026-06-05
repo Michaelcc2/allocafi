@@ -19487,3 +19487,478 @@ body {
   display: grid;
   gap: 12px;
 }
+/* Onboarding responsive mobile/tablet fit pass 2026-06-05 */
+.wallet-dialog:has(.onboarding-flow-modal) .dialog-panel,
+.wallet-dialog:has(.onboarding-welcome-exact) .dialog-panel,
+.wallet-dialog:has(.onboarding-welcome-vault-lock) .dialog-panel,
+.wallet-dialog:has(.budget-template-library-modal[data-onboarding-lock="true"]) .dialog-panel {
+  max-width: calc(100vw - 24px);
+}
+
+.onboarding-flow-modal,
+.onboarding-welcome-exact,
+.onboarding-welcome-vault-lock,
+.budget-template-library-modal[data-onboarding-lock="true"] {
+  overflow-x: hidden;
+}
+
+.onboarding-flow-modal *,
+.onboarding-welcome-exact *,
+.onboarding-welcome-vault-lock *,
+.budget-template-library-modal[data-onboarding-lock="true"] * {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .wallet-dialog:has(.onboarding-flow-modal),
+  .wallet-dialog:has(.onboarding-welcome-exact),
+  .wallet-dialog:has(.onboarding-welcome-vault-lock),
+  .wallet-dialog:has(.budget-template-library-modal[data-onboarding-lock="true"]) {
+    padding: 24px;
+  }
+
+  .wallet-dialog:has(.onboarding-flow-modal) .dialog-panel,
+  .wallet-dialog:has(.onboarding-welcome-exact) .dialog-panel,
+  .wallet-dialog:has(.onboarding-welcome-vault-lock) .dialog-panel,
+  .wallet-dialog:has(.budget-template-library-modal[data-onboarding-lock="true"]) .dialog-panel {
+    max-height: calc(100dvh - 48px);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .onboarding-welcome-vault-lock,
+  .onboarding-welcome-exact,
+  .onboarding-flow-modal,
+  .budget-template-library-modal[data-onboarding-lock="true"] {
+    width: 100%;
+  }
+
+  .welcome-vault-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .welcome-vault-art-wrap {
+    justify-self: center;
+    min-height: 300px;
+    width: min(420px, 100%);
+  }
+
+  .welcome-vault-art {
+    max-height: 300px;
+    max-width: min(420px, 100%);
+  }
+
+  .budget-template-marketplace-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .budget-template-preview-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 767px) {
+  .wallet-dialog:has(.onboarding-flow-modal),
+  .wallet-dialog:has(.onboarding-welcome-exact),
+  .wallet-dialog:has(.onboarding-welcome-vault-lock),
+  .wallet-dialog:has(.budget-template-library-modal[data-onboarding-lock="true"]) {
+    align-items: flex-start;
+    padding: 8px;
+  }
+
+  .wallet-dialog:has(.onboarding-flow-modal) .dialog-panel,
+  .wallet-dialog:has(.onboarding-welcome-exact) .dialog-panel,
+  .wallet-dialog:has(.onboarding-welcome-vault-lock) .dialog-panel,
+  .wallet-dialog:has(.budget-template-library-modal[data-onboarding-lock="true"]) .dialog-panel {
+    border-radius: 20px;
+    max-height: calc(100dvh - 16px);
+    max-width: min(420px, calc(100vw - 16px));
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 16px;
+    width: min(420px, calc(100vw - 16px));
+  }
+
+  .onboarding-welcome-exact,
+  .onboarding-welcome-vault-lock,
+  .onboarding-flow-modal,
+  .budget-template-library-modal[data-onboarding-lock="true"] {
+    border-radius: 18px;
+    box-sizing: border-box;
+    max-width: 420px;
+    min-height: auto;
+    overflow-x: hidden;
+    padding: 18px;
+    width: 100%;
+  }
+
+  .onboarding-welcome-exact-nav,
+  .welcome-vault-nav {
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .onboarding-welcome-exact-main,
+  .welcome-vault-hero {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .onboarding-welcome-exact-main h2,
+  .welcome-vault-copy h2,
+  .onboarding-flow-main h2 {
+    font-size: clamp(2rem, 11vw, 2.75rem);
+    letter-spacing: 0;
+    line-height: 1.04;
+    overflow-wrap: anywhere;
+  }
+
+  .onboarding-welcome-exact-lines,
+  .welcome-vault-subtitle,
+  .onboarding-flow-main p,
+  .onboarding-flow-modal .wallet-note {
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .welcome-vault-subtitle br {
+    display: none;
+  }
+
+  .welcome-vault-feature-list {
+    gap: 10px;
+  }
+
+  .welcome-vault-feature-list article {
+    gap: 10px;
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .welcome-vault-feature-icon {
+    border-radius: 12px;
+    height: 44px;
+    width: 44px;
+  }
+
+  .welcome-vault-art-wrap {
+    justify-self: center;
+    min-height: 180px;
+    width: min(280px, 100%);
+  }
+
+  .welcome-vault-art {
+    max-height: 180px;
+    max-width: min(280px, 100%);
+  }
+
+  .onboarding-welcome-exact-cards,
+  .welcome-vault-cards,
+  .onboarding-value-grid,
+  .onboarding-plan-grid,
+  .subscription-plan-grid,
+  .onboarding-wallet-grid,
+  .onboarding-flow-actions,
+  .dialog-actions,
+  .send-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .onboarding-welcome-exact-cards article,
+  .welcome-vault-cards article,
+  .onboarding-value-grid article,
+  .onboarding-plan-card,
+  .subscription-plan-card,
+  .onboarding-wallet-card,
+  .onboarding-vault-card {
+    box-sizing: border-box;
+    max-width: 420px;
+    width: 100%;
+  }
+
+  .onboarding-welcome-exact-cta,
+  .welcome-vault-cta,
+  .onboarding-flow-actions button,
+  .dialog-actions button,
+  .subscription-plan-card button,
+  .onboarding-plan-card button,
+  .onboarding-wallet-card button,
+  .onboarding-vault-card button {
+    justify-content: center;
+    min-height: 52px;
+    width: 100%;
+  }
+
+  .onboarding-welcome-exact .onboarding-flow-footer,
+  .onboarding-welcome-vault-lock .onboarding-flow-footer,
+  .onboarding-flow-footer,
+  .budget-template-library-modal[data-onboarding-lock="true"] .onboarding-flow-footer {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .onboarding-next-instruction,
+  .onboarding-progress {
+    justify-content: center;
+    min-height: 42px;
+    width: 100%;
+  }
+
+  .onboarding-signature-provider {
+    display: grid;
+    gap: 8px;
+  }
+
+  .onboarding-signature-provider select,
+  .onboarding-owner-wallet-input,
+  .onboarding-owner-wallet-input input,
+  .onboarding-flow-modal input,
+  .onboarding-flow-modal select {
+    min-height: 48px;
+    width: 100%;
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-library-shell,
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-main,
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-marketplace-grid,
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-list,
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-scroll,
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-browser {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-toolbar,
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-search-row,
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-footer-actions,
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-owner-wallet-summary {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-card,
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-preview-card {
+    box-sizing: border-box;
+    max-width: 420px;
+    width: 100%;
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-row,
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-card.budget-template-row {
+    align-items: start;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(92px, 108px) minmax(0, 1fr);
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-card-art,
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-card-art img {
+    max-width: 108px;
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-card-breakdown {
+    grid-column: 1 / -1;
+    margin-left: 0;
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-card-donut,
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-preview-donut {
+    margin-inline: auto;
+    max-width: 150px;
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-category-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-category-tabs button {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .wallet-dialog:has(.onboarding-flow-modal) .dialog-panel,
+  .wallet-dialog:has(.onboarding-welcome-exact) .dialog-panel,
+  .wallet-dialog:has(.onboarding-welcome-vault-lock) .dialog-panel,
+  .wallet-dialog:has(.budget-template-library-modal[data-onboarding-lock="true"]) .dialog-panel {
+    padding: 12px;
+  }
+
+  .onboarding-welcome-exact,
+  .onboarding-welcome-vault-lock,
+  .onboarding-flow-modal,
+  .budget-template-library-modal[data-onboarding-lock="true"] {
+    padding: 16px;
+  }
+
+  .onboarding-welcome-exact-main h2,
+  .welcome-vault-copy h2,
+  .onboarding-flow-main h2 {
+    font-size: clamp(1.9rem, 10.5vw, 2.35rem);
+  }
+
+  .onboarding-welcome-exact-cards article,
+  .welcome-vault-cards article {
+    min-height: 86px;
+  }
+
+  .welcome-vault-art-wrap {
+    min-height: 150px;
+    width: min(240px, 100%);
+  }
+
+  .welcome-vault-art {
+    max-height: 150px;
+    max-width: min(240px, 100%);
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-row,
+  .budget-template-library-modal[data-onboarding-lock="true"] .budget-template-card.budget-template-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-card-art,
+  .budget-template-library-modal[data-onboarding-lock="true"] .template-card-art img {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+/* Onboarding responsive overflow correction 2026-06-05 */
+@media (max-height: 940px) {
+  .wallet-dialog:has(.onboarding-welcome-vault-lock) {
+    margin: 12px auto;
+  }
+
+  .wallet-dialog:has(.onboarding-welcome-vault-lock) .dialog-panel {
+    max-height: calc(100dvh - 24px);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .onboarding-welcome-vault-lock {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .wallet-dialog:has(.onboarding-flow-modal),
+  .wallet-dialog:has(.onboarding-welcome-exact),
+  .wallet-dialog:has(.onboarding-welcome-vault-lock),
+  .wallet-dialog:has(.budget-template-library-modal[data-onboarding-lock="true"]) {
+    box-sizing: border-box;
+    margin: 0 auto !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    width: 100vw !important;
+  }
+
+  .wallet-dialog:has(.onboarding-flow-modal) .dialog-panel,
+  .wallet-dialog:has(.onboarding-welcome-exact) .dialog-panel,
+  .wallet-dialog:has(.onboarding-welcome-vault-lock) .dialog-panel,
+  .wallet-dialog:has(.budget-template-library-modal[data-onboarding-lock="true"]) .dialog-panel {
+    box-sizing: border-box !important;
+    max-width: calc(100vw - 16px) !important;
+    min-width: 0 !important;
+    width: calc(100vw - 16px) !important;
+  }
+
+  .onboarding-flow-modal,
+  .onboarding-welcome-exact,
+  .onboarding-welcome-vault-lock,
+  .budget-template-library-modal[data-onboarding-lock="true"],
+  .welcome-vault-hero,
+  .welcome-vault-copy,
+  .welcome-vault-feature-list,
+  .welcome-vault-cards,
+  .welcome-vault-cards article,
+  .onboarding-flow-main,
+  .onboarding-flow-copy {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .welcome-vault-copy h2,
+  .welcome-vault-subtitle,
+  .welcome-vault-feature-list strong,
+  .welcome-vault-feature-list small,
+  .welcome-vault-cards strong,
+  .welcome-vault-cards small,
+  .onboarding-flow-main h2,
+  .onboarding-flow-main p {
+    overflow-wrap: anywhere;
+    white-space: normal !important;
+    word-break: normal;
+  }
+
+  .welcome-vault-feature-list strong {
+    font-size: clamp(0.94rem, 4.6vw, 1.04rem);
+    line-height: 1.18;
+  }
+
+  .welcome-vault-feature-list small {
+    font-size: clamp(0.82rem, 3.8vw, 0.92rem);
+    line-height: 1.28;
+  }
+
+  .welcome-vault-logo {
+    max-width: 100%;
+    min-height: 54px;
+    padding: 0 18px;
+  }
+
+  .welcome-vault-nav {
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 390px) {
+  .wallet-dialog:has(.onboarding-flow-modal) .dialog-panel,
+  .wallet-dialog:has(.onboarding-welcome-exact) .dialog-panel,
+  .wallet-dialog:has(.onboarding-welcome-vault-lock) .dialog-panel,
+  .wallet-dialog:has(.budget-template-library-modal[data-onboarding-lock="true"]) .dialog-panel {
+    padding: 10px;
+  }
+
+  .onboarding-welcome-exact,
+  .onboarding-welcome-vault-lock,
+  .onboarding-flow-modal,
+  .budget-template-library-modal[data-onboarding-lock="true"] {
+    padding: 14px;
+  }
+
+  .welcome-vault-feature-list article {
+    gap: 9px;
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .welcome-vault-feature-icon {
+    height: 42px;
+    width: 42px;
+  }
+}
+/* Onboarding welcome text wrap guard 2026-06-05 */
+.welcome-vault-copy,
+.welcome-vault-subtitle,
+.welcome-vault-feature-list,
+.welcome-vault-feature-list article,
+.welcome-vault-feature-list article div,
+.welcome-vault-feature-list strong,
+.welcome-vault-feature-list small {
+  min-width: 0;
+}
+
+.welcome-vault-subtitle,
+.welcome-vault-feature-list strong,
+.welcome-vault-feature-list small {
+  overflow-wrap: anywhere;
+  white-space: normal !important;
+}

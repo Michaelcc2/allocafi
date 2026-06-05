@@ -1,0 +1,21 @@
+{
+  "name": "allocafi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AllocaFi non-custodial Virtual Bucket Accounts app.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "build": "node scripts/copy-web-assets.mjs",
+    "cap:add:android": "npm run build && npx cap add android",
+    "cap:sync": "npm run build && npx cap sync",
+    "cap:open:android": "npm run cap:sync && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0"
+  }
+}

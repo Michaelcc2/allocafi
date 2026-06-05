@@ -1,0 +1,104 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="980" viewBox="0 0 1440 980">
+  <defs>
+    <radialGradient id="glowBlue" cx="78%" cy="18%" r="60%">
+      <stop offset="0" stop-color="#2f80ff" stop-opacity="0.42"/>
+      <stop offset="0.42" stop-color="#7c4dff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#050816" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowPink" cx="8%" cy="88%" r="50%">
+      <stop offset="0" stop-color="#ff4fd8" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#050816" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="pageBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#081224"/>
+      <stop offset="0.55" stop-color="#050816"/>
+      <stop offset="1" stop-color="#02040d"/>
+    </linearGradient>
+    <linearGradient id="cta" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff3dbf"/>
+      <stop offset="0.48" stop-color="#c142f5"/>
+      <stop offset="1" stop-color="#2f80ff"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#13254a" stop-opacity="0.98"/>
+      <stop offset="0.55" stop-color="#0b1732" stop-opacity="0.96"/>
+      <stop offset="1" stop-color="#080c1b" stop-opacity="0.96"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="#020614" flood-opacity="0.72"/>
+    </filter>
+    <filter id="pinkGlow" x="-30%" y="-60%" width="160%" height="220%">
+      <feDropShadow dx="0" dy="0" stdDeviation="14" flood-color="#ff4fd8" flood-opacity="0.68"/>
+    </filter>
+    <style>
+      .font { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif; }
+      .title { fill:#f8fbff; font-size:64px; font-weight:900; letter-spacing:0; }
+      .kicker { fill:#ff4fd8; font-size:14px; font-weight:900; letter-spacing:2.8px; }
+      .muted { fill:#b8c4de; font-size:22px; font-weight:700; }
+      .tiny { fill:#9eabc8; font-size:16px; font-weight:700; }
+      .white { fill:#ffffff; }
+      .cyan { fill:#23f5d0; }
+      .pink { fill:#ff4fd8; }
+      .blue { fill:#66a3ff; }
+      .gold { fill:#ffca63; }
+      .cardTitle { fill:#ffffff; font-size:28px; font-weight:900; }
+      .cardText { fill:#b7c2dd; font-size:18px; font-weight:700; }
+      .pillText { fill:#ffffff; font-size:15px; font-weight:900; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="980" fill="url(#pageBg)"/>
+  <rect width="1440" height="980" fill="url(#glowBlue)"/>
+  <rect width="1440" height="980" fill="url(#glowPink)"/>
+
+  <rect x="36" y="28" width="1368" height="924" rx="40" fill="#071126" fill-opacity="0.82" stroke="#244a87" stroke-width="2"/>
+  <circle cx="1258" cy="178" r="150" fill="#2f80ff" fill-opacity="0.12"/>
+  <circle cx="179" cy="864" r="160" fill="#ff4fd8" fill-opacity="0.09"/>
+
+  <g class="font">
+    <g transform="translate(72 64)">
+      <rect width="174" height="64" rx="30" fill="#07162e" fill-opacity="0.72" stroke="#6f7dff" stroke-opacity="0.58"/>
+      <path d="M46 41 66 18 88 47H73L65 35 57 47H41Z" fill="#7c4dff"/>
+      <path d="M55 41 66 18 79 47H64Z" fill="#37d4ff" fill-opacity="0.78"/>
+      <text x="102" y="41" fill="#f8fbff" font-size="22" font-weight="900">AllocaFi</text>
+    </g>
+
+    <text x="90" y="188" class="kicker">CHOOSE PLAN</text>
+    <text x="90" y="260" class="title">Choose Your Plan</text>
+
+    <text x="92" y="314" class="muted">Choose how AllocaFi unlocks the budget template you selected.</text>
+
+<g filter="url(#shadow)">
+  <rect x="88" y="370" width="594" height="390" rx="34" fill="url(#core)" stroke="#2d5fae" stroke-width="2"/>
+  <circle cx="146" cy="428" r="30" fill="#12345f" stroke="#2f80ff"/>
+  <text x="136" y="438" fill="#ffffff" font-size="26" font-weight="900">F</text>
+  <text x="190" y="422" class="cardTitle">Free Plan</text>
+  <text x="190" y="458" class="cardText">Public address tracking with limited accounts.</text>
+  <text x="116" y="536" class="cyan" font-size="24" font-weight="900">3 Virtual Budget Accounts</text>
+  <text x="116" y="580" class="tiny">Auto-allocates wallet value from the selected template.</text>
+  <text x="116" y="624" class="tiny">Manual spends only. No send from budget accounts.</text>
+  <text x="116" y="668" class="tiny">No reserve accounts or Legal Core add-ons.</text>
+  <rect x="116" y="704" width="500" height="34" rx="17" fill="#0a213f" stroke="#244a87"/>
+  <text x="138" y="727" class="pillText">No signature required for Free preview tracking</text>
+</g>
+
+<g filter="url(#shadow)">
+  <rect x="730" y="370" width="594" height="390" rx="34" fill="url(#core)" stroke="#ff4fd8" stroke-width="2"/>
+  <circle cx="788" cy="428" r="30" fill="#32143f" stroke="#ff4fd8"/>
+  <text x="778" y="438" fill="#ffffff" font-size="26" font-weight="900">C</text>
+  <text x="832" y="422" class="cardTitle">AllocaFi Core</text>
+  <text x="832" y="458" class="cardText">$7.99/month after wallet signature.</text>
+  <text x="758" y="536" class="gold" font-size="24" font-weight="900">Full Template + Legal Core</text>
+  <text x="758" y="580" class="tiny">Signature-only proof activates verified Core setup.</text>
+  <text x="758" y="624" class="tiny">Then pay $7.99 in USDC, PYUSD, or USDT.</text>
+  <text x="758" y="668" class="tiny">Unlock reserve accounts, sends, and Ledger Core tracking.</text>
+  <rect x="758" y="704" width="500" height="34" rx="17" fill="#28153e" stroke="#ff4fd8"/>
+  <text x="780" y="727" class="pillText">Recommended for verified account ownership</text>
+</g>
+
+<rect x="92" y="820" width="1030" height="58" rx="29" fill="#071a35" stroke="#254d88"/>
+<text x="124" y="856" class="tiny">Next: Free activates limited tracking. Core continues to wallet signature.</text>
+<rect x="1150" y="820" width="182" height="58" rx="29" fill="#071a35" stroke="#254d88"/>
+<text x="1180" y="856" class="pillText">Setup Progress 3/5</text>
+  </g>
+</svg>

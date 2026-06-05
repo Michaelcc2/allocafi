@@ -3703,15 +3703,17 @@ function getWalletIntegrityIssues(wallet) {
     });
   } else if (isLiquidated && totals.left <= BALANCE_AUDIT_TOLERANCE) {
     if (wallet.allocation?.awaitingFunds) {
-      const asset = NETWORKS[wallet.network]?.asset || "stablecoin";
-      issues.push({
-        type: "awaitingFunds",
-        severity: "info",
-        action: "refreshWallet",
-        title: `${wallet.name} is waiting for funds`,
-        detail: `Add ${asset} to this Owner Wallet, then press Refresh to update the balance. Your Virtual Budget Accounts are already created with template percentages and will stay empty until funds arrive.`,
-        amount: 0,
-      });
+      if (wallet.statusType === "error") {
+        const asset = NETWORKS[wallet.network]?.asset || "stablecoin";
+        issues.push({
+          type: "awaitingFunds",
+          severity: "medium",
+          action: "refreshWallet",
+          title: `${wallet.name} balance check needs review`,
+          detail: wallet.error || `AllocaFi could not confirm this ${asset} balance. Press Refresh after checking the wallet address and network.`,
+          amount: 0,
+        });
+      }
     } else {
       issues.push({
         type: "liquidatedEmptyAccounts",
@@ -6582,8 +6584,9 @@ async function requestConnectWalletSignature(profile) {
     return { signature: bytesToBase64(signature instanceof Uint8Array ? signature : new Uint8Array(signature)), encoding: "base64", message };
   }
 
-  const provider = await getEthereumProvider();
-  const accounts = await getEthereumAccounts(provider, connectedWalletLabel || "wallet");
+  const provider = walletProvider === "auto" ? await getEthereumProvider() : await connectWalletProvider(walletProvider);
+  const providerLabel = walletProvider === "auto" ? connectedWalletLabel || "wallet" : labelForEthereumProvider(provider, walletProvider);
+  const accounts = await getEthereumAccounts(provider, providerLabel);
   const activeAddress = accounts?.[0] || connectedAccount;
   if (!connectWalletMatches(activeAddress, profile.walletAddress)) throw new Error("Connected EVM wallet does not match this Connect identity");
   const signature = await requestWalletWithTimeout(
@@ -12063,10 +12066,11 @@ async function getEthereumChainId(provider) {
 
 function getWalletAvailability() {
   return {
-    phantom: Boolean(findInjectedSolanaProvider()),
+    phantom: Boolean(getNamedSolanaProvider("phantom")),
     metamask: Boolean(getNamedEthereumProvider("metamask")),
     coinbase: Boolean(getNamedEthereumProvider("coinbase")),
     trust: Boolean(getNamedEthereumProvider("trust")),
+    trustSolana: Boolean(getNamedSolanaProvider("trust")),
     injectedEvm: Boolean(getNamedEthereumProvider("auto")),
     walletConnect: Boolean(loadWalletConnectProjectId()),
   };
@@ -12163,12 +12167,27 @@ async function connectSelectedWalletProvider() {
   return openWalletConnectDialog();
 }
 
+function getInjectedSolanaProviders() {
+  const providers = [];
+  if (window.phantom?.solana) providers.push(window.phantom.solana);
+  if (window.solana) providers.push(window.solana);
+  if (window.trustwallet?.solana) providers.push(window.trustwallet.solana);
+  if (window.solflare) providers.push(window.solflare);
+  return providers.filter((provider, index, all) =>
+    provider && all.findIndex((item) => item === provider) === index
+  );
+}
+
+function getNamedSolanaProvider(walletType = "auto") {
+  const providers = getInjectedSolanaProviders();
+  if (walletType === "phantom") return providers.find((provider) => provider === window.phantom?.solana || provider.isPhantom) || null;
+  if (walletType === "trust") return providers.find((provider) => provider === window.trustwallet?.solana || provider.isTrust || provider.isTrustWallet) || null;
+  if (walletType === "solflare") return providers.find((provider) => provider === window.solflare || provider.isSolflare) || null;
+  return providers[0] || null;
+}
+
 function findInjectedSolanaProvider() {
-  return window.phantom?.solana
-    || window.solana
-    || window.trustwallet?.solana
-    || window.solflare
-    || null;
+  return getNamedSolanaProvider("auto");
 }
 
 function getSolanaProviderLabel(provider) {
@@ -12179,14 +12198,14 @@ function getSolanaProviderLabel(provider) {
   return "Solana Wallet";
 }
 
-async function connectInjectedSolanaProvider() {
-  if (connectedSolanaProvider && connectedSolanaProvider === findInjectedSolanaProvider()) {
+async function connectInjectedSolanaProvider(walletType = "auto") {
+  const injected = getNamedSolanaProvider(walletType);
+  if (connectedSolanaProvider && connectedSolanaProvider === injected) {
     connectedSolanaAccount = connectedSolanaAccount || connectedSolanaProvider.publicKey?.toString?.() || "";
     updateWalletConnectionUi();
     return connectedSolanaProvider;
   }
 
-  const injected = findInjectedSolanaProvider();
   if (injected) {
     const response = injected.connect
       ? await injected.connect()
@@ -12266,7 +12285,7 @@ async function getSolanaProvider(walletType = "auto") {
   if (walletType === "walletconnect" || walletType === "trust-walletconnect") {
     return connectWalletConnectSolanaProvider(walletType === "trust-walletconnect" ? "Trust Wallet" : "WalletConnect/Reown");
   }
-  const injected = await connectInjectedSolanaProvider();
+  const injected = await connectInjectedSolanaProvider(walletType);
   if (injected) return injected;
   return connectWalletConnectSolanaProvider("WalletConnect/Reown");
 }
@@ -13763,6 +13782,7 @@ function createDefaultOnboardingFlow() {
     templateSelectedAt: "",
     planCode: "",
     selectedPlanCode: "",
+    signatureWalletProvider: "",
     ownerWalletId: "",
     ownerWalletAddress: "",
     vaultSignatureStatus: "pending",
@@ -14379,8 +14399,9 @@ async function saveOnboardingWallet({ testMode = false } = {}) {
   const flow = loadOnboardingFlow();
   const onboardingPlanCode = flow.selectedPlanCode || flow.planCode;
   saveWallets();
+  await refreshOnboardingOwnerWalletBalance(wallet, "#onboardingAiCheck");
   if (onboardingPlanCode === "free" && !isDemoModeActive()) {
-    await completeFreeOnboarding(wallet, { testMode });
+    await completeFreeOnboarding(wallet, { testMode, balanceAlreadyChecked: true });
     return;
   }
   updateOnboardingFlow({ step: "vault", ownerWalletId: wallet.id, ownerWalletAddress: wallet.address });
@@ -14388,7 +14409,7 @@ async function saveOnboardingWallet({ testMode = false } = {}) {
   openOnboardingVaultSignatureDialog({ testMode: testMode || isDemoModeActive() });
 }
 
-async function completeFreeOnboarding(wallet, { testMode = false } = {}) {
+async function completeFreeOnboarding(wallet, { testMode = false, balanceAlreadyChecked = false } = {}) {
   const statusBox = dialogContent.querySelector("#onboardingAiCheck");
   if (statusBox) {
     statusBox.innerHTML = `<strong>Activating Free plan</strong><span>Checking the public wallet balance and creating 3 Virtual Budget Accounts from your selected template.</span>`;
@@ -14406,7 +14427,9 @@ async function completeFreeOnboarding(wallet, { testMode = false } = {}) {
     corePaymentStatus: "not_required",
   });
   saveWallets();
-  await refreshWallet(wallet.id);
+  if (!balanceAlreadyChecked) {
+    await refreshOnboardingOwnerWalletBalance(wallet, "#onboardingAiCheck");
+  }
   const activeWallet = wallets.find((item) => item.id === wallet.id) || wallet;
   const onboardingAllocation = applyOnboardingTemplateToWallet(activeWallet.id);
   const completed = updateOnboardingFlow({ step: "complete", completedAt: new Date().toISOString() });
@@ -14425,6 +14448,55 @@ function getOnboardingOwnerWallet() {
   return wallets.find((item) => item.id === flow.ownerWalletId) || wallets.find((item) => item.ownerWallet) || wallets[0] || null;
 }
 
+function getOnboardingSignatureProviderOptions(wallet) {
+  const network = NETWORKS[wallet?.network] || {};
+  const chain = getVaultChainForNetwork(wallet?.network);
+  const availability = getWalletAvailability();
+  const options = chain === "solana"
+    ? [
+      { id: "phantom", label: "Phantom", detail: "Solana wallet extension", available: availability.phantom },
+      { id: "trust", label: "Trust Wallet", detail: "Trust Wallet Solana extension", available: availability.trustSolana },
+      { id: "walletconnect", label: "WalletConnect / Reown", detail: "Mobile Solana wallets", available: availability.walletConnect },
+    ]
+    : [
+      { id: "trust", label: "Trust Wallet", detail: `${network.asset || "Stablecoin"} owner wallet`, available: availability.trust },
+      { id: "metamask", label: "MetaMask", detail: "Ethereum-compatible wallet", available: availability.metamask },
+      { id: "coinbase", label: "Coinbase Wallet", detail: "Coinbase browser wallet", available: availability.coinbase },
+      { id: "walletconnect", label: "WalletConnect / Reown", detail: "Mobile EVM wallets", available: availability.walletConnect },
+    ];
+  return options.filter((option) => option.available);
+}
+
+function getOnboardingSignatureProviderLabel(providerId = "", wallet = null) {
+  return getOnboardingSignatureProviderOptions(wallet).find((option) => option.id === providerId)?.label || "Selected wallet";
+}
+
+function renderOnboardingSignatureProviderPicker(wallet, selectedProvider = "", signatureVerified = false) {
+  const options = getOnboardingSignatureProviderOptions(wallet);
+  const selectedIsAvailable = options.some((option) => option.id === selectedProvider);
+  const safeSelected = selectedIsAvailable ? selectedProvider : "";
+  if (!options.length) {
+    return `
+      <div class="allocation-summary onboarding-signature-provider-warning">
+        <strong>No matching wallet extension detected</strong>
+        <span>Install or enable the wallet that owns ${escapeHtml(shortAddress(wallet.address))}, then reload this step. Wallet address alone cannot activate Core.</span>
+      </div>
+    `;
+  }
+  return `
+    <label class="onboarding-signature-provider">
+      <span>Sign from wallet</span>
+      <select id="onboardingSignatureProvider" ${signatureVerified ? "disabled" : ""}>
+        <option value="">Select the wallet that owns this address</option>
+        ${options.map((option) => `
+          <option value="${escapeHtml(option.id)}" ${option.id === safeSelected ? "selected" : ""}>${escapeHtml(option.label)} - ${escapeHtml(option.detail)}</option>
+        `).join("")}
+      </select>
+      <small>Owner Wallet: ${escapeHtml(shortAddress(wallet.address))}. AllocaFi rejects signatures from any other wallet address.</small>
+    </label>
+  `;
+}
+
 function getOnboardingVaultMessage(wallet) {
   return [
     "AllocaFi Vault activation",
@@ -14435,15 +14507,102 @@ function getOnboardingVaultMessage(wallet) {
   ].join("\n");
 }
 
+async function refreshOnboardingOwnerWalletBalance(wallet, statusSelector = "") {
+  const statusBox = statusSelector ? dialogContent.querySelector(statusSelector) : null;
+  const network = NETWORKS[wallet?.network] || {};
+  const asset = network.asset || "stablecoin";
+  if (!wallet) return { ok: false, hasFunds: false, value: 0, error: "Owner Wallet was not found" };
+  if (statusBox) {
+    statusBox.innerHTML = `<strong>Reading Owner Wallet balance</strong><span>Checking ${escapeHtml(asset)} at ${escapeHtml(shortAddress(wallet.address))}. This does not move funds.</span>`;
+  }
+  const previousValue = getWalletDisplayValue(wallet);
+  wallet.status = "Checking balance";
+  wallet.statusType = "loading";
+  wallet.error = "";
+  wallet.updatedAt = new Date().toISOString();
+  saveWallets();
+
+  try {
+    try {
+      wallet.balance = await fetchWalletBalance(wallet);
+    } catch (error) {
+      if (network.kind !== "solana-token") throw error;
+      const diagnostics = await fetchSolanaTokenDiagnostics(wallet);
+      if (diagnostics.pyusdBalance > 0) {
+        wallet.balance = diagnostics.pyusdBalance;
+        wallet.error = "";
+      } else {
+        throw new Error(diagnostics.errors[0] || error?.message || "Solana token request failed");
+      }
+    }
+
+    if (network.kind === "solana-token" && wallet.balance <= 0) {
+      const diagnostics = await fetchSolanaTokenDiagnostics(wallet);
+      if (diagnostics.pyusdBalance > 0) {
+        wallet.balance = diagnostics.pyusdBalance;
+        wallet.error = "";
+      } else if (diagnostics.tokens.length) {
+        const found = diagnostics.tokens.slice(0, 3).map((token) => `${token.asset}: ${token.amount}`).join(", ");
+        wallet.error = `Solana address works, but no ${asset} was found. Other tokens found: ${found}`;
+      } else if (diagnostics.directTokenAccount) {
+        wallet.error = diagnostics.directTokenAccount.mint === network.mint
+          ? `Found ${formatUsd(diagnostics.directTokenAccount.amount)} ${asset} in this token account`
+          : `This is a ${diagnostics.directTokenAccount.asset} token account, not a ${asset} wallet owner address`;
+        if (diagnostics.directTokenAccount.mint === network.mint) wallet.balance = diagnostics.directTokenAccount.amount;
+      } else if (diagnostics.errors.length) {
+        wallet.error = `Could not find ${asset}. ${diagnostics.errors[0]}`;
+      }
+    }
+
+    await refreshPrices();
+    trackAllocationDelta(wallet, previousValue);
+    const walletValue = getWalletDisplayValue(wallet);
+    if (walletValue > 0.01) {
+      wallet.status = "Live";
+      wallet.statusType = "live";
+      wallet.error = "";
+      if (statusBox) {
+        statusBox.innerHTML = `<strong>Balance detected</strong><span>${formatUsd(walletValue)} in ${escapeHtml(asset)} is ready for the selected budget template.</span>`;
+      }
+    } else {
+      wallet.status = "Awaiting funds";
+      wallet.statusType = "warning";
+      wallet.error = wallet.error || `No ${asset} found yet. Add funds to this Owner Wallet and AllocaFi will update the budget accounts after Refresh.`;
+      if (statusBox) {
+        statusBox.innerHTML = `<strong>Wallet saved, funds not detected yet</strong><span>${escapeHtml(wallet.error)}</span>`;
+      }
+    }
+    wallet.updatedAt = new Date().toISOString();
+    saveWallets();
+    return { ok: true, hasFunds: walletValue > 0.01, value: walletValue };
+  } catch (error) {
+    const message = error?.message || "Could not read wallet balance automatically";
+    wallet.balance = Number(wallet.manualBalance || wallet.balance || 0);
+    wallet.status = "Balance check failed";
+    wallet.statusType = "error";
+    wallet.error = `Could not check balance automatically: ${message}`;
+    wallet.updatedAt = new Date().toISOString();
+    saveWallets();
+    if (statusBox) {
+      statusBox.innerHTML = `<strong>Balance check needs review</strong><span>${escapeHtml(wallet.error)}</span>`;
+    }
+    return { ok: false, hasFunds: false, value: getWalletDisplayValue(wallet), error: message };
+  }
+}
+
 async function requestOnboardingVaultSignature(wallet) {
+  const flow = loadOnboardingFlow();
+  const selectedProvider = dialogContent.querySelector("#onboardingSignatureProvider")?.value || flow.signatureWalletProvider || "";
+  if (!selectedProvider) throw new Error("Choose the wallet extension that controls the Owner Wallet address");
   const ownerWallet = {
     address: wallet.address,
     chain: getVaultChainForNetwork(wallet.network),
-    provider: NETWORKS[wallet.network]?.label || "Saved wallet",
+    provider: getOnboardingSignatureProviderLabel(selectedProvider, wallet),
   };
   const message = getOnboardingVaultMessage(wallet);
+  updateOnboardingFlow({ signatureWalletProvider: selectedProvider });
   try {
-    return await requestVaultOwnerSignature(ownerWallet, { message });
+    return await requestVaultOwnerSignature(ownerWallet, { message }, { walletProvider: selectedProvider });
   } catch (error) {
     if (["localhost", "127.0.0.1"].includes(window.location.hostname)) {
       const confirmed = window.confirm("No matching wallet provider responded. Complete local onboarding preview without a real signature? Production still requires wallet signature verification.");
@@ -14464,7 +14623,10 @@ function openOnboardingVaultSignatureDialog({ testMode = false } = {}) {
   }
   const flow = loadOnboardingFlow();
   const signatureVerified = flow.vaultSignatureStatus === "verified";
-  updateOnboardingFlow({ step: "vault", ownerWalletId: wallet.id, ownerWalletAddress: wallet.address });
+  const selectedSignatureProvider = getOnboardingSignatureProviderOptions(wallet).some((option) => option.id === flow.signatureWalletProvider)
+    ? flow.signatureWalletProvider
+    : "";
+  updateOnboardingFlow({ step: "vault", ownerWalletId: wallet.id, ownerWalletAddress: wallet.address, signatureWalletProvider: selectedSignatureProvider });
   openDialog(`
     <div class="dialog-content onboarding-modal onboarding-flow-modal" data-onboarding-lock="true" data-onboarding-step="vault">
       <div class="onboarding-flow-brand">
@@ -14481,7 +14643,8 @@ function openOnboardingVaultSignatureDialog({ testMode = false } = {}) {
           <div class="onboarding-safe-list">
             ${signatureVerified ? `<span>Wallet verified</span><span>Payment required</span><span>Core unlock pending</span>` : `<span>No funds move</span><span>No token approvals</span><span>Signature only</span>`}
           </div>
-          <button class="primary-button onboarding-primary-cta" id="onboardingActivateVault" type="button">${signatureVerified ? "Pay $7.99 USDC / PYUSD / USDT" : "Sign From Wallet"}</button>
+          ${renderOnboardingSignatureProviderPicker(wallet, selectedSignatureProvider, signatureVerified)}
+          <button class="primary-button onboarding-primary-cta" id="onboardingActivateVault" type="button" ${!signatureVerified && !selectedSignatureProvider ? "disabled aria-disabled=\"true\"" : ""}>${signatureVerified ? "Pay $7.99 USDC / PYUSD / USDT" : "Sign From Wallet"}</button>
           <small>${signatureVerified ? "Stablecoin payment step. Production routes through the connected wallet transaction." : "Free wallet signature. No transaction."}</small>
         </div>
         <div id="onboardingVaultStatus" class="allocation-summary">
@@ -14496,8 +14659,22 @@ function openOnboardingVaultSignatureDialog({ testMode = false } = {}) {
     </div>
   `);
 
+  const signatureProviderSelect = dialogContent.querySelector("#onboardingSignatureProvider");
+  const activateButton = dialogContent.querySelector("#onboardingActivateVault");
+  signatureProviderSelect?.addEventListener("change", () => {
+    const selectedProvider = signatureProviderSelect.value || "";
+    updateOnboardingFlow({ signatureWalletProvider: selectedProvider });
+    if (!signatureVerified) {
+      activateButton.disabled = !selectedProvider;
+      activateButton.setAttribute("aria-disabled", selectedProvider ? "false" : "true");
+    }
+    const statusBox = dialogContent.querySelector("#onboardingVaultStatus");
+    if (statusBox && selectedProvider) {
+      statusBox.innerHTML = `<strong>${escapeHtml(getOnboardingSignatureProviderLabel(selectedProvider, wallet))} selected</strong><span>Click Sign From Wallet. The signature must come from ${escapeHtml(shortAddress(wallet.address))} or AllocaFi will reject it.</span>`;
+    }
+  });
   dialogContent.querySelector("#onboardingBackWalletFromVault")?.addEventListener("click", () => openOnboardingWalletGuideDialog({ testMode, selectedPlanCode: "premium" }));
-  dialogContent.querySelector("#onboardingActivateVault").addEventListener("click", () => {
+  activateButton.addEventListener("click", () => {
     if (signatureVerified) {
       completeCoreOnboardingPayment({ testMode });
       return;
@@ -14576,6 +14753,7 @@ async function completeCoreOnboardingPayment({ testMode = false } = {}) {
     status: "paid",
     txHash: paymentHash,
   });
+  await refreshOnboardingOwnerWalletBalance(wallet, "#onboardingVaultStatus");
   const onboardingAllocation = applyOnboardingTemplateToWallet(wallet.id);
   saveVault2OwnerWallet({
     address: wallet.address,
@@ -15339,9 +15517,10 @@ async function setPrimaryVaultOwnerWallet() {
   showToast("Owner Wallet saved. Verify it to unlock Vault 2.0 recovery.");
 }
 
-async function requestVaultOwnerSignature(ownerWallet, challenge) {
+async function requestVaultOwnerSignature(ownerWallet, challenge, options = {}) {
+  const walletProvider = options.walletProvider || "auto";
   if (ownerWallet.chain === "solana") {
-    const provider = await getSolanaProvider();
+    const provider = await getSolanaProvider(walletProvider);
     const activeAddress = connectedSolanaAccount || provider.publicKey?.toString?.();
     if (activeAddress !== ownerWallet.address) throw new Error("Connected Solana wallet does not match the Owner Wallet");
     if (!provider.signMessage) throw new Error("This Solana wallet does not support message signing");
@@ -15350,8 +15529,9 @@ async function requestVaultOwnerSignature(ownerWallet, challenge) {
     return { signature: bytesToBase64(signature instanceof Uint8Array ? signature : new Uint8Array(signature)), encoding: "base64" };
   }
 
-  const provider = await getEthereumProvider();
-  const accounts = await getEthereumAccounts(provider, connectedWalletLabel || "wallet");
+  const provider = walletProvider === "auto" ? await getEthereumProvider() : await connectWalletProvider(walletProvider);
+  const providerLabel = walletProvider === "auto" ? connectedWalletLabel || "wallet" : labelForEthereumProvider(provider, walletProvider);
+  const accounts = await getEthereumAccounts(provider, providerLabel);
   const activeAddress = accounts?.[0] || connectedAccount;
   if (!activeAddress || activeAddress.toLowerCase() !== ownerWallet.address.toLowerCase()) {
     throw new Error("Connected EVM wallet does not match the Owner Wallet");

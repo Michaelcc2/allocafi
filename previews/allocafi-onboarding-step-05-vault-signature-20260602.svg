@@ -1,0 +1,128 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="95%">
+      <stop offset="0%" stop-color="#173A84"/>
+      <stop offset="42%" stop-color="#08152C"/>
+      <stop offset="100%" stop-color="#050816"/>
+    </radialGradient>
+    <linearGradient id="cta" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#2F80FF"/>
+      <stop offset="0.52" stop-color="#7C4DFF"/>
+      <stop offset="1" stop-color="#FF4FD8"/>
+    </linearGradient>
+    <linearGradient id="safe" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#21F5D0"/>
+      <stop offset="1" stop-color="#16D68A"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#10264D"/>
+      <stop offset="1" stop-color="#0A1228"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="28" stdDeviation="40" flood-color="#00091D" flood-opacity="0.72"/>
+    </filter>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="22" flood-color="#21F5D0" flood-opacity="0.42"/>
+    </filter>
+    <style>
+      .font{font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif}
+      .white{fill:#F8FAFF}
+      .muted{fill:#A9B8D8}
+      .subtle{fill:#7585AA}
+      .green{fill:#16D68A}
+      .cyan{fill:#21F5D0}
+      .heavy{font-weight:850}
+      .bold{font-weight:760}
+      .medium{font-weight:620}
+    </style>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <circle cx="1260" cy="160" r="330" fill="#2F80FF" opacity="0.13"/>
+  <circle cx="300" cy="850" r="360" fill="#21F5D0" opacity="0.07"/>
+  <rect x="54" y="46" width="1492" height="908" rx="44" fill="#071126" fill-opacity="0.87" stroke="#2A4778" stroke-width="2" filter="url(#shadow)"/>
+
+  <g transform="translate(106 92)">
+    <rect x="0" y="0" width="198" height="66" rx="23" fill="#0D1A35" stroke="#2C4976"/>
+    <circle cx="36" cy="33" r="18" fill="url(#cta)"/>
+    <text x="68" y="42" class="font white bold" font-size="25">AllocaFi</text>
+  </g>
+
+  <g transform="translate(170 190)">
+    <text x="0" y="0" class="font white heavy" font-size="64">Activate AllocaFi Vault</text>
+    <text x="0" y="58" class="font muted medium" font-size="26">Sign a free wallet message to protect your AllocaFi data and unlock the app.</text>
+    <text x="0" y="98" class="font muted medium" font-size="26">This is not a transaction, token approval, or transfer.</text>
+  </g>
+
+  <g transform="translate(170 330)">
+    <rect x="0" y="0" width="760" height="400" rx="38" fill="#08172F" stroke="#21F5D0" stroke-width="2" filter="url(#glow)"/>
+    <circle cx="84" cy="84" r="42" fill="#0D2347" stroke="#21F5D0"/>
+    <path d="M64 88l15 15 28-42" stroke="#21F5D0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="148" y="76" class="font white heavy" font-size="34">Signature-only Vault activation</text>
+    <text x="148" y="116" class="font muted medium" font-size="20">Your wallet proves ownership. Your funds stay in your wallet.</text>
+
+    <g transform="translate(44 168)">
+      <rect x="0" y="0" width="672" height="64" rx="22" fill="#061126" stroke="#25466F"/>
+      <text x="24" y="39" class="font muted medium" font-size="18">Message: I authorize AllocaFi Vault activation for my owner wallet.</text>
+    </g>
+
+    <g transform="translate(54 260)">
+      <circle cx="9" cy="9" r="9" fill="url(#safe)"/>
+      <text x="30" y="16" class="font white bold" font-size="18">No funds move</text>
+      <circle cx="226" cy="9" r="9" fill="url(#safe)"/>
+      <text x="247" y="16" class="font white bold" font-size="18">No token approvals</text>
+      <circle cx="492" cy="9" r="9" fill="url(#safe)"/>
+      <text x="513" y="16" class="font white bold" font-size="18">Data protected</text>
+    </g>
+
+    <rect x="44" y="314" width="672" height="80" rx="27" fill="url(#cta)" filter="url(#glow)"/>
+    <text x="212" y="348" class="font white heavy" font-size="27">Sign to Activate Vault</text>
+    <text x="226" y="378" class="font white medium" font-size="17">Free wallet signature. No transaction.</text>
+  </g>
+
+  <g transform="translate(984 330)">
+    <rect x="0" y="0" width="446" height="400" rx="38" fill="#08172F" stroke="#294A78"/>
+    <text x="34" y="58" class="font white bold" font-size="27">After signature</text>
+
+    <g transform="translate(34 108)">
+      <circle cx="16" cy="16" r="16" fill="#102850" stroke="#2F80FF"/>
+      <text x="10" y="23" class="font white bold" font-size="17">1</text>
+      <text x="52" y="22" class="font white bold" font-size="21">Apply template</text>
+      <text x="52" y="52" class="font muted medium" font-size="17">Budget accounts are created from your selected plan.</text>
+    </g>
+
+    <g transform="translate(34 188)">
+      <circle cx="16" cy="16" r="16" fill="#102850" stroke="#7C4DFF"/>
+      <text x="10" y="23" class="font white bold" font-size="17">2</text>
+      <text x="52" y="22" class="font white bold" font-size="21">Auto allocate</text>
+      <text x="52" y="52" class="font muted medium" font-size="17">Your stablecoin balance is organized into accounts.</text>
+    </g>
+
+    <g transform="translate(34 268)">
+      <circle cx="16" cy="16" r="16" fill="#102850" stroke="#21F5D0"/>
+      <text x="10" y="23" class="font white bold" font-size="17">3</text>
+      <text x="52" y="22" class="font white bold" font-size="21">Unlock app</text>
+      <text x="52" y="52" class="font muted medium" font-size="17">Dashboard, Wallets, Accounts, and Settings open.</text>
+    </g>
+  </g>
+
+  <g transform="translate(170 772)">
+    <rect x="0" y="0" width="1260" height="56" rx="22" fill="#081831" stroke="#1B3D68"/>
+    <text x="30" y="36" class="font muted medium" font-size="19">AllocaFi never asks for seed phrases, private keys, or recovery phrases.</text>
+  </g>
+
+  <g transform="translate(96 870)">
+    <rect x="0" y="0" width="1048" height="42" rx="21" fill="#081831" stroke="#1B3D68"/>
+    <text x="28" y="28" class="font muted medium" font-size="18">Next: enter AllocaFi.</text>
+  </g>
+
+  <g transform="translate(1172 870)">
+    <rect x="0" y="0" width="332" height="42" rx="21" fill="#081A36" stroke="#294A78"/>
+    <text x="22" y="28" class="font white bold" font-size="16">Setup Progress</text>
+    <circle cx="180" cy="21" r="7" fill="#1A2B4F" stroke="#334C76"/>
+    <circle cx="210" cy="21" r="7" fill="#1A2B4F" stroke="#334C76"/>
+    <circle cx="240" cy="21" r="7" fill="#1A2B4F" stroke="#334C76"/>
+    <circle cx="270" cy="21" r="7" fill="#1A2B4F" stroke="#334C76"/>
+    <circle cx="300" cy="21" r="8" fill="url(#cta)"/>
+  </g>
+</svg>
