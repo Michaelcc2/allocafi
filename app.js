@@ -7889,30 +7889,37 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
   const healthLabel = healthScore >= 80 ? "Excellent" : healthScore >= 55 ? "Stable" : "Needs Funding";
   const availablePercent = totalBudgeted > 0 ? Math.min((totalAvailable / totalBudgeted) * 100, 100) : 0;
   const walletAsset = getWalletAssetLabel(primaryWallet) || rows[0]?.walletAssetLabel || "Wallet";
+  const networkSymbol = getNetworkAssetSymbol(NETWORKS[primaryWallet.network]) || "ETH";
+  const heroLogo = renderAssetLogo(networkSymbol) || renderAssetLogo("ETH") || getBucketCategoryIcon("default");
 
   bucketAccountsView.innerHTML = `
     <section class="accounts20-shell" aria-label="Accounts 2.0">
       <header class="accounts20-topbar">
-        <div>
-          <h2>My Budgets</h2>
-        </div>
+        <h2>My Budgets</h2>
         <div class="accounts20-top-actions">
           <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts">${getWalletActionIcon("scan")}</button>
+          <button class="accounts20-icon-button accounts20-bell" type="button" aria-label="Budget alerts">${getWalletActionIcon("rules")}</button>
           <button class="accounts20-icon-button" type="button" data-accounts20-add aria-label="Add budget account">+</button>
         </div>
       </header>
 
       <section class="accounts20-hero">
-        <div class="accounts20-hero-main">
-          <span class="accounts20-wallet-logo">${renderAssetLogo(getNetworkAssetSymbol(NETWORKS[primaryWallet.network]) || "ETH") || getBucketCategoryIcon("default")}</span>
-          <div>
-            <strong>${escapeHtml(primaryWallet.name || walletAsset)}</strong>
-            <small>${escapeHtml(walletAsset)} | ${rows.length} account${rows.length === 1 ? "" : "s"}</small>
+        <div class="accounts20-hero-head">
+          <span class="accounts20-wallet-logo">${heroLogo}</span>
+          <div class="accounts20-hero-title">
+            <strong>${escapeHtml(primaryWallet.name || walletAsset)} <i aria-hidden="true">${getWalletActionIcon("copy")}</i></strong>
+            <small>${escapeHtml(walletAsset)}</small>
           </div>
+          <span class="accounts20-account-count">${rows.length} account${rows.length === 1 ? "" : "s"}</span>
         </div>
-        <strong class="accounts20-total">${renderMoneyValue(totalBudgeted, { compactAt: 1_000_000, label: "Total budgeted" })}</strong>
-        <span class="accounts20-muted">Total Budgeted</span>
-        <b class="accounts20-available">${renderMoneyValue(totalAvailable, { compactAt: 1_000_000, label: "Available budget" })} Available</b>
+        <div class="accounts20-hero-body">
+          <div>
+            <strong class="accounts20-total">${renderMoneyValue(totalBudgeted, { compactAt: 1_000_000, label: "Total budgeted" })}</strong>
+            <span class="accounts20-muted">Total Budgeted</span>
+            <b class="accounts20-available">${renderMoneyValue(totalAvailable, { compactAt: 1_000_000, label: "Available budget" })} Available</b>
+          </div>
+          <div class="accounts20-mini-chart" aria-hidden="true"><span></span><i></i></div>
+        </div>
         <div class="accounts20-hero-line"><span style="width:${availablePercent}%"></span></div>
         <div class="accounts20-hero-metrics">
           <article><span>${getWalletActionIcon("rules")}</span><div><small>Financial Health</small><strong>${healthScore}<em>/100</em></strong><b>${escapeHtml(healthLabel)}</b></div></article>
