@@ -3611,7 +3611,7 @@ function getBillDueMeta(bill, fromDate = new Date()) {
 
 function getBillDueText(bill) {
   const meta = getBillDueMeta(bill);
-  return meta ? `${meta.dateLabel} ï¿½ ${meta.label}` : "No due date";
+  return meta ? `${meta.dateLabel} | ${meta.label}` : "No due date";
 }
 
 function getUpcomingBillItems() {
@@ -5998,7 +5998,7 @@ function renderMonthlyMoneyFlowPanel({ dashboard, details, moneyIn, moneyOut, ut
           <span class="insight-icon teal" aria-label="Top spending budget account">${renderOverviewPanelIcon("target")}</span>
           <div>
             <strong>Top Spending Budget Account</strong>
-            <small>${topSpending ? `${escapeHtml(topSpending.bucket.name)} ï¿½ ${formatUsd(topSpending.spent)} (${topSpendingPercent.toFixed(0)}%)` : "No spending category yet"}</small>
+            <small>${topSpending ? `${escapeHtml(topSpending.bucket.name)} | ${formatUsd(topSpending.spent)} (${topSpendingPercent.toFixed(0)}%)` : "No spending category yet"}</small>
           </div>
         </article>
         <article>
@@ -6509,7 +6509,7 @@ function renderUnifiedFinance() {
     <div class="overview-card">
       <div class="overview-card-head"><span>Recent Transactions</span><strong>${transactions.length}</strong></div>
       <div class="overview-list">
-        ${transactions.length ? transactions.map((tx) => `<div class="overview-row compact"><span>${escapeHtml(tx.merchantLabel || tx.category || "Activity")} ï¿½ ${escapeHtml(tx.sourceType)}</span><strong>${formatUsd(Number(tx.amount || 0))}</strong></div>`).join("") : `<p class="wallet-note">No unified transactions yet.</p>`}
+        ${transactions.length ? transactions.map((tx) => `<div class="overview-row compact"><span>${escapeHtml(tx.merchantLabel || tx.category || "Activity")} | ${escapeHtml(tx.sourceType)}</span><strong>${formatUsd(Number(tx.amount || 0))}</strong></div>`).join("") : `<p class="wallet-note">No unified transactions yet.</p>`}
       </div>
     </div>
     <div class="overview-card insight-card">
@@ -7857,7 +7857,7 @@ function renderBucketAccounts() {
     const assetGroups = [...walletGroup.assets.values()].sort((a, b) => a.assetLabel.localeCompare(b.assetLabel));
     const walletNameList = [...walletGroup.walletNames].filter(Boolean);
     const walletTitle = walletNameList.length > 1 ? "Shared wallet address" : walletNameList[0] || "Wallet address";
-    const walletSubtitle = `${shortAddress(walletGroup.address)} ï¿½ ${assetGroups.length} asset${assetGroups.length === 1 ? "" : "s"} ï¿½ ${walletGroup.totalBuckets} Virtual Budget Account${walletGroup.totalBuckets === 1 ? "" : "s"}`;
+    const walletSubtitle = `${shortAddress(walletGroup.address)} | ${assetGroups.length} asset${assetGroups.length === 1 ? "" : "s"} | ${walletGroup.totalBuckets} Virtual Budget Account${walletGroup.totalBuckets === 1 ? "" : "s"}`;
     return `
       <section class="wallet-account-group">
         <div class="wallet-account-heading">
@@ -7882,7 +7882,7 @@ function renderBucketAccounts() {
                 <div class="asset-account-heading">
                   <div>
                     <strong>${escapeHtml(assetGroup.assetLabel)}</strong>
-                    <small>${escapeHtml([...assetGroup.walletNames].filter(Boolean).join(", ") || "Wallet")} ï¿½ ${rows.length} budget account${rows.length === 1 ? "" : "s"}${assetGroup.canSend ? " ï¿½ Send enabled" : ""}</small>
+                    <small>${escapeHtml([...assetGroup.walletNames].filter(Boolean).join(", ") || "Wallet")} | ${rows.length} budget account${rows.length === 1 ? "" : "s"}${assetGroup.canSend ? " | Send enabled" : ""}</small>
                   </div>
                   <div>
                     <span>${renderMoneyValue(assetGroup.totalBalance, { compactAt: 1_000_000, label: `${assetGroup.assetLabel} total balance` })}</span>
@@ -7904,7 +7904,7 @@ function renderBucketAccounts() {
                                 <em class="account-purpose-chip">${escapeHtml(account.group)}</em>
                                 <small>${escapeHtml(shortAddress(account.walletAddress))}<span class="account-copy-glyph" aria-hidden="true">${getWalletActionIcon("copy")}</span></small>
                               </span>
-                              <span class="account-spent-line">Spent <b>${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })}</b> this week${account.monthlyRequired > 0 ? ` ï¿½ Weekly target ${renderMoneyValue(account.weeklyTarget, { compactAt: 1_000_000, label: `${account.bucket.name} weekly target` })}` : ""}</span>
+                              <span class="account-spent-line">Spent <b>${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })}</b> this week${account.monthlyRequired > 0 ? ` | Weekly target ${renderMoneyValue(account.weeklyTarget, { compactAt: 1_000_000, label: `${account.bucket.name} weekly target` })}` : ""}</span>
                             </div>
                           </div>
                         </div>
@@ -9524,7 +9524,7 @@ function render() {
   totalBalance.title = fullNetWorthLabel;
   totalBalance.setAttribute("aria-label", `Total Net Worth: ${fullNetWorthLabel}`);
   lastUpdated.textContent = `Total Connected Wallet Addresses: ${unifiedSummary.connectedWallets}`;
-  walletCount.textContent = `${supportedWallets.length} supported wallet${supportedWallets.length === 1 ? "" : "s"} saved${unsupportedWallets.length ? ` ï¿½ ${unsupportedWallets.length} hidden` : ""}`;
+  walletCount.textContent = `${supportedWallets.length} supported wallet${supportedWallets.length === 1 ? "" : "s"} saved${unsupportedWallets.length ? ` | ${unsupportedWallets.length} hidden` : ""}`;
   renderDashboard();
   renderGoals();
   renderTransactionLog();
@@ -9670,7 +9670,7 @@ function openSendDialog(id, bucketId = null, options = {}) {
           Saved destination
           <select id="savedRecipient">
             <option value="">${savedRecipients.length ? "Choose saved destination" : "No saved destinations for this asset yet"}</option>
-            ${savedRecipients.map((entry) => `<option value="${entry.id}">${escapeHtml(entry.name)} ï¿½ ${escapeHtml(getAddressBookNetworkLabel(entry, wallet.network))}</option>`).join("")}
+            ${savedRecipients.map((entry) => `<option value="${entry.id}">${escapeHtml(entry.name)} | ${escapeHtml(getAddressBookNetworkLabel(entry, wallet.network))}</option>`).join("")}
           </select>
         </label>
         <label>
@@ -9881,7 +9881,7 @@ function openAssignMoneyDialogLegacy() {
 
   const walletOptions = supportedWallets.map((wallet) => {
     const value = getWalletDisplayValue(wallet);
-    return `<option value="${wallet.id}">${escapeHtml(wallet.name)} Â· ${formatUsd(value)}</option>`;
+    return `<option value="${wallet.id}">${escapeHtml(wallet.name)} | ${formatUsd(value)}</option>`;
   }).join("");
   const firstWallet = supportedWallets[0];
 
@@ -10044,7 +10044,7 @@ function renderAssignPreviewLegacy(walletId, amount) {
   const buckets = getAssignmentTemplateBuckets(wallet, templateKey);
   const rows = buckets.map((bucket) => {
     const percent = Number(bucket.percent || 0);
-    return `<span>${escapeHtml(bucket.name)} ï¿½ ${percent}%${amount > 0 ? ` ï¿½ ${formatUsd(amount * (percent / 100))}` : ""}</span>`;
+    return `<span>${escapeHtml(bucket.name)} | ${percent}%${amount > 0 ? ` | ${formatUsd(amount * (percent / 100))}` : ""}</span>`;
   }).join("");
   const templateName = getAssignmentTemplateName(templateKey);
   dialogContent.querySelector("#assignPreview").innerHTML = `
@@ -10150,7 +10150,7 @@ function renderAddBucketPreview(walletId, bucketName, percent) {
   const plan = getRebalancedBucketPlanWithNewBucket(wallet, name, percent);
   dialogContent.querySelector("#addBucketPreview").innerHTML = `
     <strong>Rebalanced template preview</strong>
-    ${plan.map((bucket) => `<span>${escapeHtml(bucket.name)} ${Number(bucket.percent || 0).toFixed(1)}% ï¿½ ${formatUsd(bucket.allocated)}</span>`).join("")}
+    ${plan.map((bucket) => `<span>${escapeHtml(bucket.name)} ${Number(bucket.percent || 0).toFixed(1)}% | ${formatUsd(bucket.allocated)}</span>`).join("")}
   `;
 }
 
@@ -10165,7 +10165,7 @@ function openAddBucketAccountDialog() {
     ? selectedWalletId
     : wallets[0].id;
   const walletOptions = getSupportedWallets().map((wallet) => `
-    <option value="${wallet.id}" ${wallet.id === defaultWalletId ? "selected" : ""}>${escapeHtml(wallet.name)} ï¿½ ${formatUsd(getWalletDisplayValue(wallet))}</option>
+    <option value="${wallet.id}" ${wallet.id === defaultWalletId ? "selected" : ""}>${escapeHtml(wallet.name)} | ${formatUsd(getWalletDisplayValue(wallet))}</option>
   `).join("");
 
   openDialog(`
@@ -10378,7 +10378,7 @@ function getBucketOptions(selectedBucketId = "") {
   return wallets.flatMap((wallet) => (wallet.allocation?.buckets || []).map((bucket) => ({
     walletId: wallet.id,
     bucketId: bucket.id,
-    label: `${wallet.name} Â· ${bucket.name}`,
+    label: `${wallet.name} | ${bucket.name}`,
   }))).map((option) => `
     <option value="${option.bucketId}" ${option.bucketId === selectedBucketId ? "selected" : ""}>${escapeHtml(option.label)}</option>
   `).join("");
@@ -10392,7 +10392,7 @@ function getAllBucketOptions(selectedBucketId = "") {
     return {
       walletId: wallet.id,
       bucketId: bucket.id,
-      label: `${wallet.name} Â· ${bucket.name} (${formatUsd(left)} balance)`,
+      label: `${wallet.name} | ${bucket.name} (${formatUsd(left)} balance)`,
     };
   })).map((option) => `
     <option value="${option.walletId}:${option.bucketId}" ${option.bucketId === selectedBucketId ? "selected" : ""}>${escapeHtml(option.label)}</option>
@@ -10457,7 +10457,7 @@ function openTemplateDialog() {
         <label>
           Wallet
           <select id="templateWallet">
-            ${getSupportedWallets().map((wallet) => `<option value="${wallet.id}">${escapeHtml(wallet.name)} Â· ${formatUsd(getWalletDisplayValue(wallet))}</option>`).join("")}
+            ${getSupportedWallets().map((wallet) => `<option value="${wallet.id}">${escapeHtml(wallet.name)} | ${formatUsd(getWalletDisplayValue(wallet))}</option>`).join("")}
           </select>
         </label>
         <label>
@@ -10481,7 +10481,7 @@ function openTemplateDialog() {
     const template = BUCKET_TEMPLATES[dialogContent.querySelector("#templateType").value];
     dialogContent.querySelector("#templatePreview").innerHTML = `
       <strong>${escapeHtml(template.name)}</strong>
-      ${template.buckets.map((bucket) => `<span>${escapeHtml(bucket.name)} Â· ${bucket.percent}%${bucket.subaccounts ? ` Â· ${bucket.subaccounts.length} bill subaccounts` : ""}</span>`).join("")}
+      ${template.buckets.map((bucket) => `<span>${escapeHtml(bucket.name)} | ${bucket.percent}%${bucket.subaccounts ? ` | ${bucket.subaccounts.length} bill subaccounts` : ""}</span>`).join("")}
     `;
   };
   dialogContent.querySelector("#templateType").addEventListener("change", updatePreview);
@@ -10573,7 +10573,7 @@ function saveMoveMoney() {
     id: crypto.randomUUID(),
     type: "virtual-transfer",
     bucketId: to.bucket.id,
-    bucketName: `${from.bucket.name} â†’ ${to.bucket.name}`,
+    bucketName: `${from.bucket.name} -> ${to.bucket.name}`,
     amount,
     note,
     createdAt: new Date().toISOString(),
@@ -11510,7 +11510,7 @@ function openBucketDetailDialog(walletId, bucketId) {
                     <span class="vba-activity-icon">${getWalletActionIcon(tx.type?.includes("send") ? "send" : "spend")}</span>
                     <div>
                       <strong>${escapeHtml(title)}</strong>
-                      <small>${escapeHtml(dateLabel)}${meta ? ` ï¿½ ${escapeHtml(meta)}` : ""}</small>
+                      <small>${escapeHtml(dateLabel)}${meta ? ` | ${escapeHtml(meta)}` : ""}</small>
                     </div>
                     <b>${renderMoneyValue(Number(tx.amount || 0), { compactAt: 1_000_000, label: `${title} amount` })}</b>
                   </div>

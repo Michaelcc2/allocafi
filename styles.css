@@ -20261,3 +20261,200 @@ body {
     place-items: center;
   }
 }
+/* Mobile Accounts VBA card correction 2026-06-06 */
+@media (max-width: 640px) {
+  [data-panel="accounts"] .wallet-account-group,
+  [data-panel="accounts"] .asset-account-group,
+  [data-panel="accounts"] .asset-account-list {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  [data-panel="accounts"] .wallet-account-heading {
+    gap: 12px;
+    grid-template-columns: 1fr;
+  }
+
+  [data-panel="accounts"] .wallet-account-heading h3,
+  [data-panel="accounts"] .asset-account-heading strong {
+    line-height: 1.12;
+  }
+
+  [data-panel="accounts"] .wallet-account-heading p,
+  [data-panel="accounts"] .asset-account-heading small {
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  [data-panel="accounts"] .wallet-account-heading > span {
+    justify-self: stretch;
+    max-width: 100%;
+    text-align: left;
+  }
+
+  [data-panel="accounts"] .asset-account-heading {
+    align-items: stretch;
+    gap: 10px;
+    grid-template-columns: 1fr;
+  }
+
+  [data-panel="accounts"] .asset-account-heading > div:last-child {
+    align-items: start;
+    justify-items: start;
+    text-align: left;
+  }
+
+  [data-panel="accounts"] .personalized-vba-card {
+    border-radius: 18px;
+    gap: 12px;
+    overflow: hidden;
+    padding: 14px;
+  }
+
+  [data-panel="accounts"] .personalized-vba-card::after {
+    display: none;
+  }
+
+  [data-panel="accounts"] .account-card-hero {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr !important;
+    min-width: 0;
+  }
+
+  [data-panel="accounts"] .account-identity-panel,
+  [data-panel="accounts"] .account-name {
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  [data-panel="accounts"] .account-card-kicker {
+    display: block;
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+    line-height: 1.15;
+    white-space: normal;
+  }
+
+  [data-panel="accounts"] .account-title-cluster {
+    align-items: center;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 50px minmax(0, 1fr) !important;
+    min-width: 0;
+  }
+
+  [data-panel="accounts"] .personalized-vba-card .account-icon {
+    border-radius: 14px;
+    height: 50px;
+    width: 50px;
+  }
+
+  [data-panel="accounts"] .personalized-vba-card .account-icon svg {
+    height: 28px;
+    width: 28px;
+  }
+
+  [data-panel="accounts"] .account-title-row {
+    min-width: 0;
+    width: 100%;
+  }
+
+  [data-panel="accounts"] .account-title-row strong {
+    display: block;
+    flex: 1 1 auto;
+    font-size: clamp(1.2rem, 6.2vw, 1.55rem);
+    line-height: 1.08;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-panel="accounts"] .personalized-vba-card .account-source-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  [data-panel="accounts"] .personalized-vba-card .account-source-line em,
+  [data-panel="accounts"] .personalized-vba-card .account-source-line small {
+    font-size: 0.65rem;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-panel="accounts"] .account-spent-line {
+    display: block;
+    line-height: 1.35;
+    white-space: normal;
+  }
+
+  [data-panel="accounts"] .personalized-vba-card .account-amount {
+    align-items: center;
+    box-sizing: border-box;
+    gap: 4px 10px;
+    grid-template-areas:
+      "label coin"
+      "amount coin";
+    grid-template-columns: minmax(0, 1fr) 46px !important;
+    min-height: 98px !important;
+    padding: 14px !important;
+    width: 100%;
+  }
+
+  [data-panel="accounts"] .personalized-vba-card .account-amount span {
+    grid-area: label;
+    line-height: 1.14;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  [data-panel="accounts"] .personalized-vba-card .account-amount strong {
+    display: block;
+    font-size: clamp(1.75rem, 9vw, 2.35rem) !important;
+    grid-area: amount;
+    line-height: 0.98;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-panel="accounts"] .personalized-vba-card .account-amount .account-balance-money {
+    display: block;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-panel="accounts"] .account-coin-stack {
+    grid-area: coin;
+    height: 44px;
+    width: 44px;
+  }
+
+  [data-panel="accounts"] .account-coin-stack b {
+    font-size: 1.08rem;
+  }
+
+  [data-panel="accounts"] .account-meta-strip {
+    grid-template-columns: 1fr;
+  }
+
+  [data-panel="accounts"] .account-meta-strip > span + span {
+    border-left: 0;
+    border-top: 1px solid rgba(132, 153, 193, 0.12);
+  }
+}
