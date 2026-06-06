@@ -53,6 +53,7 @@ const {
 } = await import("./ledgercore-ui.js");
 
 const WALLETCONNECT_PROJECT_KEY = "allocafi-walletconnect-project-v1";
+const ALLOCAFI_REOWN_PROJECT_ID = "472f879ee8538cc4dab6893faafb08d0";
 const cryptoApi = globalThis.crypto || {};
 const crypto = {
   ...cryptoApi,
@@ -3089,7 +3090,7 @@ async function flushCloudSync(label = "Sync") {
 }
 
 function loadWalletConnectProjectId() {
-  return localStorage.getItem(WALLETCONNECT_PROJECT_KEY) || "";
+  return localStorage.getItem(WALLETCONNECT_PROJECT_KEY) || ALLOCAFI_REOWN_PROJECT_ID || "";
 }
 
 async function hydrateClientConfig() {
@@ -3098,9 +3099,12 @@ async function hydrateClientConfig() {
     if (!response.ok) return;
     const config = await response.json();
     let shouldUpdateWalletUi = false;
-    if (config.walletConnectProjectId && !loadWalletConnectProjectId()) {
+    if (config.walletConnectProjectId) {
       localStorage.setItem(WALLETCONNECT_PROJECT_KEY, config.walletConnectProjectId);
       if (walletConnectProjectInput) walletConnectProjectInput.value = config.walletConnectProjectId;
+      shouldUpdateWalletUi = true;
+    } else if (walletConnectProjectInput && !walletConnectProjectInput.value) {
+      walletConnectProjectInput.value = loadWalletConnectProjectId();
       shouldUpdateWalletUi = true;
     }
     serverSolanaRpcConfigured = Boolean(config.solanaRpcConfigured);
