@@ -13520,6 +13520,7 @@ function saveViewOnlyWalletAddress({ network, address, name, budget, manualBalan
     return null;
   }
   const balance = Math.max(0, Number(manualBalance || 0));
+
   const now = new Date().toISOString();
   const wallet = {
     id: crypto.randomUUID(),
@@ -14391,6 +14392,36 @@ function openOnboardingWalletGuideDialog({ testMode = false, selectedPlanCode = 
     }
   });
 }
+
+async function advanceOnboardingAfterOwnerWallet(wallet, { testMode = false, balanceAlreadyChecked = false } = {}) {
+  selectedWalletId = wallet.id;
+  const flow = loadOnboardingFlow();
+  const onboardingPlanCode = flow.selectedPlanCode || flow.planCode;
+  saveWallets();
+  if (onboardingPlanCode === "free" && !isDemoModeActive()) {
+    if (!balanceAlreadyChecked) {
+      await refreshOnboardingOwnerWalletBalance(wallet, "#onboardingAiCheck");
+    }
+    await completeFreeOnboarding(wallet, { testMode, balanceAlreadyChecked: true });
+    return;
+  }
+  updateOnboardingFlow({ step: "vault", ownerWalletId: wallet.id, ownerWalletAddress: wallet.address });
+  const statusBox = dialogContent.querySelector("#onboardingAiCheck");
+  if (statusBox) {
+    statusBox.innerHTML = `
+      <strong>Owner Wallet saved</strong>
+      <span>Opening signature-only Vault activation. No funds will move.</span>
+    `;
+  }
+  void refreshOnboardingOwnerWalletBalance(wallet).catch((error) => {
+    wallet.status = "Balance check pending";
+    wallet.statusType = "warning";
+    wallet.error = error?.message || "Owner Wallet balance check will retry after activation.";
+    wallet.updatedAt = new Date().toISOString();
+    saveWallets();
+  });
+  openOnboardingVaultSignatureDialog({ testMode: testMode || isDemoModeActive() });
+}
 async function saveOnboardingWallet({ testMode = false } = {}) {
   const networkKey = dialogContent.querySelector("#onboardingNetwork").value;
   const address = cleanAddress(dialogContent.querySelector("#onboardingAddress").value);
@@ -14411,6 +14442,21 @@ async function saveOnboardingWallet({ testMode = false } = {}) {
     <span>${escapeHtml(diagnosis.detail)}</span>
   `;
   if (!diagnosis.ok) return;
+
+  const existingWallet = !isDemoModeActive()
+    ? wallets.find((item) => item.network === networkKey && item.address.toLowerCase() === address.toLowerCase())
+    : null;
+  if (existingWallet) {
+    existingWallet.ownerWallet = true;
+    existingWallet.role = "Owner Wallet";
+    existingWallet.status = "Owner wallet connected";
+    existingWallet.statusType = "live";
+    existingWallet.error = "";
+    existingWallet.updatedAt = new Date().toISOString();
+    wallets = [existingWallet, ...wallets.filter((item) => item.id !== existingWallet.id).map((item) => ({ ...item, ownerWallet: false }))];
+    await advanceOnboardingAfterOwnerWallet(existingWallet, { testMode });
+    return;
+  }
 
   const now = new Date().toISOString();
   const wallet = {
@@ -14444,25 +14490,7 @@ async function saveOnboardingWallet({ testMode = false } = {}) {
     wallets = [wallet, ...wallets.filter((item) => !item.ownerWallet)];
   }
 
-  selectedWalletId = wallet.id;
-  const flow = loadOnboardingFlow();
-  const onboardingPlanCode = flow.selectedPlanCode || flow.planCode;
-  saveWallets();
-  if (onboardingPlanCode === "free" && !isDemoModeActive()) {
-    await refreshOnboardingOwnerWalletBalance(wallet, "#onboardingAiCheck");
-    await completeFreeOnboarding(wallet, { testMode, balanceAlreadyChecked: true });
-    return;
-  }
-  updateOnboardingFlow({ step: "vault", ownerWalletId: wallet.id, ownerWalletAddress: wallet.address });
-  void refreshOnboardingOwnerWalletBalance(wallet).catch((error) => {
-    wallet.status = "Balance check pending";
-    wallet.statusType = "warning";
-    wallet.error = error?.message || "Owner Wallet balance check will retry after activation.";
-    wallet.updatedAt = new Date().toISOString();
-    saveWallets();
-  });
-  render();
-  openOnboardingVaultSignatureDialog({ testMode: testMode || isDemoModeActive() });
+  await advanceOnboardingAfterOwnerWallet(wallet, { testMode });
 }
 
 async function completeFreeOnboarding(wallet, { testMode = false, balanceAlreadyChecked = false } = {}) {
