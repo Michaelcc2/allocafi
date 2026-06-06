@@ -1040,6 +1040,10 @@ function moveAdvancedSectionsIntoSettings() {
         </div>
       </div>
       <div class="settings-launch-grid">
+        <button class="settings-launch-card onboarding-test-launch-card" data-start-onboarding-test type="button">
+          <strong>Test Onboarding</strong>
+          <span>Restart the new-user onboarding flow in a safe sandbox.</span>
+        </button>
         ${advancedIds.map((id) => `
           <button class="settings-launch-card ${id === "ai" ? "future-system-card" : ""}" data-open-advanced="${id}" type="button" ${id === "pay" ? "hidden" : ""}>
             <strong>${labels[id][0]}</strong>
@@ -1050,6 +1054,7 @@ function moveAdvancedSectionsIntoSettings() {
     </section>
   `);
 
+  settingsPanel.querySelector("[data-start-onboarding-test]")?.addEventListener("click", startOnboardingTestFlow);
   settingsPanel.querySelectorAll("[data-open-advanced]").forEach((button) => {
     button.addEventListener("click", () => openAdvancedSystem(button.dataset.openAdvanced));
   });
@@ -3218,6 +3223,19 @@ function canUseBucketCountUnderPlan(nextCount) {
   if (isDemoModeActive() || isAdminPowerEnabled()) return true;
   const limit = getCurrentEntitlements().buckets;
   return limit === Infinity || nextCount <= limit;
+}
+
+function getBudgetAccountPlanLimit() {
+  if (isDemoModeActive() || isAdminPowerEnabled()) return Infinity;
+  return getCurrentEntitlements().buckets;
+}
+
+function showBudgetAccountLimitUpgradePrompt() {
+  const limit = getBudgetAccountPlanLimit();
+  const currentPlan = getCurrentSubscriptionPlan();
+  const planLabel = currentPlan.code === "free" ? "Free" : currentPlan.name;
+  showToast(`${planLabel} allows ${formatPlanLimit(limit)} Virtual Budget Accounts. Upgrade to AllocaFi Core for unlimited budget accounts.`);
+  openSubscriptionCheckout("premium");
 }
 
 function canSendFromVirtualBucketAccounts() {
@@ -10160,6 +10178,10 @@ function openAddBucketAccountDialog() {
     switchTab("wallets");
     return;
   }
+  if (!canUseBucketCountUnderPlan(countVirtualBucketAccounts() + 1)) {
+    showBudgetAccountLimitUpgradePrompt();
+    return;
+  }
 
   const defaultWalletId = wallets.some((wallet) => wallet.id === selectedWalletId)
     ? selectedWalletId
@@ -10222,8 +10244,7 @@ function saveAddedBucketAccount() {
     return;
   }
   if (!canUseBucketCountUnderPlan(countVirtualBucketAccounts() + 1)) {
-    showToast("Upgrade to Premium for more Virtual Budget Accounts");
-    openSubscriptionCheckout("premium");
+    showBudgetAccountLimitUpgradePrompt();
     return;
   }
 
@@ -10301,8 +10322,7 @@ function saveAssignedMoney() {
     }
     const nextTotalBuckets = countVirtualBucketAccounts() - existingBuckets.length + templateBuckets.length;
     if (!canUseBucketCountUnderPlan(nextTotalBuckets)) {
-      showToast("Upgrade to Premium to auto-create more budget accounts");
-      openSubscriptionCheckout("premium");
+      showBudgetAccountLimitUpgradePrompt();
       return;
     }
     const awaitingFunds = walletValue <= 0.01;
@@ -10507,8 +10527,7 @@ function applyBucketTemplate() {
 
   const newTemplateBuckets = template.buckets.filter((templateBucket) => !wallet.allocation.buckets.some((bucket) => bucket.name.toLowerCase() === templateBucket.name.toLowerCase())).length;
   if (!canUseBucketCountUnderPlan(countVirtualBucketAccounts() + newTemplateBuckets)) {
-    showToast("Upgrade to Premium for unlimited budget accounts");
-    openSubscriptionCheckout("premium");
+    showBudgetAccountLimitUpgradePrompt();
     return;
   }
 
@@ -10721,8 +10740,7 @@ function saveWizardWallet() {
     return;
   }
   if (!canUseBucketCountUnderPlan(countVirtualBucketAccounts() + DEFAULT_BUCKETS.length)) {
-    showToast("Upgrade to Premium to create starter budget accounts");
-    openSubscriptionCheckout("premium");
+    showBudgetAccountLimitUpgradePrompt();
     return;
   }
   const walletValue = 0;
@@ -10803,8 +10821,7 @@ function saveAllocation(id) {
   const existingCount = wallet.allocation?.buckets?.length || 0;
   const nextTotalBuckets = countVirtualBucketAccounts() - existingCount + buckets.length;
   if (!canUseBucketCountUnderPlan(nextTotalBuckets)) {
-    showToast("Upgrade to Premium for unlimited budget accounts");
-    openSubscriptionCheckout("premium");
+    showBudgetAccountLimitUpgradePrompt();
     return;
   }
 
@@ -13812,6 +13829,7 @@ function startOnboardingDemoMode() {
   return true;
 }
 
+
 function createDefaultOnboardingFlow() {
   return {
     startedAt: "",
@@ -14974,6 +14992,8 @@ function openOnboardingTutorialDialog() {
 
 function startOnboardingTestFlow() {
   if (!startOnboardingDemoMode()) return;
+  localStorage.removeItem(ONBOARDING_STATUS_KEY);
+  saveOnboardingFlow(createDefaultOnboardingFlow());
   openOnboardingWelcomeDialog({ testMode: true });
 }
 
