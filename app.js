@@ -7894,11 +7894,10 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
     <section class="accounts20-shell" aria-label="Accounts 2.0">
       <header class="accounts20-topbar">
         <div>
-          <span>Accounts 2.0</span>
           <h2>My Budgets</h2>
         </div>
         <div class="accounts20-top-actions">
-          <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts">${getWalletActionIcon("view")}</button>
+          <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts">${getWalletActionIcon("scan")}</button>
           <button class="accounts20-icon-button" type="button" data-accounts20-add aria-label="Add budget account">+</button>
         </div>
       </header>
@@ -7916,8 +7915,8 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
         <b class="accounts20-available">${renderMoneyValue(totalAvailable, { compactAt: 1_000_000, label: "Available budget" })} Available</b>
         <div class="accounts20-hero-line"><span style="width:${availablePercent}%"></span></div>
         <div class="accounts20-hero-metrics">
-          <article><span>${getWalletActionIcon("rules")}</span><small>Financial Health</small><strong>${healthScore}<em>/100</em></strong><b>${escapeHtml(healthLabel)}</b></article>
-          <article><span>${getWalletActionIcon("spend")}</span><small>This Week Spent</small><strong>${renderMoneyValue(totalSpent, { compactAt: 1_000_000, label: "This week spent" })}</strong><b>${totalBudgeted > 0 ? `${Math.min((totalSpent / totalBudgeted) * 100, 100).toFixed(0)}% of total budget` : "No spend yet"}</b></article>
+          <article><span>${getWalletActionIcon("rules")}</span><div><small>Financial Health</small><strong>${healthScore}<em>/100</em></strong><b>${escapeHtml(healthLabel)}</b></div></article>
+          <article><span>${getWalletActionIcon("refresh")}</span><div><small>This Week Spent</small><strong>${renderMoneyValue(totalSpent, { compactAt: 1_000_000, label: "This week spent" })}</strong><b>${totalBudgeted > 0 ? `${Math.min((totalSpent / totalBudgeted) * 100, 100).toFixed(0)}% of total budget` : "No spend yet"}</b></div></article>
         </div>
       </section>
 
