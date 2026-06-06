@@ -20063,3 +20063,124 @@ body {
     min-height: 22px;
   }
 }
+/* Mobile monthly dashboard card fit 2026-06-06 */
+@media (max-width: 640px) {
+  .monthly-dashboard-shell {
+    overflow-x: hidden;
+    padding: 18px 16px;
+  }
+
+  .monthly-dashboard-shell > .panel-heading {
+    gap: 18px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+  }
+
+  .monthly-dashboard-shell > .panel-heading h2 {
+    font-size: clamp(1.9rem, 9vw, 2.35rem);
+    line-height: 1.05;
+  }
+
+  .monthly-dashboard-shell > .panel-heading p {
+    font-size: clamp(0.96rem, 4.8vw, 1.08rem);
+    line-height: 1.55;
+    max-width: 100%;
+  }
+
+  .monthly-dashboard-shell > .panel-heading::before {
+    display: none;
+  }
+
+  .monthly-dashboard-shell #dashboardMonth.status-pill {
+    min-width: 0;
+    width: min(100%, 220px);
+  }
+
+  .monthly-dashboard-shell #dashboardStats {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) !important;
+    overflow-x: hidden;
+    padding-bottom: 0;
+    width: 100%;
+  }
+
+  .monthly-dashboard-shell #dashboardStats > .monthly-stat-card {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-height: 198px;
+    min-width: 0;
+    padding: 16px;
+    width: 100%;
+  }
+
+  .monthly-dashboard-shell .fintech-stat-card {
+    border-radius: 18px;
+    gap: 11px;
+  }
+
+  .monthly-dashboard-shell .fintech-stat-card::after {
+    inset: 7px;
+    opacity: 0.52;
+  }
+
+  .monthly-dashboard-shell .fintech-stat-card .monthly-stat-main {
+    gap: 12px;
+    grid-template-columns: 62px minmax(0, 1fr);
+  }
+
+  .monthly-dashboard-shell .fintech-stat-card .monthly-stat-icon {
+    border-radius: 16px;
+    height: 62px;
+    width: 62px;
+  }
+
+  .monthly-dashboard-shell .fintech-stat-card .monthly-stat-main em,
+  .monthly-dashboard-shell .fintech-stat-card .monthly-stat-main small {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .monthly-dashboard-shell .fintech-stat-card .monthly-stat-main strong {
+    font-size: clamp(1.68rem, 8.2vw, 2.28rem);
+    line-height: 1;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .monthly-dashboard-shell .fintech-stat-card .monthly-stat-main strong .money-value {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .monthly-dashboard-shell .fintech-stat-card .monthly-trend-line {
+    height: 56px;
+    margin: 0 0 -2px;
+  }
+
+  .monthly-dashboard-shell .fintech-stat-card .monthly-stat-foot {
+    align-items: center;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+  }
+
+  .monthly-dashboard-shell .fintech-stat-card .monthly-stat-foot small {
+    min-width: 0;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .monthly-dashboard-shell #dashboardStats > .monthly-flow-strip {
+    grid-column: 1;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+}
