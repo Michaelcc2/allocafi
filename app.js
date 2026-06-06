@@ -9516,7 +9516,13 @@ function render() {
     walletList.append(card);
   });
   const unifiedSummary = getUnifiedSummary();
-  totalBalance.textContent = formatUsd(unifiedSummary.netWorth);
+  const fullNetWorthLabel = formatUsd(unifiedSummary.netWorth);
+  const compactHeroBalance = window.matchMedia?.("(max-width: 640px)")?.matches
+    ? formatCompactUsd(unifiedSummary.netWorth)
+    : fullNetWorthLabel;
+  totalBalance.textContent = compactHeroBalance;
+  totalBalance.title = fullNetWorthLabel;
+  totalBalance.setAttribute("aria-label", `Total Net Worth: ${fullNetWorthLabel}`);
   lastUpdated.textContent = `Total Connected Wallet Addresses: ${unifiedSummary.connectedWallets}`;
   walletCount.textContent = `${supportedWallets.length} supported wallet${supportedWallets.length === 1 ? "" : "s"} saved${unsupportedWallets.length ? ` ï¿½ ${unsupportedWallets.length} hidden` : ""}`;
   renderDashboard();
