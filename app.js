@@ -14367,7 +14367,29 @@ function openOnboardingWalletGuideDialog({ testMode = false, selectedPlanCode = 
       <span>Use this test address, then activate the Vault preview on the next step.</span>
     `;
   });
-  dialogContent.querySelector("#onboardingCheckWallet").addEventListener("click", () => saveOnboardingWallet({ testMode }));
+  dialogContent.querySelector("#onboardingCheckWallet").addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    const previousLabel = button.textContent;
+    button.disabled = true;
+    button.textContent = "Checking wallet...";
+    try {
+      await saveOnboardingWallet({ testMode });
+    } catch (error) {
+      const checkBox = dialogContent.querySelector("#onboardingAiCheck");
+      if (checkBox) {
+        checkBox.innerHTML = `
+          <strong>Wallet step needs review</strong>
+          <span>${escapeHtml(error?.message || "Could not continue. Check the wallet address and try again.")}</span>
+        `;
+      }
+      showToast(error?.message || "Could not continue onboarding");
+    } finally {
+      if (dialogContent?.querySelector("#onboardingCheckWallet") === button) {
+        button.disabled = false;
+        button.textContent = previousLabel;
+      }
+    }
+  });
 }
 async function saveOnboardingWallet({ testMode = false } = {}) {
   const networkKey = dialogContent.querySelector("#onboardingNetwork").value;
@@ -14426,12 +14448,19 @@ async function saveOnboardingWallet({ testMode = false } = {}) {
   const flow = loadOnboardingFlow();
   const onboardingPlanCode = flow.selectedPlanCode || flow.planCode;
   saveWallets();
-  await refreshOnboardingOwnerWalletBalance(wallet, "#onboardingAiCheck");
   if (onboardingPlanCode === "free" && !isDemoModeActive()) {
+    await refreshOnboardingOwnerWalletBalance(wallet, "#onboardingAiCheck");
     await completeFreeOnboarding(wallet, { testMode, balanceAlreadyChecked: true });
     return;
   }
   updateOnboardingFlow({ step: "vault", ownerWalletId: wallet.id, ownerWalletAddress: wallet.address });
+  void refreshOnboardingOwnerWalletBalance(wallet).catch((error) => {
+    wallet.status = "Balance check pending";
+    wallet.statusType = "warning";
+    wallet.error = error?.message || "Owner Wallet balance check will retry after activation.";
+    wallet.updatedAt = new Date().toISOString();
+    saveWallets();
+  });
   render();
   openOnboardingVaultSignatureDialog({ testMode: testMode || isDemoModeActive() });
 }
