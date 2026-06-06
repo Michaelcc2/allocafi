@@ -19994,47 +19994,53 @@ body {
 
   .summary-band.reference-cover .total-panel {
     border-radius: 14px;
-    gap: 2px;
+    gap: 1px;
+    grid-template-rows: auto auto auto minmax(22px, auto);
     height: 54%;
-    left: 66.2%;
-    padding: 6px 6px 7px;
+    left: 65.4%;
+    padding: 12px 5px 6px;
     top: 15.5%;
-    width: 30.8%;
+    width: 32.4%;
   }
 
   .summary-band.reference-cover .total-panel span {
-    font-size: clamp(0.42rem, 1.9vw, 0.62rem);
-    letter-spacing: 0.07em;
-    line-height: 1.05;
+    font-size: clamp(0.38rem, 1.65vw, 0.56rem);
+    letter-spacing: 0;
+    line-height: 1.04;
     max-width: 100%;
+    white-space: normal;
   }
 
   .summary-band.reference-cover .total-panel strong {
-    font-size: clamp(0.92rem, 6.1vw, 1.55rem);
-    line-height: 0.92;
+    font-size: clamp(0.68rem, 4vw, 1rem);
+    letter-spacing: 0;
+    line-height: 0.96;
     max-width: 100%;
+    overflow: visible;
+    white-space: nowrap;
+    word-break: normal;
   }
 
   .summary-band.reference-cover .total-panel small {
-    font-size: clamp(0.42rem, 1.9vw, 0.62rem);
-    line-height: 1.08;
+    font-size: clamp(0.36rem, 1.55vw, 0.54rem);
+    line-height: 1.04;
   }
 
   .summary-band.reference-cover .assign-button {
     border-radius: 9px;
-    font-size: clamp(0.48rem, 2.55vw, 0.74rem);
+    font-size: clamp(0.44rem, 2.2vw, 0.66rem);
     font-weight: 950;
-    min-height: 24px;
-    padding: 5px 6px;
+    min-height: 22px;
+    padding: 4px 5px;
     white-space: nowrap;
   }
 
   .summary-band.reference-cover .hero-add-wallet-button {
-    font-size: 1rem;
-    height: 28px;
-    right: 5px;
-    top: 5px;
-    width: 28px;
+    font-size: 0.78rem;
+    height: 22px;
+    right: 3px;
+    top: 3px;
+    width: 22px;
   }
 
   .summary-band.reference-cover .hero-add-wallet-button::before {
@@ -20048,9 +20054,9 @@ body {
   }
 
   .summary-band.reference-cover .total-panel {
-    left: 66.5%;
-    padding: 5px 5px 6px;
-    width: 30.4%;
+    left: 65.6%;
+    padding: 11px 4px 5px;
+    width: 32%;
   }
 
   .summary-band.reference-cover .assign-button {
