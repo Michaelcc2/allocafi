@@ -12076,6 +12076,33 @@ function getWalletAvailability() {
   };
 }
 
+const WALLETCONNECT_EVM_PROVIDER_IDS = new Set(["walletconnect", "trust-walletconnect", "metamask-walletconnect", "coinbase-walletconnect"]);
+const WALLETCONNECT_SOLANA_PROVIDER_IDS = new Set(["walletconnect", "trust-walletconnect", "phantom-walletconnect"]);
+
+function isWalletConnectEvmProviderId(walletType = "") {
+  return WALLETCONNECT_EVM_PROVIDER_IDS.has(walletType);
+}
+
+function isWalletConnectSolanaProviderId(walletType = "") {
+  return WALLETCONNECT_SOLANA_PROVIDER_IDS.has(walletType);
+}
+
+function getWalletConnectProviderLabel(walletType = "walletconnect") {
+  const labels = {
+    "trust-walletconnect": "Trust Wallet App",
+    "metamask-walletconnect": "MetaMask App",
+    "coinbase-walletconnect": "Coinbase Wallet App",
+    "phantom-walletconnect": "Phantom App",
+    walletconnect: "WalletConnect / Reown",
+  };
+  return labels[walletType] || "WalletConnect / Reown";
+}
+
+function getMobileWalletBridgeDetail() {
+  const mobile = window.matchMedia?.("(max-width: 768px)")?.matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  return mobile ? "Mobile app via Reown" : "Mobile app or QR via Reown";
+}
+
 async function connectInjectedEthereumProvider(walletType = "auto") {
   const injected = getNamedEthereumProvider(walletType);
   if (!injected) {
@@ -12149,8 +12176,8 @@ async function connectWalletConnectProvider(label = "WalletConnect/Reown") {
 
 async function connectWalletProvider(walletType = "auto") {
   if (connectedProvider && connectedAccount && walletType === "auto") return connectedProvider;
-  if (walletType === "walletconnect" || walletType === "trust-walletconnect") {
-    return connectWalletConnectProvider(walletType === "trust-walletconnect" ? "Trust Wallet" : "WalletConnect/Reown");
+  if (isWalletConnectEvmProviderId(walletType)) {
+    return connectWalletConnectProvider(getWalletConnectProviderLabel(walletType));
   }
   return connectInjectedEthereumProvider(walletType);
 }
@@ -12256,7 +12283,7 @@ async function connectWalletConnectSolanaProvider(label = "WalletConnect/Reown")
   await provider.connect({
     namespaces: {
       solana: {
-        methods: ["solana_requestAccounts", "solana_getAccounts", "solana_signAndSendTransaction"],
+        methods: ["solana_requestAccounts", "solana_getAccounts", "solana_signMessage", "solana_signAndSendTransaction"],
         chains: ["solana:mainnetBeta"],
         events: ["accountsChanged", "disconnect"],
       },
@@ -12282,12 +12309,12 @@ async function getSolanaProvider(walletType = "auto") {
     updateWalletConnectionUi();
     return connectedSolanaProvider;
   }
-  if (walletType === "walletconnect" || walletType === "trust-walletconnect") {
-    return connectWalletConnectSolanaProvider(walletType === "trust-walletconnect" ? "Trust Wallet" : "WalletConnect/Reown");
+  if (isWalletConnectSolanaProviderId(walletType)) {
+    return connectWalletConnectSolanaProvider(getWalletConnectProviderLabel(walletType));
   }
   const injected = await connectInjectedSolanaProvider(walletType);
   if (injected) return injected;
-  return connectWalletConnectSolanaProvider("WalletConnect/Reown");
+  return connectWalletConnectSolanaProvider("WalletConnect / Reown");
 }
 
 function isWalletConnectSolanaProvider(provider) {
@@ -14452,17 +14479,23 @@ function getOnboardingSignatureProviderOptions(wallet) {
   const network = NETWORKS[wallet?.network] || {};
   const chain = getVaultChainForNetwork(wallet?.network);
   const availability = getWalletAvailability();
+  const bridgeDetail = getMobileWalletBridgeDetail();
   const options = chain === "solana"
     ? [
-      { id: "phantom", label: "Phantom", detail: "Solana wallet extension", available: availability.phantom },
-      { id: "trust", label: "Trust Wallet", detail: "Trust Wallet Solana extension", available: availability.trustSolana },
-      { id: "walletconnect", label: "WalletConnect / Reown", detail: "Mobile Solana wallets", available: availability.walletConnect },
+      { id: "phantom", label: "Phantom", detail: "In-app browser or extension", available: availability.phantom },
+      { id: "phantom-walletconnect", label: "Phantom App", detail: `${bridgeDetail} if supported`, available: availability.walletConnect },
+      { id: "trust", label: "Trust Wallet Extension", detail: "Trust Wallet Solana extension", available: availability.trustSolana },
+      { id: "trust-walletconnect", label: "Trust Wallet App", detail: bridgeDetail, available: availability.walletConnect },
+      { id: "walletconnect", label: "WalletConnect / Reown", detail: "Choose any compatible Solana wallet", available: availability.walletConnect },
     ]
     : [
-      { id: "trust", label: "Trust Wallet", detail: `${network.asset || "Stablecoin"} owner wallet`, available: availability.trust },
-      { id: "metamask", label: "MetaMask", detail: "Ethereum-compatible wallet", available: availability.metamask },
-      { id: "coinbase", label: "Coinbase Wallet", detail: "Coinbase browser wallet", available: availability.coinbase },
-      { id: "walletconnect", label: "WalletConnect / Reown", detail: "Mobile EVM wallets", available: availability.walletConnect },
+      { id: "trust", label: "Trust Wallet Extension", detail: `${network.asset || "Stablecoin"} owner wallet`, available: availability.trust },
+      { id: "trust-walletconnect", label: "Trust Wallet App", detail: bridgeDetail, available: availability.walletConnect },
+      { id: "metamask", label: "MetaMask Extension", detail: "Ethereum-compatible browser wallet", available: availability.metamask },
+      { id: "metamask-walletconnect", label: "MetaMask App", detail: bridgeDetail, available: availability.walletConnect },
+      { id: "coinbase", label: "Coinbase Wallet Extension", detail: "Coinbase browser wallet", available: availability.coinbase },
+      { id: "coinbase-walletconnect", label: "Coinbase Wallet App", detail: bridgeDetail, available: availability.walletConnect },
+      { id: "walletconnect", label: "WalletConnect / Reown", detail: "Choose any compatible EVM wallet", available: availability.walletConnect },
     ];
   return options.filter((option) => option.available);
 }
@@ -14478,8 +14511,8 @@ function renderOnboardingSignatureProviderPicker(wallet, selectedProvider = "", 
   if (!options.length) {
     return `
       <div class="allocation-summary onboarding-signature-provider-warning">
-        <strong>No matching wallet extension detected</strong>
-        <span>Install or enable the wallet that owns ${escapeHtml(shortAddress(wallet.address))}, then reload this step. Wallet address alone cannot activate Core.</span>
+        <strong>No matching wallet route detected</strong>
+        <span>Install or enable the wallet that owns ${escapeHtml(shortAddress(wallet.address))}, or configure Reown for mobile wallet app support. Wallet address alone cannot activate Core.</span>
       </div>
     `;
   }
@@ -14593,7 +14626,7 @@ async function refreshOnboardingOwnerWalletBalance(wallet, statusSelector = "") 
 async function requestOnboardingVaultSignature(wallet) {
   const flow = loadOnboardingFlow();
   const selectedProvider = dialogContent.querySelector("#onboardingSignatureProvider")?.value || flow.signatureWalletProvider || "";
-  if (!selectedProvider) throw new Error("Choose the wallet extension that controls the Owner Wallet address");
+  if (!selectedProvider) throw new Error("Choose the wallet app or extension that controls the Owner Wallet address");
   const ownerWallet = {
     address: wallet.address,
     chain: getVaultChainForNetwork(wallet.network),
@@ -15523,14 +15556,42 @@ async function requestVaultOwnerSignature(ownerWallet, challenge, options = {}) 
     const provider = await getSolanaProvider(walletProvider);
     const activeAddress = connectedSolanaAccount || provider.publicKey?.toString?.();
     if (activeAddress !== ownerWallet.address) throw new Error("Connected Solana wallet does not match the Owner Wallet");
+    const messageBytes = textToBytes(challenge.message);
+    if (isWalletConnectSolanaProvider(provider)) {
+      const messageBase64 = bytesToBase64(messageBytes);
+      let result = null;
+      try {
+        result = await provider.request({
+          chainId: "solana:mainnetBeta",
+          method: "solana_signMessage",
+          params: { message: messageBase64, pubkey: activeAddress },
+        });
+      } catch (firstError) {
+        result = await provider.request({
+          chainId: "solana:mainnetBeta",
+          method: "solana_signMessage",
+          params: [messageBase64],
+        }).catch(() => {
+          throw firstError;
+        });
+      }
+      const signature = result?.signature || result?.result?.signature || result?.signedMessage?.signature || result;
+      if (!signature) throw new Error("This Solana wallet did not return a message signature");
+      if (typeof signature === "string") return { signature, encoding: "base64" };
+      return { signature: bytesToBase64(signature instanceof Uint8Array ? signature : new Uint8Array(signature)), encoding: "base64" };
+    }
     if (!provider.signMessage) throw new Error("This Solana wallet does not support message signing");
-    const result = await provider.signMessage(textToBytes(challenge.message), "utf8");
+    const result = await provider.signMessage(messageBytes, "utf8");
     const signature = result?.signature || result;
     return { signature: bytesToBase64(signature instanceof Uint8Array ? signature : new Uint8Array(signature)), encoding: "base64" };
   }
 
   const provider = walletProvider === "auto" ? await getEthereumProvider() : await connectWalletProvider(walletProvider);
-  const providerLabel = walletProvider === "auto" ? connectedWalletLabel || "wallet" : labelForEthereumProvider(provider, walletProvider);
+  const providerLabel = walletProvider === "auto"
+    ? connectedWalletLabel || "wallet"
+    : isWalletConnectEvmProviderId(walletProvider)
+      ? getWalletConnectProviderLabel(walletProvider)
+      : labelForEthereumProvider(provider, walletProvider);
   const accounts = await getEthereumAccounts(provider, providerLabel);
   const activeAddress = accounts?.[0] || connectedAccount;
   if (!activeAddress || activeAddress.toLowerCase() !== ownerWallet.address.toLowerCase()) {

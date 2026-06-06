@@ -333,7 +333,7 @@ function getConfigStatus() {
     plaid: envSet("PLAID_CLIENT_ID") && envSet("PLAID_SECRET"),
     stripe: envSet("STRIPE_SECRET_KEY") && envSet("STRIPE_WEBHOOK_SECRET"),
     openai: envSet("OPENAI_API_KEY"),
-    walletConnect: envSet("WALLETCONNECT_PROJECT_ID"),
+    walletConnect: envSet("WALLETCONNECT_PROJECT_ID") || envSet("REOWN_PROJECT_ID"),
     solanaRpc: Boolean(getConfiguredSolanaRpcEndpoint()),
   };
   return {
@@ -341,7 +341,7 @@ function getConfigStatus() {
     configured: Object.values(services).some(Boolean),
     services,
     requiredForPhase1: ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "DATABASE_URL"],
-    optionalNext: ["SOLANA_RPC_URL", "HELIUS_API_KEY", "HELIUS_RPC_URL", "ALCHEMY_SOLANA_RPC_URL", "OPENAI_API_KEY", "WALLETCONNECT_PROJECT_ID", "PLAID_CLIENT_ID", "PLAID_SECRET", "STRIPE_SECRET_KEY"],
+    optionalNext: ["SOLANA_RPC_URL", "HELIUS_API_KEY", "HELIUS_RPC_URL", "ALCHEMY_SOLANA_RPC_URL", "OPENAI_API_KEY", "WALLETCONNECT_PROJECT_ID", "REOWN_PROJECT_ID", "PLAID_CLIENT_ID", "PLAID_SECRET", "STRIPE_SECRET_KEY"],
   };
 }
 
@@ -2069,7 +2069,7 @@ const server = createServer(async (req, res) => {
   if (url.pathname === "/api/config/client" && req.method === "GET") {
     const configuredSolanaRpc = getConfiguredSolanaRpcEndpoint();
     sendJson(res, 200, {
-      walletConnectProjectId: process.env.WALLETCONNECT_PROJECT_ID || "",
+      walletConnectProjectId: process.env.REOWN_PROJECT_ID || process.env.WALLETCONNECT_PROJECT_ID || "",
       solanaRpcConfigured: Boolean(configuredSolanaRpc),
       solanaRpcHost: configuredSolanaRpc ? new URL(configuredSolanaRpc).hostname : "",
     });
