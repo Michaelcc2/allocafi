@@ -20458,7 +20458,7 @@ body {
     border-top: 1px solid rgba(132, 153, 193, 0.12);
   }
 }
-/* Mobile Accounts safe VBA stack 2026-06-06 */
+/* Mobile Accounts compact VBA rows 2026-06-06 */
 @media (max-width: 640px) {
   #bucketAccountsView {
     box-sizing: border-box;
@@ -20478,10 +20478,18 @@ body {
 
   #bucketAccountsView .wallet-account-heading,
   #bucketAccountsView .asset-account-heading {
-    align-items: stretch;
-    display: grid;
-    gap: 10px;
-    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch !important;
+    display: grid !important;
+    gap: 10px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  #bucketAccountsView .wallet-account-heading h3,
+  #bucketAccountsView .asset-account-heading strong {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   #bucketAccountsView .wallet-account-heading p,
@@ -20492,63 +20500,78 @@ body {
 
   #bucketAccountsView .wallet-account-heading > span,
   #bucketAccountsView .asset-account-heading > div:last-child {
-    justify-self: stretch;
+    justify-self: stretch !important;
     max-width: 100%;
-    text-align: left;
+    text-align: left !important;
   }
 
   #bucketAccountsView .account-row.personalized-vba-card {
+    border-radius: 18px !important;
     box-sizing: border-box;
+    display: grid !important;
+    gap: 10px !important;
     max-width: 100%;
+    min-height: 0 !important;
     min-width: 0;
     overflow: hidden;
-    padding: 14px;
+    padding: 14px 14px 12px !important;
     width: 100%;
   }
 
+  #bucketAccountsView .account-row.personalized-vba-card::before {
+    inset: 0 12px auto !important;
+  }
+
   #bucketAccountsView .account-row.personalized-vba-card::after {
-    display: none;
+    display: none !important;
   }
 
   #bucketAccountsView .account-row.personalized-vba-card .account-card-hero {
-    display: grid;
-    gap: 12px;
-    grid-template-columns: minmax(0, 1fr);
+    align-items: start !important;
+    display: grid !important;
+    gap: 12px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(82px, auto) !important;
     max-width: 100%;
     min-width: 0;
   }
 
+  #bucketAccountsView .account-row.personalized-vba-card .account-identity-panel,
+  #bucketAccountsView .account-row.personalized-vba-card .account-name {
+    display: grid !important;
+    gap: 5px !important;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  #bucketAccountsView .account-row.personalized-vba-card .account-card-kicker,
+  #bucketAccountsView .account-row.personalized-vba-card .account-icon,
+  #bucketAccountsView .account-row.personalized-vba-card .account-source-line,
+  #bucketAccountsView .account-row.personalized-vba-card .account-coin-stack,
+  #bucketAccountsView .account-row.personalized-vba-card .account-amount span {
+    display: none !important;
+  }
+
   #bucketAccountsView .account-row.personalized-vba-card .account-title-cluster {
-    align-items: center;
-    display: grid;
-    gap: 12px;
-    grid-template-columns: 52px minmax(0, 1fr);
+    display: block !important;
     min-width: 0;
   }
 
-  #bucketAccountsView .account-row.personalized-vba-card .account-icon {
-    border-radius: 15px;
-    height: 52px;
-    min-width: 52px;
-    width: 52px;
-  }
-
-  #bucketAccountsView .account-row.personalized-vba-card .account-icon svg {
-    height: 28px;
-    width: 28px;
-  }
-
-  #bucketAccountsView .account-row.personalized-vba-card .account-title-row,
-  #bucketAccountsView .account-row.personalized-vba-card .account-name {
+  #bucketAccountsView .account-row.personalized-vba-card .account-title-row {
+    align-items: center !important;
+    display: flex !important;
+    gap: 8px !important;
     max-width: 100%;
     min-width: 0;
   }
 
   #bucketAccountsView .account-row.personalized-vba-card .account-title-row strong {
-    display: block;
+    color: var(--text) !important;
+    display: block !important;
     flex: 1 1 auto;
-    font-size: clamp(1.25rem, 6vw, 1.55rem);
-    line-height: 1.08;
+    font-size: clamp(1.12rem, 5.4vw, 1.38rem) !important;
+    line-height: 1.08 !important;
+    max-width: 100%;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -20556,81 +20579,101 @@ body {
     writing-mode: horizontal-tb;
   }
 
-  #bucketAccountsView .account-row.personalized-vba-card .account-source-line {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  #bucketAccountsView .account-row.personalized-vba-card .account-source-line em,
-  #bucketAccountsView .account-row.personalized-vba-card .account-source-line small {
-    font-size: 0.66rem;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    writing-mode: horizontal-tb;
+  #bucketAccountsView .account-row.personalized-vba-card .account-title-edit {
+    flex: 0 0 auto;
   }
 
   #bucketAccountsView .account-row.personalized-vba-card .account-spent-line {
+    color: #aeb9d7 !important;
     display: block;
-    font-size: 0.74rem;
-    line-height: 1.35;
+    font-size: 0.76rem !important;
+    line-height: 1.32 !important;
+    max-width: 100%;
     overflow-wrap: anywhere;
     white-space: normal;
   }
 
   #bucketAccountsView .account-row.personalized-vba-card .account-amount {
-    align-items: center;
-    box-sizing: border-box;
-    display: grid;
-    gap: 4px 10px;
-    grid-template-columns: minmax(0, 1fr) 44px;
-    min-height: 88px;
-    padding: 12px;
-    width: 100%;
+    align-items: start !important;
+    background: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    display: block !important;
+    height: auto !important;
+    justify-self: end;
+    min-height: 0 !important;
+    min-width: 0;
+    padding: 0 !important;
+    text-align: right;
+    width: auto !important;
   }
 
-  #bucketAccountsView .account-row.personalized-vba-card .account-amount span {
-    font-size: 0.76rem;
-    line-height: 1.12;
-    white-space: normal;
-  }
-
-  #bucketAccountsView .account-row.personalized-vba-card .account-amount strong {
-    display: block;
-    font-size: clamp(1.7rem, 8.2vw, 2.25rem);
-    letter-spacing: 0;
-    line-height: 1;
+  #bucketAccountsView .account-row.personalized-vba-card .account-amount strong,
+  #bucketAccountsView .account-row.personalized-vba-card .account-amount .account-balance-money {
+    background: none !important;
+    background-clip: border-box !important;
+    color: #e8efff !important;
+    display: block !important;
+    font-size: clamp(0.95rem, 4.6vw, 1.12rem) !important;
+    letter-spacing: 0 !important;
+    line-height: 1.05 !important;
+    max-width: 112px;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     writing-mode: horizontal-tb;
+    -webkit-text-fill-color: #e8efff !important;
   }
 
-  #bucketAccountsView .account-row.personalized-vba-card .account-amount .account-balance-money {
-    display: block;
-    max-width: 100%;
+  #bucketAccountsView .account-row.personalized-vba-card .account-meter-stack {
+    border-top: 1px solid rgba(132, 153, 193, 0.1);
+    gap: 7px !important;
+    padding-top: 10px !important;
+  }
+
+  #bucketAccountsView .account-row.personalized-vba-card .meter-label {
+    align-items: center !important;
+    display: flex !important;
+    gap: 10px !important;
+    justify-content: space-between !important;
+  }
+
+  #bucketAccountsView .account-row.personalized-vba-card .meter-label span {
+    font-size: 0.7rem !important;
+    letter-spacing: 0.07em !important;
+    max-width: 68%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  #bucketAccountsView .account-row.personalized-vba-card .account-coin-stack {
-    height: 42px;
-    width: 42px;
+  #bucketAccountsView .account-row.personalized-vba-card .meter-label strong {
+    font-size: 0.82rem !important;
   }
 
-  #bucketAccountsView .account-row.personalized-vba-card .account-coin-stack b {
-    font-size: 1rem;
+  #bucketAccountsView .account-row.personalized-vba-card .account-progress {
+    height: 7px !important;
+  }
+
+  #bucketAccountsView .account-row.personalized-vba-card .account-meta-strip {
+    display: none !important;
   }
 
   #bucketAccountsView .account-row.personalized-vba-card .account-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    display: grid !important;
+    gap: 8px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #bucketAccountsView .account-row.personalized-vba-card .account-actions button {
+    justify-content: center;
+    min-height: 36px !important;
+    padding: 0 8px !important;
+    white-space: normal;
+    width: 100%;
   }
 }
