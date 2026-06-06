@@ -118,6 +118,7 @@ const ONBOARDING_FLOW_KEY = "allocafi-onboarding-flow-v2";
 const ONBOARDING_DEMO_STAGE_KEY = "allocafi-onboarding-demo-stage-v1";
 const ONBOARDING_ALLOWED_OWNER_ASSETS = new Set(["USDC", "USDT", "PYUSD"]);
 const ONBOARDING_FREE_BUCKET_LIMIT = 3;
+const ACCOUNTS_20_ENABLED_KEY = "allocafi-accounts-20-enabled-v1";
 const VAULT_KDF_ITERATIONS = 250000;
 const VAULT_FILE_VERSION = 1;
 const SOLANA_TOKEN_INDEXERS = [
@@ -1044,6 +1045,10 @@ function moveAdvancedSectionsIntoSettings() {
           <strong>Test Onboarding</strong>
           <span>Restart the new-user onboarding flow in a safe sandbox.</span>
         </button>
+        <button class="settings-launch-card accounts20-toggle-card ${isAccounts20Enabled() ? "active" : ""}" data-toggle-accounts20 type="button" aria-pressed="${isAccounts20Enabled() ? "true" : "false"}">
+          <strong>Accounts 2.0</strong>
+          <span>${isAccounts20Enabled() ? "Enabled for mobile Accounts testing." : "Experimental mobile Virtual Budget Accounts UI."}</span>
+        </button>
         ${advancedIds.map((id) => `
           <button class="settings-launch-card ${id === "ai" ? "future-system-card" : ""}" data-open-advanced="${id}" type="button" ${id === "pay" ? "hidden" : ""}>
             <strong>${labels[id][0]}</strong>
@@ -1055,11 +1060,38 @@ function moveAdvancedSectionsIntoSettings() {
   `);
 
   settingsPanel.querySelector("[data-start-onboarding-test]")?.addEventListener("click", startOnboardingTestFlow);
+  settingsPanel.querySelector("[data-toggle-accounts20]")?.addEventListener("click", toggleAccounts20);
   settingsPanel.querySelectorAll("[data-open-advanced]").forEach((button) => {
     button.addEventListener("click", () => openAdvancedSystem(button.dataset.openAdvanced));
   });
 }
 
+
+function isAccounts20Enabled() {
+  return localStorage.getItem(ACCOUNTS_20_ENABLED_KEY) === "true";
+}
+
+function isAccounts20MobileViewport() {
+  return typeof window !== "undefined" && window.matchMedia?.("(max-width: 768px)")?.matches;
+}
+
+function shouldRenderAccounts20() {
+  return isAccounts20Enabled() && isAccounts20MobileViewport();
+}
+
+function toggleAccounts20() {
+  const enabled = !isAccounts20Enabled();
+  localStorage.setItem(ACCOUNTS_20_ENABLED_KEY, enabled ? "true" : "false");
+  const button = document.querySelector("[data-toggle-accounts20]");
+  if (button) {
+    button.classList.toggle("active", enabled);
+    button.setAttribute("aria-pressed", enabled ? "true" : "false");
+    const copy = button.querySelector("span");
+    if (copy) copy.textContent = enabled ? "Enabled for mobile Accounts testing." : "Experimental mobile Virtual Budget Accounts UI.";
+  }
+  render();
+  showToast(enabled ? "Accounts 2.0 enabled for mobile" : "Accounts 2.0 disabled");
+}
 moveAdvancedSectionsIntoSettings();
 
 const form = document.querySelector("#walletForm");
@@ -7759,9 +7791,9 @@ function bindVirtualAssetAccountControls(root = document) {
 function getAccountWalletGroupKey(address = "") {
   return String(address || "unassigned-wallet").trim().toLowerCase() || "unassigned-wallet";
 }
-function renderBucketAccounts() {
-  if (!bucketAccountsView) return;
-  const accounts = getSupportedWallets().flatMap((wallet) => (wallet.allocation?.buckets || []).map((bucket) => {
+
+function buildVirtualBudgetAccountRecords() {
+  return getSupportedWallets().flatMap((wallet) => (wallet.allocation?.buckets || []).map((bucket) => {
     const walletOverbalance = getWalletOverbalanceAmount(wallet);
     const allocated = Number(bucket.allocated || 0);
     const spent = Number(bucket.spent || 0);
@@ -7819,7 +7851,216 @@ function renderBucketAccounts() {
       txMeta,
     };
   }));
+}
+
+function formatAccounts20BtcEquivalent(value) {
+  const btcPrice = getAssetCurrentPrice("BTC") || 0;
+  if (!btcPrice) return "";
+  return `approx ${formatBtc(Number(value || 0) / btcPrice)}`;
+}
+
+function getAccounts20FundingState(account) {
+  if (account.walletOverbalance > 0.01) return { label: "Needs Refresh", className: "needs" };
+  if (Number(account.allocated || 0) <= 0.01) return { label: "Ready", className: "ready" };
+  const ratio = Number(account.balance || 0) / Math.max(Number(account.allocated || 0), 1);
+  if (ratio >= 0.75) return { label: "Fully Funded", className: "funded" };
+  if (ratio >= 0.35) return { label: "Almost Funded", className: "almost" };
+  return { label: "Needs Funding", className: "needs" };
+}
+
+function getAccounts20Record(walletId, bucketId) {
+  return buildVirtualBudgetAccountRecords().find((account) => account.walletId === walletId && account.bucket.id === bucketId);
+}
+
+function renderAccounts20Circle(percent, label = "of budget") {
+  const safePercent = Math.max(0, Math.min(Number(percent || 0), 100));
+  return `<span class="accounts20-ring" style="--ring:${safePercent}%"><b>${Number(safePercent.toFixed(1))}%</b><small>${escapeHtml(label)}</small></span>`;
+}
+
+function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
+  const budgetWallets = getBudgetWallets();
+  const primaryWallet = budgetWallets.find((wallet) => /owner/i.test(`${wallet.name || ""} ${wallet.role || ""}`)) || budgetWallets[0] || getSupportedWallets()[0] || {};
+  const primaryAccounts = accounts.filter((account) => account.walletId === primaryWallet.id);
+  const rows = primaryAccounts.length ? primaryAccounts : accounts;
+  const totalBudgeted = rows.reduce((sum, account) => sum + Number(account.allocated || 0), 0);
+  const totalAvailable = rows.reduce((sum, account) => sum + Number(account.balance || 0), 0);
+  const totalSpent = rows.reduce((sum, account) => sum + Number(account.spent || 0), 0);
+  const healthScore = totalBudgeted > 0 ? Math.max(0, Math.min(100, Math.round((totalAvailable / totalBudgeted) * 100))) : 100;
+  const healthLabel = healthScore >= 80 ? "Excellent" : healthScore >= 55 ? "Stable" : "Needs Funding";
+  const availablePercent = totalBudgeted > 0 ? Math.min((totalAvailable / totalBudgeted) * 100, 100) : 0;
+  const walletAsset = getWalletAssetLabel(primaryWallet) || rows[0]?.walletAssetLabel || "Wallet";
+
+  bucketAccountsView.innerHTML = `
+    <section class="accounts20-shell" aria-label="Accounts 2.0">
+      <header class="accounts20-topbar">
+        <div>
+          <span>Accounts 2.0</span>
+          <h2>My Budgets</h2>
+        </div>
+        <div class="accounts20-top-actions">
+          <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts">${getWalletActionIcon("view")}</button>
+          <button class="accounts20-icon-button" type="button" data-accounts20-add aria-label="Add budget account">+</button>
+        </div>
+      </header>
+
+      <section class="accounts20-hero">
+        <div class="accounts20-hero-main">
+          <span class="accounts20-wallet-logo">${renderAssetLogo(getNetworkAssetSymbol(NETWORKS[primaryWallet.network]) || "ETH") || getBucketCategoryIcon("default")}</span>
+          <div>
+            <strong>${escapeHtml(primaryWallet.name || walletAsset)}</strong>
+            <small>${escapeHtml(walletAsset)} | ${rows.length} account${rows.length === 1 ? "" : "s"}</small>
+          </div>
+        </div>
+        <strong class="accounts20-total">${renderMoneyValue(totalBudgeted, { compactAt: 1_000_000, label: "Total budgeted" })}</strong>
+        <span class="accounts20-muted">Total Budgeted</span>
+        <b class="accounts20-available">${renderMoneyValue(totalAvailable, { compactAt: 1_000_000, label: "Available budget" })} Available</b>
+        <div class="accounts20-hero-line"><span style="width:${availablePercent}%"></span></div>
+        <div class="accounts20-hero-metrics">
+          <article><span>${getWalletActionIcon("rules")}</span><small>Financial Health</small><strong>${healthScore}<em>/100</em></strong><b>${escapeHtml(healthLabel)}</b></article>
+          <article><span>${getWalletActionIcon("spend")}</span><small>This Week Spent</small><strong>${renderMoneyValue(totalSpent, { compactAt: 1_000_000, label: "This week spent" })}</strong><b>${totalBudgeted > 0 ? `${Math.min((totalSpent / totalBudgeted) * 100, 100).toFixed(0)}% of total budget` : "No spend yet"}</b></article>
+        </div>
+      </section>
+
+      <div class="accounts20-list-head">
+        <h3>Budget Accounts</h3>
+        <strong>Total: ${renderMoneyValue(totalAvailable, { compactAt: 1_000_000, label: "Available total" })}</strong>
+      </div>
+      <div class="accounts20-list">
+        ${rows.map((account) => {
+          const state = getAccounts20FundingState(account);
+          return `
+            <article class="accounts20-card accounts20-${escapeHtml(account.categoryType)}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
+              <span class="accounts20-card-icon">${getBucketCategoryIcon(account.categoryType)}</span>
+              <div class="accounts20-card-copy">
+                <strong>${escapeHtml(account.bucket.name)}</strong>
+                <span class="accounts20-status ${escapeHtml(state.className)}"><i></i>${escapeHtml(state.label)}</span>
+                <small>Spent this week</small>
+                <b>${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })}</b>
+              </div>
+              ${renderAccounts20Circle(account.allocationPercent)}
+              <div class="accounts20-card-balance">
+                <strong>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} balance` })}</strong>
+                <small>${escapeHtml(formatAccounts20BtcEquivalent(account.balance))}</small>
+              </div>
+              <button class="accounts20-more" data-accounts20-menu data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" type="button" aria-label="Open ${escapeHtml(account.bucket.name)} actions">...</button>
+            </article>
+          `;
+        }).join("")}
+      </div>
+    </section>
+    ${assetAccountsSection}
+  `;
+
+  bindAccounts20Controls(bucketAccountsView);
+  bindVirtualAssetAccountControls(bucketAccountsView);
+}
+
+function bindAccounts20Controls(root = document) {
+  root.querySelector("[data-accounts20-add]")?.addEventListener("click", openAddBucketAccountDialog);
+  root.querySelector("[data-accounts20-search]")?.addEventListener("click", () => showToast("Search is coming to Accounts 2.0 testing"));
+  root.querySelectorAll(".accounts20-card").forEach((card) => {
+    card.addEventListener("click", (event) => {
+      if (event.target.closest("button")) return;
+      openAccounts20DetailDialog(card.dataset.walletId, card.dataset.bucketId);
+    });
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      openAccounts20DetailDialog(card.dataset.walletId, card.dataset.bucketId);
+    });
+  });
+  root.querySelectorAll("[data-accounts20-menu]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openAccounts20ActionsDialog(button.dataset.walletId, button.dataset.bucketId);
+    });
+  });
+}
+
+function openAccounts20ActionsDialog(walletId, bucketId) {
+  const account = getAccounts20Record(walletId, bucketId);
+  if (!account) return;
+  openDialog(`
+    <div class="dialog-content accounts20-action-sheet">
+      <h2>${escapeHtml(account.bucket.name)}</h2>
+      <p class="wallet-note">Choose an action for this Virtual Budget Account.</p>
+      <div class="vba-detail-action-grid">
+        <button class="primary-button detail-view" type="button">${getWalletActionIcon("view")}<span>View account</span></button>
+        ${account.canSend && canSendFromVirtualBucketAccounts() ? `<button class="secondary-button detail-send" type="button">${getWalletActionIcon("send")}<span>Send funds</span></button>` : ""}
+        <button class="secondary-button detail-move" type="button">${getWalletActionIcon("move")}<span>Move funds</span></button>
+        <button class="secondary-button detail-rules" type="button">${getWalletActionIcon("rules")}<span>Rules</span></button>
+        <button class="secondary-button detail-customize" type="button">${getWalletActionIcon("edit")}<span>Customize</span></button>
+      </div>
+    </div>
+  `);
+  dialogContent.querySelector(".detail-view")?.addEventListener("click", () => openAccounts20DetailDialog(walletId, bucketId));
+  dialogContent.querySelector(".detail-send")?.addEventListener("click", () => openSendDialog(walletId, bucketId));
+  dialogContent.querySelector(".detail-move")?.addEventListener("click", () => openMoveMoneyDialog(bucketId));
+  dialogContent.querySelector(".detail-rules")?.addEventListener("click", () => openBucketRulesDialog(walletId, bucketId));
+  dialogContent.querySelector(".detail-customize")?.addEventListener("click", () => {
+    const wallet = wallets.find((item) => item.id === walletId);
+    const bucket = wallet?.allocation?.buckets?.find((item) => item.id === bucketId);
+    if (isBillsBucket(bucket)) openBillsPlannerDialog(walletId, bucketId);
+    else openEditBucketDialog(walletId, bucketId);
+  });
+}
+
+function openAccounts20DetailDialog(walletId, bucketId) {
+  const account = getAccounts20Record(walletId, bucketId);
+  const wallet = wallets.find((item) => item.id === walletId);
+  if (!account || !wallet) return;
+  const state = getAccounts20FundingState(account);
+  const availablePercent = account.allocated > 0 ? Math.min((account.balance / account.allocated) * 100, 100) : 0;
+  openDialog(`
+    <div class="dialog-content accounts20-detail-modal">
+      <section class="accounts20-detail-top">
+        <button class="ghost-button accounts20-detail-back" type="button">Back</button>
+        <button class="ghost-button accounts20-detail-menu" type="button">...</button>
+      </section>
+      <section class="accounts20-detail-hero">
+        <span class="accounts20-detail-icon">${getBucketCategoryIcon(account.categoryType)}</span>
+        <h2>${escapeHtml(account.bucket.name)}</h2>
+        <span class="accounts20-status ${escapeHtml(state.className)}"><i></i>${escapeHtml(state.label)}</span>
+        <strong>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available` })}</strong>
+        <small>${escapeHtml(formatAccounts20BtcEquivalent(account.balance))}</small>
+        ${renderAccounts20Circle(account.allocationPercent)}
+      </section>
+      <section class="accounts20-detail-stats">
+        <div><span>Budget</span><strong>${renderMoneyValue(account.allocated, { compactAt: 1_000_000, label: "Budget amount" })}</strong></div>
+        <div class="accounts20-stat-bar"><span style="width:${availablePercent}%"></span></div>
+        <div><span>Spent this week</span><strong>${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: "Spent this week" })}</strong></div>
+        <div><span>Available</span><strong class="positive">${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: "Available amount" })}</strong></div>
+      </section>
+      <section class="accounts20-quick-actions">
+        <h3>Quick Actions</h3>
+        ${account.canSend && canSendFromVirtualBucketAccounts() ? `<button class="secondary-button detail-send" type="button">${getWalletActionIcon("send")}<span><b>Send</b><small>Send funds</small></span></button>` : ""}
+        <button class="secondary-button detail-move" type="button">${getWalletActionIcon("move")}<span><b>Move</b><small>Move funds</small></span></button>
+        <button class="secondary-button detail-rules" type="button">${getWalletActionIcon("rules")}<span><b>Rules</b><small>Automation rules</small></span></button>
+        <button class="secondary-button detail-customize" type="button">${getWalletActionIcon("edit")}<span><b>Customize</b><small>Edit budget</small></span></button>
+      </section>
+      <section class="accounts20-insights">
+        <strong>Budget Insights</strong>
+        <span>${escapeHtml(account.status)}</span>
+      </section>
+      <button class="primary-button accounts20-add-transaction detail-spend" type="button">+ Add Transaction</button>
+    </div>
+  `);
+  dialogContent.querySelector(".accounts20-detail-back")?.addEventListener("click", () => walletDialog.close());
+  dialogContent.querySelector(".accounts20-detail-menu")?.addEventListener("click", () => openAccounts20ActionsDialog(walletId, bucketId));
+  dialogContent.querySelector(".detail-send")?.addEventListener("click", () => openSendDialog(walletId, bucketId));
+  dialogContent.querySelector(".detail-move")?.addEventListener("click", () => openMoveMoneyDialog(bucketId));
+  dialogContent.querySelector(".detail-rules")?.addEventListener("click", () => openBucketRulesDialog(walletId, bucketId));
+  dialogContent.querySelector(".detail-customize")?.addEventListener("click", () => {
+    if (isBillsBucket(account.bucket)) openBillsPlannerDialog(walletId, bucketId);
+    else openEditBucketDialog(walletId, bucketId);
+  });
+  dialogContent.querySelector(".detail-spend")?.addEventListener("click", () => openSpendDialog(walletId, bucketId));
+}
+function renderBucketAccounts() {
+  if (!bucketAccountsView) return;
+  const accounts = buildVirtualBudgetAccountRecords();
   const assetAccountsSection = renderVirtualAssetAccountsSection();
+
   if (!accounts.length) {
     bucketAccountsView.innerHTML = `
       <div class="empty-state">
@@ -7832,6 +8073,11 @@ function renderBucketAccounts() {
     `;
     bucketAccountsView.querySelector(".empty-assign").addEventListener("click", openAssignMoneyDialog);
     bindVirtualAssetAccountControls(bucketAccountsView);
+    return;
+  }
+
+  if (shouldRenderAccounts20()) {
+    renderAccounts20Mobile(accounts, assetAccountsSection);
     return;
   }
 
