@@ -21360,3 +21360,68 @@ body {
     max-width: 72px !important;
   }
 }
+/* Accounts 2.0 viewport-fit correction 2026-06-07 */
+@media (max-width: 768px) {
+  .accounts20-shell {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: 608px !important;
+    overflow-x: hidden !important;
+    padding: 18px 16px 112px !important;
+    width: 100% !important;
+  }
+
+  .accounts20-topbar,
+  .accounts20-list-head {
+    padding-inline: 0 !important;
+    width: 100% !important;
+  }
+
+  .accounts20-hero,
+  .accounts20-card {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .accounts20-list {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .accounts20-shell {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .accounts20-hero-head {
+    grid-template-columns: 54px minmax(0, 1fr) auto !important;
+  }
+
+  .accounts20-hero-body {
+    grid-template-columns: minmax(0, 1fr) 120px !important;
+  }
+
+  .accounts20-card {
+    grid-template-columns: 50px minmax(0, 1fr) 62px minmax(74px, auto) 18px !important;
+    gap: 8px !important;
+  }
+
+  .accounts20-card-copy strong,
+  .accounts20-card-copy small,
+  .accounts20-card-copy b,
+  .accounts20-card-balance strong {
+    max-width: 100% !important;
+  }
+
+  .accounts20-ring {
+    height: 62px !important;
+    width: 62px !important;
+  }
+
+  .accounts20-card-balance strong {
+    font-size: 0.98rem !important;
+    max-width: 74px !important;
+  }
+}
