@@ -21425,3 +21425,244 @@ body {
     max-width: 74px !important;
   }
 }
+/* Accounts 2.0 mobile data-fit refinement 2026-06-07 */
+@media (max-width: 768px) {
+  .accounts20-shell {
+    max-width: none !important;
+    padding: 12px 8px 112px !important;
+  }
+
+  .accounts20-topbar {
+    gap: 8px !important;
+    padding: 0 2px !important;
+  }
+
+  .accounts20-topbar h2 {
+    font-size: 1.12rem !important;
+  }
+
+  .accounts20-topbar button {
+    border-radius: 14px !important;
+    height: 42px !important;
+    width: 42px !important;
+  }
+
+  .accounts20-hero {
+    border-radius: 24px !important;
+    gap: 10px !important;
+    padding: 13px !important;
+  }
+
+  .accounts20-hero-head {
+    grid-template-columns: 48px minmax(0, 1fr) auto !important;
+    gap: 10px !important;
+  }
+
+  .accounts20-wallet-logo {
+    border-radius: 16px !important;
+    height: 48px !important;
+    width: 48px !important;
+  }
+
+  .accounts20-hero-title strong {
+    font-size: 0.92rem !important;
+    line-height: 1.1 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .accounts20-hero-title small,
+  .accounts20-account-count {
+    font-size: 0.7rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .accounts20-total {
+    font-size: clamp(2.05rem, 9vw, 2.5rem) !important;
+    letter-spacing: 0 !important;
+    line-height: 1.02 !important;
+  }
+
+  .accounts20-muted {
+    font-size: 0.82rem !important;
+  }
+
+  .accounts20-available {
+    font-size: 0.9rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .accounts20-hero-body {
+    grid-template-columns: minmax(0, 1fr) 106px !important;
+    min-height: 78px !important;
+  }
+
+  .accounts20-mini-chart {
+    height: 70px !important;
+  }
+
+  .accounts20-hero-metrics {
+    gap: 8px !important;
+  }
+
+  .accounts20-hero-metrics article {
+    border-radius: 18px !important;
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    min-height: 72px !important;
+    padding: 9px !important;
+  }
+
+  .accounts20-hero-metrics article > span {
+    height: 34px !important;
+    width: 34px !important;
+  }
+
+  .accounts20-hero-metrics small,
+  .accounts20-hero-metrics b {
+    font-size: 0.68rem !important;
+    line-height: 1.12 !important;
+  }
+
+  .accounts20-hero-metrics strong {
+    font-size: 1rem !important;
+    line-height: 1 !important;
+  }
+
+  .accounts20-list-head {
+    gap: 8px !important;
+    padding: 0 2px !important;
+  }
+
+  .accounts20-list-head h3 {
+    font-size: 1.02rem !important;
+    max-width: 54% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .accounts20-list-head strong {
+    font-size: 0.88rem !important;
+    max-width: 44% !important;
+    overflow: hidden !important;
+    text-align: right !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .accounts20-list {
+    gap: 8px !important;
+  }
+
+  .accounts20-card {
+    border-radius: 18px !important;
+    gap: 8px !important;
+    grid-template-columns: 46px minmax(0, 1fr) 72px minmax(68px, auto) 14px !important;
+    min-height: 90px !important;
+    padding: 8px !important;
+  }
+
+  .accounts20-card-icon {
+    border-radius: 14px !important;
+    height: 46px !important;
+    width: 46px !important;
+  }
+
+  .accounts20-card-icon svg {
+    height: 24px !important;
+    width: 24px !important;
+  }
+
+  .accounts20-card-copy {
+    gap: 2px !important;
+    min-width: 0 !important;
+  }
+
+  .accounts20-card-copy strong {
+    font-size: 0.9rem !important;
+    line-height: 1.08 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .accounts20-status,
+  .accounts20-card-copy small {
+    font-size: 0.68rem !important;
+    line-height: 1.08 !important;
+  }
+
+  .accounts20-card-copy b {
+    font-size: 0.8rem !important;
+    line-height: 1.08 !important;
+  }
+
+  .accounts20-ring {
+    height: 72px !important;
+    padding: 8px !important;
+    width: 72px !important;
+  }
+
+  .accounts20-ring b {
+    font-size: 0.8rem !important;
+    line-height: 1 !important;
+  }
+
+  .accounts20-ring small {
+    display: none !important;
+  }
+
+  .accounts20-card-balance {
+    align-items: flex-end !important;
+    min-width: 0 !important;
+  }
+
+  .accounts20-card-balance strong {
+    font-size: 0.9rem !important;
+    line-height: 1.1 !important;
+    max-width: 76px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .accounts20-card-balance small {
+    display: none !important;
+  }
+
+  .accounts20-more {
+    font-size: 1.25rem !important;
+    min-width: 12px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .accounts20-shell {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  .accounts20-card {
+    grid-template-columns: 44px minmax(0, 1fr) 68px minmax(64px, auto) 12px !important;
+    gap: 7px !important;
+    padding: 7px !important;
+  }
+
+  .accounts20-card-icon {
+    height: 44px !important;
+    width: 44px !important;
+  }
+
+  .accounts20-ring {
+    height: 68px !important;
+    width: 68px !important;
+  }
+
+  .accounts20-card-balance strong {
+    font-size: 0.84rem !important;
+    max-width: 68px !important;
+  }
+}
