@@ -21722,3 +21722,96 @@ body {
     padding-right: 7px !important;
   }
 }
+/* Accounts 2.0 mobile true edge canvas 2026-06-07 */
+@media (max-width: 768px) {
+  .accounts20-shell {
+    left: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    position: relative !important;
+    right: auto !important;
+    width: 100vw !important;
+  }
+
+  .accounts20-topbar,
+  .accounts20-list-head {
+    padding-left: max(16px, env(safe-area-inset-left)) !important;
+    padding-right: max(16px, env(safe-area-inset-right)) !important;
+  }
+
+  .accounts20-hero,
+  .accounts20-card {
+    border-left-color: rgba(124, 77, 255, 0.2) !important;
+    border-right-color: rgba(47, 128, 255, 0.2) !important;
+    border-radius: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+
+  .accounts20-hero {
+    padding-left: max(18px, env(safe-area-inset-left)) !important;
+    padding-right: max(18px, env(safe-area-inset-right)) !important;
+  }
+
+  .accounts20-list {
+    gap: 10px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .accounts20-card {
+    grid-template-columns: 52px minmax(0, 1fr) 76px minmax(82px, auto) 18px !important;
+    padding-left: max(12px, env(safe-area-inset-left)) !important;
+    padding-right: max(10px, env(safe-area-inset-right)) !important;
+  }
+
+  .accounts20-card-icon {
+    height: 52px !important;
+    width: 52px !important;
+  }
+
+  .accounts20-ring {
+    height: 76px !important;
+    width: 76px !important;
+  }
+
+  .accounts20-card-balance strong {
+    max-width: 88px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .accounts20-topbar,
+  .accounts20-list-head {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .accounts20-hero {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .accounts20-card {
+    grid-template-columns: 50px minmax(0, 1fr) 72px minmax(76px, auto) 16px !important;
+    padding-left: 9px !important;
+    padding-right: 8px !important;
+  }
+
+  .accounts20-card-icon {
+    height: 50px !important;
+    width: 50px !important;
+  }
+
+  .accounts20-ring {
+    height: 72px !important;
+    width: 72px !important;
+  }
+
+  .accounts20-card-balance strong {
+    max-width: 80px !important;
+  }
+}
