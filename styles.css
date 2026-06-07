@@ -21261,3 +21261,232 @@ body {
     display: none;
   }
 }
+
+/* Accounts 2.0 exact reference pass 2026-06-06 */
+@media (max-width: 768px) {
+  .accounts20-shell {
+    gap: 13px;
+    margin-inline: auto;
+    max-width: 540px;
+    padding-top: 8px;
+  }
+
+  .accounts20-topbar {
+    padding: 0 2px 2px;
+  }
+
+  .accounts20-topbar h2 {
+    font-size: 1.22rem;
+    font-weight: 900;
+  }
+
+  .accounts20-hero {
+    border-color: rgba(92, 104, 170, 0.28);
+    border-radius: 24px;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .accounts20-hero::after {
+    display: none;
+  }
+
+  .accounts20-hero-head {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+  }
+
+  .accounts20-wallet-logo {
+    border-radius: 16px;
+    height: 52px;
+    width: 52px;
+  }
+
+  .accounts20-hero-title strong {
+    font-size: 0.96rem;
+  }
+
+  .accounts20-account-count {
+    color: #b9c5e8;
+    font-size: 0.74rem;
+  }
+
+  .accounts20-hero-body {
+    grid-template-columns: minmax(0, 0.92fr) minmax(118px, 0.78fr);
+    margin-top: 2px;
+  }
+
+  .accounts20-total {
+    font-size: clamp(2.24rem, 10vw, 2.82rem);
+  }
+
+  .accounts20-muted {
+    display: block;
+    font-size: 0.86rem;
+    margin-top: 6px;
+  }
+
+  .accounts20-available {
+    font-size: 0.93rem;
+    margin-top: 8px;
+  }
+
+  .accounts20-mini-chart {
+    align-self: center;
+    height: 86px;
+    margin-top: 6px;
+  }
+
+  .accounts20-hero-line {
+    height: 10px;
+    margin: 1px 0 2px;
+  }
+
+  .accounts20-hero-metrics {
+    gap: 9px;
+  }
+
+  .accounts20-hero-metrics article {
+    border-radius: 17px;
+    min-height: 72px;
+    padding: 10px;
+  }
+
+  .accounts20-hero-metrics article > span {
+    height: 36px;
+    width: 36px;
+  }
+
+  .accounts20-list-head {
+    margin-top: -1px;
+  }
+
+  .accounts20-list-head h3 {
+    font-size: 1.18rem;
+  }
+
+  .accounts20-list {
+    gap: 9px;
+  }
+
+  .accounts20-card {
+    background: rgba(8, 15, 35, 0.9);
+    border-color: rgba(92, 104, 170, 0.22);
+    border-radius: 19px;
+    gap: 9px;
+    grid-template-columns: 52px minmax(96px, 1fr) 66px minmax(70px, auto) 18px;
+    min-height: 82px;
+    padding: 10px;
+  }
+
+  .accounts20-card-icon {
+    border-radius: 15px;
+    height: 50px;
+    width: 50px;
+  }
+
+  .accounts20-card-copy strong {
+    font-size: 0.98rem;
+    max-width: 100%;
+  }
+
+  .accounts20-status {
+    font-size: 0.71rem;
+  }
+
+  .accounts20-card-copy small,
+  .accounts20-card-copy b {
+    font-size: 0.82rem;
+  }
+
+  .accounts20-ring {
+    padding: 7px;
+  }
+
+  .accounts20-ring b {
+    font-size: 0.8rem;
+  }
+
+  .accounts20-ring small {
+    display: none;
+  }
+
+  .accounts20-card-balance strong {
+    font-size: 0.98rem;
+  }
+
+  .accounts20-card-balance small {
+    font-size: 0.62rem;
+  }
+
+  .accounts20-more {
+    font-size: 1.28rem;
+    letter-spacing: 0.04em;
+    padding: 0;
+  }
+
+  .accounts20-food .accounts20-card-icon {
+    background: linear-gradient(145deg, #ff5d6c, #ff4fd8);
+  }
+
+  .accounts20-food .accounts20-ring {
+    background: radial-gradient(circle at center, #071026 57%, transparent 58%), conic-gradient(#ff5d6c var(--ring), rgba(132, 153, 193, 0.18) 0);
+  }
+
+  .accounts20-bills .accounts20-card-icon,
+  .accounts20-tax .accounts20-card-icon {
+    background: linear-gradient(145deg, #7c4dff, #2f80ff);
+  }
+
+  .accounts20-bills .accounts20-ring,
+  .accounts20-tax .accounts20-ring {
+    background: radial-gradient(circle at center, #071026 57%, transparent 58%), conic-gradient(#7c4dff var(--ring), rgba(132, 153, 193, 0.18) 0);
+  }
+
+  .accounts20-transport .accounts20-card-icon,
+  .accounts20-travel .accounts20-card-icon {
+    background: linear-gradient(145deg, #20d8ff, #2f80ff);
+  }
+
+  .accounts20-transport .accounts20-ring,
+  .accounts20-travel .accounts20-ring {
+    background: radial-gradient(circle at center, #071026 57%, transparent 58%), conic-gradient(#20d8ff var(--ring), rgba(132, 153, 193, 0.18) 0);
+  }
+
+  .accounts20-savings .accounts20-card-icon {
+    background: linear-gradient(145deg, #ffb84d, #ffdf6d);
+  }
+
+  .accounts20-savings .accounts20-ring {
+    background: radial-gradient(circle at center, #071026 57%, transparent 58%), conic-gradient(#ffb84d var(--ring), rgba(132, 153, 193, 0.18) 0);
+  }
+
+  .accounts20-invest .accounts20-card-icon,
+  .accounts20-default .accounts20-card-icon {
+    background: linear-gradient(145deg, #b05cff, #ff4fd8);
+  }
+
+  .accounts20-invest .accounts20-ring,
+  .accounts20-default .accounts20-ring {
+    background: radial-gradient(circle at center, #071026 57%, transparent 58%), conic-gradient(#b05cff var(--ring), rgba(132, 153, 193, 0.18) 0);
+  }
+}
+
+@media (max-width: 390px) {
+  .accounts20-hero-body {
+    grid-template-columns: minmax(0, 1fr) 104px;
+  }
+
+  .accounts20-mini-chart {
+    height: 78px;
+  }
+
+  .accounts20-card {
+    grid-template-columns: 46px minmax(82px, 1fr) 56px minmax(58px, auto) 16px;
+  }
+
+  .accounts20-card-copy small {
+    max-width: 82px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
