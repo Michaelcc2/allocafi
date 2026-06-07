@@ -21951,3 +21951,57 @@ body {
     max-width: 94px !important;
   }
 }
+/* Accounts 2.0 mobile borderless row surface 2026-06-07 */
+@media (max-width: 768px) {
+  .accounts20-shell {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: hidden !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    width: 100% !important;
+  }
+
+  .accounts20-list {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    width: 100% !important;
+  }
+
+  .accounts20-card {
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-radius: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .accounts20-list {
+    margin-left: -28px !important;
+    margin-right: -28px !important;
+    width: calc(100% + 56px) !important;
+  }
+
+  .accounts20-card {
+    grid-template-columns: 52px minmax(0, 1fr) 72px minmax(88px, auto) 16px !important;
+    padding-left: 42px !important;
+    padding-right: 20px !important;
+  }
+
+  .accounts20-card-icon {
+    height: 52px !important;
+    width: 52px !important;
+  }
+
+  .accounts20-card-balance strong {
+    max-width: 92px !important;
+  }
+}
