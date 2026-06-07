@@ -7886,6 +7886,27 @@ function getAccounts20FundingState(account) {
   return { label: "Needs Funding", className: "needs" };
 }
 
+function getAccounts20FundedPercent(account) {
+  const allocated = Number(account?.allocated || 0);
+  if (allocated <= 0.01) return Number(account?.balance || 0) > 0 ? 100 : 0;
+  return Math.max(0, Math.min((Number(account?.balance || 0) / allocated) * 100, 100));
+}
+
+function getAccounts20TypeLabel(account) {
+  if (account?.monthlyRequired > 0 || account?.categoryType === "bills") return "Bills Reserve";
+  if (["savings", "travel", "invest"].includes(account?.categoryType)) return "Savings Goal";
+  if (account?.categoryType === "tax") return "Tax Reserve";
+  if (account?.categoryType === "medical") return "Health Reserve";
+  if (account?.autoFunding) return "Auto Refill Account";
+  return "Monthly Expense";
+}
+
+function getAccounts20ActivityLabel(account) {
+  if (account?.txMeta?.count > 0) return account.txMeta.detail || "Recent activity";
+  if (account?.monthlyRequired > 0) return "Bills tracked";
+  return account?.createdLabel ? `Updated ${account.createdLabel}` : "Updated today";
+}
+
 function getAccounts20Record(walletId, bucketId) {
   return buildVirtualBudgetAccountRecords().find((account) => account.walletId === walletId && account.bucket.id === bucketId);
 }
@@ -7962,9 +7983,11 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
           <svg class="accounts20-mini-chart" viewBox="0 0 180 96" aria-hidden="true"><defs><linearGradient id="accounts20ChartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#20f0d0" stop-opacity="0.28"/><stop offset="1" stop-color="#20f0d0" stop-opacity="0"/></linearGradient></defs><path class="accounts20-chart-fill" d="M6 82 C25 60 36 65 50 54 C66 40 79 52 94 39 C112 24 124 33 138 21 C154 6 166 16 174 5 L174 96 L6 96 Z"/><path class="accounts20-chart-line" d="M6 82 C25 60 36 65 50 54 C66 40 79 52 94 39 C112 24 124 33 138 21 C154 6 166 16 174 5"/><circle class="accounts20-chart-dot" cx="174" cy="5" r="5"/></svg>
         </div>
         <div class="accounts20-hero-line"><span style="width:${availablePercent}%"></span></div>
-        <div class="accounts20-hero-metrics">
-          <article><span>${getAccounts20MetricIcon("health")}</span><div><small>Financial Health</small><strong>${healthScore}<em>/100</em></strong><b>${escapeHtml(healthLabel)}</b></div></article>
-          <article><span>${getAccounts20MetricIcon("spent")}</span><div><small>This Week Spent</small><strong>${renderMoneyValue(totalSpent, { compactAt: 1_000_000, label: "This week spent" })}</strong><b>${totalBudgeted > 0 ? `${Math.min((totalSpent / totalBudgeted) * 100, 100).toFixed(0)}% of total budget` : "No spend yet"}</b></div></article>
+        <div class="accounts20-hero-metrics accounts20-hero-metrics-rich">
+          <article><small>Monthly Burn</small><strong>${renderMoneyValue(totalSpent, { compactAt: 1_000_000, label: "Monthly burn rate" })}</strong><b>${totalBudgeted > 0 ? `${Math.min((totalSpent / totalBudgeted) * 100, 100).toFixed(0)}% used</b>` : "No spend yet</b>"}</article>
+          <article><small>Active Accounts</small><strong>${rows.length}</strong><b>Budget accounts</b></article>
+          <article><small>Upcoming Bills</small><strong>${rows.filter((account) => account.monthlyRequired > 0).length}</strong><b>Tracked this cycle</b></article>
+          <article><small>Health</small><strong>${healthScore}<em>/100</em></strong><b>${escapeHtml(healthLabel)}</b></article>
         </div>
       </section>
 
@@ -7976,18 +7999,23 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
         ${rows.map((account) => {
           const state = getAccounts20FundingState(account);
           return `
-            <article class="accounts20-card accounts20-card-bars accounts20-${escapeHtml(account.categoryType)}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
+            <article class="accounts20-card accounts20-card-bars accounts20-card-rich accounts20-${escapeHtml(account.categoryType)}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
               <span class="accounts20-card-icon">${getAccounts20Icon(account.categoryType)}</span>
               <div class="accounts20-card-main">
                 <div class="accounts20-card-topline">
                   <strong>${escapeHtml(account.bucket.name)}</strong>
-                  <b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} balance` })}</b>
+                  <b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available balance` })} / ${renderMoneyValue(account.allocated, { compactAt: 1_000_000, label: `${account.bucket.name} target amount` })}</b>
+                </div>
+                <div class="accounts20-card-targetline">
+                  <span>Available ${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available` })} - Allocated ${renderMoneyValue(account.allocated, { compactAt: 1_000_000, label: `${account.bucket.name} allocated` })}</span>
+                  <em>${escapeHtml(getAccounts20TypeLabel(account))}</em>
                 </div>
                 <div class="accounts20-card-statusline">
-                  <span class="accounts20-status ${escapeHtml(state.className)}"><i></i>${escapeHtml(state.label)}</span>
-                  <small>${Number(account.allocationPercent.toFixed(1))}% allocated &bull; ${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })} spent</small>
+                  <span class="accounts20-status ${escapeHtml(state.className)}"><i></i>${Number(getAccounts20FundedPercent(account).toFixed(0))}% Funded</span>
+                  <small>Spent ${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })}</small>
                 </div>
-                <div class="accounts20-card-progress" style="--progress:${Math.max(0, Math.min(account.allocationPercent, 100))}%"><span></span></div>
+                <div class="accounts20-card-progress" style="--progress:${getAccounts20FundedPercent(account)}%"><span></span></div>
+                <div class="accounts20-card-activity">${escapeHtml(getAccounts20ActivityLabel(account))}</div>
               </div>
               <button class="accounts20-more" data-accounts20-menu data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" type="button" aria-label="Open ${escapeHtml(account.bucket.name)} actions">&rsaquo;</button>
             </article>

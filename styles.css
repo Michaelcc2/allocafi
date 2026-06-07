@@ -22506,3 +22506,88 @@ body {
     max-width: 112px;
   }
 }
+/* Accounts 2.0 data-rich card correction 2026-06-07 */
+@media (max-width: 768px) {
+  .accounts20-hero-metrics-rich {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .accounts20-hero-metrics-rich article {
+    min-height: 54px;
+    padding: 9px 11px;
+  }
+
+  .accounts20-card-rich {
+    grid-template-columns: 56px minmax(0, 1fr) 18px;
+    min-height: 118px;
+  }
+
+  .accounts20-card-rich .accounts20-card-main {
+    gap: 7px;
+  }
+
+  .accounts20-card-targetline {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  .accounts20-card-targetline span {
+    color: #dce6ff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .accounts20-card-targetline em {
+    color: #aeb8d8;
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    font-style: normal;
+    font-weight: 750;
+    max-width: 112px;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .accounts20-card-rich .accounts20-card-statusline small {
+    color: #aeb8d8;
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    max-width: 116px;
+  }
+
+  .accounts20-card-activity {
+    color: #8492ba;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.15;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 430px) {
+  .accounts20-card-rich {
+    grid-template-columns: 52px minmax(0, 1fr) 16px;
+    min-height: 116px;
+  }
+
+  .accounts20-card-rich .accounts20-card-topline b {
+    max-width: 108px;
+  }
+
+  .accounts20-card-targetline em,
+  .accounts20-card-rich .accounts20-card-statusline small {
+    max-width: 96px;
+  }
+}
