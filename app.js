@@ -7914,7 +7914,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
   bucketAccountsView.innerHTML = `
     <section class="accounts20-shell" aria-label="Accounts 2.0">
       <header class="accounts20-topbar">
-        <h2>My Budgets</h2>
+        <h2>Virtual Budget Accounts</h2>
         <div class="accounts20-top-actions">
           <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg></button>
           <button class="accounts20-icon-button accounts20-bell" type="button" aria-label="Budget alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg></button>
