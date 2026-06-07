@@ -21490,3 +21490,321 @@ body {
     text-overflow: ellipsis;
   }
 }
+/* Accounts 2.0 exact screenshot lock 2026-06-06 */
+@media (max-width: 768px) {
+  .accounts20-shell {
+    background: #050816 !important;
+    gap: 14px !important;
+    margin: 0 auto !important;
+    max-width: 560px !important;
+    padding: 10px 0 112px !important;
+  }
+
+  .accounts20-topbar {
+    padding: 0 4px !important;
+  }
+
+  .accounts20-topbar h2 {
+    color: #f8fbff !important;
+    font-size: 1.2rem !important;
+    font-weight: 850 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .accounts20-top-actions {
+    gap: 12px !important;
+  }
+
+  .accounts20-icon-button {
+    background: rgba(8, 13, 31, 0.8) !important;
+    border: 1px solid rgba(124, 143, 196, 0.24) !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    height: 39px !important;
+    width: 39px !important;
+  }
+
+  .accounts20-icon-button svg {
+    height: 21px !important;
+    width: 21px !important;
+  }
+
+  .accounts20-hero {
+    background: linear-gradient(147deg, #17134b 0%, #11173e 52%, #07162d 100%) !important;
+    border: 1px solid rgba(86, 95, 164, 0.3) !important;
+    border-radius: 23px !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+    gap: 11px !important;
+    padding: 14px !important;
+  }
+
+  .accounts20-hero-head {
+    grid-template-columns: 58px minmax(0, 1fr) auto !important;
+    gap: 12px !important;
+  }
+
+  .accounts20-wallet-logo {
+    background: linear-gradient(145deg, #7c4dff 5%, #4768ff 100%) !important;
+    border-radius: 17px !important;
+    box-shadow: 0 14px 28px rgba(80, 78, 255, 0.24) !important;
+    height: 58px !important;
+    width: 58px !important;
+  }
+
+  .accounts20-hero-title strong {
+    color: #fff !important;
+    font-size: 1.02rem !important;
+    font-weight: 850 !important;
+    letter-spacing: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .accounts20-hero-title small,
+  .accounts20-account-count {
+    color: #c6d0ed !important;
+    font-size: 0.76rem !important;
+  }
+
+  .accounts20-hero-body {
+    align-items: end !important;
+    grid-template-columns: minmax(0, 1fr) minmax(138px, 42%) !important;
+    min-height: 118px !important;
+  }
+
+  .accounts20-total {
+    color: #fff !important;
+    font-size: clamp(2.55rem, 11vw, 3.05rem) !important;
+    font-weight: 850 !important;
+    letter-spacing: 0 !important;
+    line-height: 0.95 !important;
+    margin: 0 0 7px !important;
+  }
+
+  .accounts20-muted {
+    color: #aeb8d8 !important;
+    font-size: 0.92rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .accounts20-available {
+    color: #26f0cf !important;
+    display: block !important;
+    font-size: 0.98rem !important;
+    font-weight: 850 !important;
+    margin-top: 14px !important;
+  }
+
+  .accounts20-mini-chart {
+    height: 94px !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  .accounts20-chart-fill {
+    fill: url(#accounts20ChartFill) !important;
+  }
+
+  .accounts20-chart-line {
+    fill: none !important;
+    filter: drop-shadow(0 0 8px rgba(32, 240, 208, 0.75)) !important;
+    stroke: #20f0d0 !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+    stroke-width: 5 !important;
+  }
+
+  .accounts20-chart-dot {
+    fill: #20f0d0 !important;
+    filter: drop-shadow(0 0 8px rgba(32, 240, 208, 0.9)) !important;
+  }
+
+  .accounts20-hero-line {
+    height: 10px !important;
+    margin: 0 !important;
+  }
+
+  .accounts20-hero-line span {
+    background: linear-gradient(90deg, #ff4fd8 0%, #7c4dff 45%, #20f0d0 100%) !important;
+  }
+
+  .accounts20-hero-metrics {
+    gap: 10px !important;
+    margin-top: 2px !important;
+  }
+
+  .accounts20-hero-metrics article {
+    background: rgba(8, 15, 35, 0.58) !important;
+    border: 1px solid rgba(132, 153, 193, 0.12) !important;
+    border-radius: 16px !important;
+    grid-template-columns: 44px minmax(0, 1fr) !important;
+    min-height: 78px !important;
+    padding: 10px !important;
+  }
+
+  .accounts20-hero-metrics article > span {
+    height: 39px !important;
+    width: 39px !important;
+  }
+
+  .accounts20-list-head {
+    padding: 0 5px !important;
+  }
+
+  .accounts20-list-head h3 {
+    color: #f8fbff !important;
+    font-size: 1.13rem !important;
+    font-weight: 850 !important;
+  }
+
+  .accounts20-list-head strong {
+    color: #eef4ff !important;
+    font-size: 0.92rem !important;
+    font-weight: 800 !important;
+  }
+
+  .accounts20-list {
+    gap: 10px !important;
+  }
+
+  .accounts20-card {
+    background: #080d22 !important;
+    border: 1px solid rgba(89, 99, 161, 0.22) !important;
+    border-radius: 17px !important;
+    box-shadow: none !important;
+    gap: 12px !important;
+    grid-template-columns: 58px minmax(112px, 1fr) 82px minmax(82px, auto) 18px !important;
+    min-height: 103px !important;
+    padding: 12px !important;
+  }
+
+  .accounts20-card-icon {
+    border-radius: 15px !important;
+    box-shadow: 0 12px 24px rgba(80, 78, 255, 0.16) !important;
+    height: 55px !important;
+    width: 55px !important;
+  }
+
+  .accounts20-card-icon svg {
+    height: 30px !important;
+    width: 30px !important;
+  }
+
+  .accounts20-card-copy strong {
+    color: #fff !important;
+    font-size: 1.02rem !important;
+    font-weight: 850 !important;
+    line-height: 1.12 !important;
+  }
+
+  .accounts20-status {
+    font-size: 0.76rem !important;
+    line-height: 1.08 !important;
+  }
+
+  .accounts20-card-copy small {
+    color: #aeb8d8 !important;
+    font-size: 0.76rem !important;
+    line-height: 1.08 !important;
+    margin-top: 5px !important;
+  }
+
+  .accounts20-card-copy b {
+    color: #fff !important;
+    font-size: 0.86rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .accounts20-ring {
+    padding: 9px !important;
+  }
+
+  .accounts20-ring b {
+    font-size: 0.96rem !important;
+    font-weight: 850 !important;
+  }
+
+  .accounts20-ring small {
+    display: block !important;
+    font-size: 0.53rem !important;
+    margin-top: -12px !important;
+  }
+
+  .accounts20-card-balance strong {
+    color: #fff !important;
+    font-size: 1.08rem !important;
+    font-weight: 850 !important;
+  }
+
+  .accounts20-card-balance small {
+    color: #aeb8d8 !important;
+    display: block !important;
+    font-size: 0.69rem !important;
+    margin-top: 3px !important;
+    max-width: 90px !important;
+  }
+
+  .accounts20-more {
+    color: #dce6ff !important;
+    font-size: 1.45rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+
+  .accounts20-food .accounts20-card-icon {
+    background: linear-gradient(145deg, #ff6b76 0%, #ff3f8f 100%) !important;
+  }
+
+  .accounts20-bills .accounts20-card-icon,
+  .accounts20-tax .accounts20-card-icon {
+    background: linear-gradient(145deg, #9a5cff 0%, #4d73ff 100%) !important;
+  }
+
+  .accounts20-transport .accounts20-card-icon,
+  .accounts20-travel .accounts20-card-icon {
+    background: linear-gradient(145deg, #2dd7ff 0%, #357dff 100%) !important;
+  }
+
+  .accounts20-savings .accounts20-card-icon {
+    background: linear-gradient(145deg, #ffdf6d 0%, #ffb84d 100%) !important;
+  }
+
+  .accounts20-invest .accounts20-card-icon,
+  .accounts20-default .accounts20-card-icon {
+    background: linear-gradient(145deg, #b05cff 0%, #ff4fd8 100%) !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .accounts20-shell {
+    max-width: 100% !important;
+  }
+
+  .accounts20-hero {
+    padding: 13px !important;
+  }
+
+  .accounts20-hero-body {
+    grid-template-columns: minmax(0, 1fr) 128px !important;
+  }
+
+  .accounts20-total {
+    font-size: clamp(2.35rem, 10vw, 2.75rem) !important;
+  }
+
+  .accounts20-card {
+    gap: 8px !important;
+    grid-template-columns: 52px minmax(96px, 1fr) 68px minmax(68px, auto) 16px !important;
+    min-height: 96px !important;
+    padding: 10px !important;
+  }
+
+  .accounts20-card-icon {
+    height: 50px !important;
+    width: 50px !important;
+  }
+
+  .accounts20-ring small,
+  .accounts20-card-balance small {
+    display: none !important;
+  }
+}

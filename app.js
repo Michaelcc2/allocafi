@@ -7897,8 +7897,8 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
       <header class="accounts20-topbar">
         <h2>My Budgets</h2>
         <div class="accounts20-top-actions">
-          <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts">${getWalletActionIcon("scan")}</button>
-          <button class="accounts20-icon-button accounts20-bell" type="button" aria-label="Budget alerts">${getWalletActionIcon("rules")}</button>
+          <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg></button>
+          <button class="accounts20-icon-button accounts20-bell" type="button" aria-label="Budget alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg></button>
           <button class="accounts20-icon-button" type="button" data-accounts20-add aria-label="Add budget account">+</button>
         </div>
       </header>
@@ -7918,7 +7918,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
             <span class="accounts20-muted">Total Budgeted</span>
             <b class="accounts20-available">${renderMoneyValue(totalAvailable, { compactAt: 1_000_000, label: "Available budget" })} Available</b>
           </div>
-          <div class="accounts20-mini-chart" aria-hidden="true"><span></span><i></i></div>
+          <svg class="accounts20-mini-chart" viewBox="0 0 180 96" aria-hidden="true"><defs><linearGradient id="accounts20ChartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#20f0d0" stop-opacity="0.28"/><stop offset="1" stop-color="#20f0d0" stop-opacity="0"/></linearGradient></defs><path class="accounts20-chart-fill" d="M6 82 C25 60 36 65 50 54 C66 40 79 52 94 39 C112 24 124 33 138 21 C154 6 166 16 174 5 L174 96 L6 96 Z"/><path class="accounts20-chart-line" d="M6 82 C25 60 36 65 50 54 C66 40 79 52 94 39 C112 24 124 33 138 21 C154 6 166 16 174 5"/><circle class="accounts20-chart-dot" cx="174" cy="5" r="5"/></svg>
         </div>
         <div class="accounts20-hero-line"><span style="width:${availablePercent}%"></span></div>
         <div class="accounts20-hero-metrics">
