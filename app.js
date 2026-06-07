@@ -119,6 +119,7 @@ const ONBOARDING_DEMO_STAGE_KEY = "allocafi-onboarding-demo-stage-v1";
 const ONBOARDING_ALLOWED_OWNER_ASSETS = new Set(["USDC", "USDT", "PYUSD"]);
 const ONBOARDING_FREE_BUCKET_LIMIT = 3;
 const ACCOUNTS_20_ENABLED_KEY = "allocafi-accounts-20-enabled-v1";
+const ACCOUNTS_20_ISOLATED_TAB = "accounts20-isolated";
 const VAULT_KDF_ITERATIONS = 250000;
 const VAULT_FILE_VERSION = 1;
 const SOLANA_TOKEN_INDEXERS = [
@@ -985,6 +986,11 @@ function ensureUnifiedFinanceShell() {
         <div id="allocafiConnectView"></div>
       </section>
     </section>
+    <section class="tab-panel" data-panel="accounts20-isolated">
+      <section class="accounts20-isolated-route-panel" aria-label="Accounts 2.0 Isolated Test Screen">
+        <div id="accounts20IsolatedView"></div>
+      </section>
+    </section>
   `);
 }
 
@@ -993,7 +999,7 @@ ensureUnifiedFinanceShell();
 function moveAdvancedSectionsIntoSettings() {
   const settingsPanel = document.querySelector('[data-panel="settings"] .dashboard-panel');
   if (!settingsPanel || document.querySelector("#advancedSystemsView")) return;
-  const advancedIds = ["pay", "ledgercore", "allocafi-connect", "unified", "banks", "monthly", "family", "business", "rewards", "ai", "admin"];
+  const advancedIds = ["pay", "ledgercore", "allocafi-connect", "accounts20-isolated", "unified", "banks", "monthly", "family", "business", "rewards", "ai", "admin"];
 
   advancedIds.forEach((id) => {
     document.querySelector(`[data-tab="${id}"]`)?.remove();
@@ -1003,6 +1009,7 @@ function moveAdvancedSectionsIntoSettings() {
     pay: ["AllocaFi Pay", "Non-custodial payment routing, QR profiles, methods, contacts"],
     ledgercore: ["AllocaFi LedgerCore&trade;", "Receipt, tax, and transaction intelligence engine"],
     "allocafi-connect": ["AllocaFi Connect", "Secure wallet messaging and app-to-app calls"],
+    "accounts20-isolated": ["Accounts 2.0 Isolated", "Standalone mobile Virtual Budget Accounts test screen"],
     unified: ["Unified Finance", "Bank + crypto command center foundation"],
     banks: ["Bank Accounts", "Plaid-ready bank connection foundation"],
     monthly: ["Monthly Budget", "Plaid-ready income, spending, and percentage view"],
@@ -1182,6 +1189,7 @@ const adminDashboardView = document.querySelector("#adminDashboardView");
 const allocafiPayView = document.querySelector("#allocafiPayView");
 const ledgerCoreView = document.querySelector("#ledgerCoreView");
 const allocafiConnectView = document.querySelector("#allocafiConnectView");
+const accounts20IsolatedView = document.querySelector("#accounts20IsolatedView");
 const addGoalButton = document.querySelector("#addGoal");
 const addAddressBookButton = document.querySelector("#addAddressBook");
 const suggestCategoriesButton = document.querySelector("#suggestCategories");
@@ -3414,6 +3422,8 @@ function openAdvancedSystem(tabName) {
     window.history.pushState({ tab: "ledgercore" }, "", "#ledgercore");
   } else if (tabName === "allocafi-connect" && window.location.hash !== "#allocafi-connect") {
     window.history.pushState({ tab: "allocafi-connect" }, "", "#allocafi-connect");
+  } else if (tabName === ACCOUNTS_20_ISOLATED_TAB && window.location.hash !== "#accounts-20-isolated") {
+    window.history.pushState({ tab: ACCOUNTS_20_ISOLATED_TAB }, "", "#accounts-20-isolated");
   } else if (tabName === "ai" && window.location.hash !== "#allocafi-ai") {
     window.history.pushState({ tab: "ai" }, "", "#allocafi-ai");
   } else if (tabName === "admin" && window.location.hash !== "#admin") {
@@ -3427,6 +3437,7 @@ function getRouteTab(pathname = window.location.pathname, hash = window.location
   if (["#allocafi-ai", "#ai", "#settings-ai"].includes(normalizedHash)) return "settings";
   if (["#ledgercore", "#allocafi-ledgercore", "#settings-ledgercore"].includes(normalizedHash)) return "ledgercore";
   if (["#allocafi-connect", "#connect", "#settings-connect"].includes(normalizedHash)) return "allocafi-connect";
+  if (["#accounts-20-isolated", "#accounts20-isolated", "#settings-accounts20"].includes(normalizedHash)) return ACCOUNTS_20_ISOLATED_TAB;
   if (["#pay", "#allocafi-pay", "#settings-pay"].includes(normalizedHash)) return canAccessAllocaFiPayModule() ? "pay" : null;
   const normalized = String(pathname || "").replace(/\/+$/, "") || "/";
   if (["/business", "/enterprise", "/enterprise/dashboard"].includes(normalized)) return "business";
@@ -7903,7 +7914,8 @@ function renderAccounts20Circle(percent, label = "of budget") {
   return `<span class="accounts20-ring" style="--ring:${safePercent}%"><b>${Number(safePercent.toFixed(1))}%</b><small>${escapeHtml(label)}</small></span>`;
 }
 
-function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
+function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bucketAccountsView) {
+  if (!target) return;
   const budgetWallets = getBudgetWallets();
   const primaryWallet = budgetWallets.find((wallet) => /owner/i.test(`${wallet.name || ""} ${wallet.role || ""}`)) || budgetWallets[0] || getSupportedWallets()[0] || {};
   const primaryAccounts = accounts.filter((account) => account.walletId === primaryWallet.id);
@@ -7918,7 +7930,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
   const networkSymbol = getNetworkAssetSymbol(NETWORKS[primaryWallet.network]) || "ETH";
   const heroLogo = renderAssetLogo(networkSymbol) || renderAssetLogo("ETH") || getBucketCategoryIcon("default");
 
-  bucketAccountsView.innerHTML = `
+  target.innerHTML = `
     <section class="accounts20-shell" aria-label="Accounts 2.0">
       <header class="accounts20-topbar">
         <h2>Virtual Budget Accounts</h2>
@@ -7974,7 +7986,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
                 <strong>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} balance` })}</strong>
                 <small>${escapeHtml(formatAccounts20BtcEquivalent(account.balance))}</small>
               </div>
-              <button class="accounts20-more" data-accounts20-menu data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" type="button" aria-label="Open ${escapeHtml(account.bucket.name)} actions">...</button>
+              <button class="accounts20-more" data-accounts20-menu data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" type="button" aria-label="Open ${escapeHtml(account.bucket.name)} actions">&rsaquo;</button>
             </article>
           `;
         }).join("")}
@@ -7983,8 +7995,36 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
     ${assetAccountsSection}
   `;
 
-  bindAccounts20Controls(bucketAccountsView);
-  bindVirtualAssetAccountControls(bucketAccountsView);
+  bindAccounts20Controls(target);
+  bindVirtualAssetAccountControls(target);
+}
+
+function renderAccounts20Isolated() {
+  if (!accounts20IsolatedView) return;
+  const accounts = buildVirtualBudgetAccountRecords();
+  if (!accounts.length) {
+    accounts20IsolatedView.innerHTML = `
+      <section class="accounts20-shell" aria-label="Accounts 2.0 Isolated">
+        <header class="accounts20-topbar">
+          <h2>Virtual Budget Accounts</h2>
+          <div class="accounts20-top-actions">
+            <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg></button>
+            <button class="accounts20-icon-button accounts20-bell" type="button" aria-label="Budget alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg></button>
+            <button class="accounts20-icon-button" type="button" data-accounts20-add aria-label="Add budget account">+</button>
+          </div>
+        </header>
+        <section class="accounts20-empty-card">
+          <h3>No Virtual Budget Accounts yet</h3>
+          <p>Choose a budget template or auto allocate to build your mobile Accounts 2.0 test view.</p>
+          <button class="primary-button empty-assign" type="button">Auto Allocate</button>
+        </section>
+      </section>
+    `;
+    accounts20IsolatedView.querySelector(".empty-assign")?.addEventListener("click", openAssignMoneyDialog);
+    bindAccounts20Controls(accounts20IsolatedView);
+    return;
+  }
+  renderAccounts20Mobile(accounts, "", accounts20IsolatedView);
 }
 
 function bindAccounts20Controls(root = document) {
@@ -8091,7 +8131,7 @@ function openAccounts20DetailDialog(walletId, bucketId) {
 function renderBucketAccounts() {
   if (!bucketAccountsView) return;
   const useAccounts20 = shouldRenderAccounts20();
-  setAccounts20IsolatedMode(useAccounts20);
+  setAccounts20IsolatedMode(false);
   const accounts = buildVirtualBudgetAccountRecords();
   const assetAccountsSection = renderVirtualAssetAccountsSection();
 
@@ -8111,7 +8151,7 @@ function renderBucketAccounts() {
   }
 
   if (useAccounts20) {
-    renderAccounts20Mobile(accounts, "");
+    renderAccounts20Mobile(accounts, "", bucketAccountsView);
     return;
   }
 
@@ -9840,6 +9880,7 @@ function render() {
   renderAllocaFiPay();
   renderAllocaFiLedgerCore();
   renderAllocaFiConnect();
+  renderAccounts20Isolated();
   renderRewardsDashboard();
   renderAdminDashboard();
   renderAccountCloudPanel();

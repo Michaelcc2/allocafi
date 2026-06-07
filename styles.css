@@ -22255,3 +22255,50 @@ body {
     padding-right: 12px !important;
   }
 }
+
+/* Accounts 2.0 isolated route screen 2026-06-07 */
+.accounts20-isolated-route-panel {
+  background: #050816;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: 0;
+}
+
+.accounts20-isolated-route-panel #accounts20IsolatedView {
+  min-height: 100dvh;
+}
+
+.accounts20-isolated-route-panel .accounts20-shell {
+  background: #050816;
+  min-height: 100dvh;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 18px calc(104px + env(safe-area-inset-bottom));
+}
+
+.accounts20-empty-card {
+  border: 1px solid rgba(92, 125, 220, 0.28);
+  border-radius: 24px;
+  background: rgba(8, 16, 38, 0.92);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+  color: #f7f9ff;
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 22px;
+}
+
+.accounts20-empty-card p {
+  color: #aeb8d8;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .accounts20-isolated-route-panel .accounts20-shell {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
