@@ -1079,6 +1079,13 @@ function shouldRenderAccounts20() {
   return isAccounts20Enabled() && isAccounts20MobileViewport();
 }
 
+function setAccounts20IsolatedMode(enabled) {
+  const accountsPanel = document.querySelector('[data-panel="accounts"]');
+  const accountsDashboard = bucketAccountsView?.closest('.dashboard-panel');
+  accountsPanel?.classList.toggle('accounts20-isolated-panel', Boolean(enabled));
+  accountsDashboard?.classList.toggle('accounts20-isolated-dashboard', Boolean(enabled));
+}
+
 function toggleAccounts20() {
   const enabled = !isAccounts20Enabled();
   localStorage.setItem(ACCOUNTS_20_ENABLED_KEY, enabled ? "true" : "false");
@@ -8083,6 +8090,8 @@ function openAccounts20DetailDialog(walletId, bucketId) {
 }
 function renderBucketAccounts() {
   if (!bucketAccountsView) return;
+  const useAccounts20 = shouldRenderAccounts20();
+  setAccounts20IsolatedMode(useAccounts20);
   const accounts = buildVirtualBudgetAccountRecords();
   const assetAccountsSection = renderVirtualAssetAccountsSection();
 
@@ -8101,8 +8110,8 @@ function renderBucketAccounts() {
     return;
   }
 
-  if (shouldRenderAccounts20()) {
-    renderAccounts20Mobile(accounts, assetAccountsSection);
+  if (useAccounts20) {
+    renderAccounts20Mobile(accounts, "");
     return;
   }
 
