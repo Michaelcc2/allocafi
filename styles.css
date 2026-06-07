@@ -21318,3 +21318,45 @@ body {
   .accounts20-ring { height: 56px; width: 56px; }
   .accounts20-card-balance strong { font-size: 0.9rem; max-width: 60px; }
 }
+
+/* Accounts 2.0 edge-to-edge account surface 2026-06-06 */
+@media (max-width: 768px) {
+  .accounts20-shell {
+    margin-left: calc(50% - 50vw) !important;
+    margin-right: calc(50% - 50vw) !important;
+    max-width: none !important;
+    padding: 18px 12px 112px !important;
+    width: 100vw !important;
+  }
+
+  .accounts20-topbar,
+  .accounts20-list-head {
+    padding-inline: 4px !important;
+  }
+
+  .accounts20-hero,
+  .accounts20-card {
+    border-radius: 22px !important;
+    margin-inline: 0 !important;
+    width: 100% !important;
+  }
+
+  .accounts20-list {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .accounts20-shell {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .accounts20-card {
+    grid-template-columns: 52px minmax(92px, 1fr) 64px minmax(72px, auto) 18px !important;
+  }
+
+  .accounts20-card-balance strong {
+    max-width: 72px !important;
+  }
+}
