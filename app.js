@@ -7932,8 +7932,11 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
 
   target.innerHTML = `
     <section class="accounts20-shell" aria-label="Accounts 2.0">
-      <header class="accounts20-topbar">
-        <h2>Virtual Budget Accounts</h2>
+      <header class="accounts20-topbar accounts20-topbar-premium">
+        <div class="accounts20-title-block">
+          <h2>Virtual Budget Accounts</h2>
+          <p>${rows.length} account${rows.length === 1 ? "" : "s"} &bull; ${renderMoneyValue(totalAvailable, { compactAt: 1_000_000, label: "Managed value" })} managed</p>
+        </div>
         <div class="accounts20-top-actions">
           <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg></button>
           <button class="accounts20-icon-button accounts20-bell" type="button" aria-label="Budget alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg></button>
@@ -7973,18 +7976,18 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
         ${rows.map((account) => {
           const state = getAccounts20FundingState(account);
           return `
-            <article class="accounts20-card accounts20-${escapeHtml(account.categoryType)}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
+            <article class="accounts20-card accounts20-card-bars accounts20-${escapeHtml(account.categoryType)}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
               <span class="accounts20-card-icon">${getAccounts20Icon(account.categoryType)}</span>
-              <div class="accounts20-card-copy">
-                <strong>${escapeHtml(account.bucket.name)}</strong>
-                <span class="accounts20-status ${escapeHtml(state.className)}"><i></i>${escapeHtml(state.label)}</span>
-                <small>Spent this week</small>
-                <b>${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })}</b>
-              </div>
-              ${renderAccounts20Circle(account.allocationPercent)}
-              <div class="accounts20-card-balance">
-                <strong>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} balance` })}</strong>
-                <small>${escapeHtml(formatAccounts20BtcEquivalent(account.balance))}</small>
+              <div class="accounts20-card-main">
+                <div class="accounts20-card-topline">
+                  <strong>${escapeHtml(account.bucket.name)}</strong>
+                  <b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} balance` })}</b>
+                </div>
+                <div class="accounts20-card-statusline">
+                  <span class="accounts20-status ${escapeHtml(state.className)}"><i></i>${escapeHtml(state.label)}</span>
+                  <small>${Number(account.allocationPercent.toFixed(1))}% allocated &bull; ${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })} spent</small>
+                </div>
+                <div class="accounts20-card-progress" style="--progress:${Math.max(0, Math.min(account.allocationPercent, 100))}%"><span></span></div>
               </div>
               <button class="accounts20-more" data-accounts20-menu data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" type="button" aria-label="Open ${escapeHtml(account.bucket.name)} actions">&rsaquo;</button>
             </article>
