@@ -7872,6 +7872,25 @@ function getAccounts20Record(walletId, bucketId) {
   return buildVirtualBudgetAccountRecords().find((account) => account.walletId === walletId && account.bucket.id === bucketId);
 }
 
+function getAccounts20Icon(categoryType = "default") {
+  const icons = {
+    food: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h13l-2 8H8L5 7Z"/><path d="M8 7 7 4H4"/><circle cx="9" cy="19" r="1.5"/><circle cx="16" cy="19" r="1.5"/></svg>',
+    tax: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>',
+    bills: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>',
+    transport: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 14h14l-1.5-5h-11L5 14Z"/><path d="M7 14v3"/><path d="M17 14v3"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/></svg>',
+    savings: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3 6 13h5l-1 8 8-12h-5l1-6Z"/></svg>',
+    travel: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 20 4l-6 16-3-7-7-1Z"/><path d="m11 13 3 7"/></svg>',
+    invest: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17 9 12l4 4 7-9"/><path d="M14 7h6v6"/></svg>',
+    medical: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10Z"/><path d="M12 8v7"/><path d="M8.5 11.5h7"/></svg>',
+    default: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4Z"/><path d="M8 9h8"/><path d="M8 13h8"/></svg>',
+  };
+  return icons[categoryType] || icons.default;
+}
+
+function getAccounts20MetricIcon(type = "health") {
+  if (type === "spent") return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3v5h-5"/><path d="M7 21v-5h5"/><path d="M17 8a7 7 0 0 0-11.5 2"/><path d="M7 16a7 7 0 0 0 11.5-2"/></svg>';
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10Z"/><path d="M8.5 12h2l1.2-2.5 2.1 5 1.2-2.5h2.5"/></svg>';
+}
 function renderAccounts20Circle(percent, label = "of budget") {
   const safePercent = Math.max(0, Math.min(Number(percent || 0), 100));
   return `<span class="accounts20-ring" style="--ring:${safePercent}%"><b>${Number(safePercent.toFixed(1))}%</b><small>${escapeHtml(label)}</small></span>`;
@@ -7922,8 +7941,8 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
         </div>
         <div class="accounts20-hero-line"><span style="width:${availablePercent}%"></span></div>
         <div class="accounts20-hero-metrics">
-          <article><span>${getWalletActionIcon("rules")}</span><div><small>Financial Health</small><strong>${healthScore}<em>/100</em></strong><b>${escapeHtml(healthLabel)}</b></div></article>
-          <article><span>${getWalletActionIcon("refresh")}</span><div><small>This Week Spent</small><strong>${renderMoneyValue(totalSpent, { compactAt: 1_000_000, label: "This week spent" })}</strong><b>${totalBudgeted > 0 ? `${Math.min((totalSpent / totalBudgeted) * 100, 100).toFixed(0)}% of total budget` : "No spend yet"}</b></div></article>
+          <article><span>${getAccounts20MetricIcon("health")}</span><div><small>Financial Health</small><strong>${healthScore}<em>/100</em></strong><b>${escapeHtml(healthLabel)}</b></div></article>
+          <article><span>${getAccounts20MetricIcon("spent")}</span><div><small>This Week Spent</small><strong>${renderMoneyValue(totalSpent, { compactAt: 1_000_000, label: "This week spent" })}</strong><b>${totalBudgeted > 0 ? `${Math.min((totalSpent / totalBudgeted) * 100, 100).toFixed(0)}% of total budget` : "No spend yet"}</b></div></article>
         </div>
       </section>
 
@@ -7936,7 +7955,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "") {
           const state = getAccounts20FundingState(account);
           return `
             <article class="accounts20-card accounts20-${escapeHtml(account.categoryType)}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
-              <span class="accounts20-card-icon">${getBucketCategoryIcon(account.categoryType)}</span>
+              <span class="accounts20-card-icon">${getAccounts20Icon(account.categoryType)}</span>
               <div class="accounts20-card-copy">
                 <strong>${escapeHtml(account.bucket.name)}</strong>
                 <span class="accounts20-status ${escapeHtml(state.className)}"><i></i>${escapeHtml(state.label)}</span>
@@ -8024,7 +8043,7 @@ function openAccounts20DetailDialog(walletId, bucketId) {
         <button class="ghost-button accounts20-detail-menu" type="button">...</button>
       </section>
       <section class="accounts20-detail-hero">
-        <span class="accounts20-detail-icon">${getBucketCategoryIcon(account.categoryType)}</span>
+        <span class="accounts20-detail-icon">${getAccounts20Icon(account.categoryType)}</span>
         <h2>${escapeHtml(account.bucket.name)}</h2>
         <span class="accounts20-status ${escapeHtml(state.className)}"><i></i>${escapeHtml(state.label)}</span>
         <strong>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available` })}</strong>
