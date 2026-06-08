@@ -8014,8 +8014,8 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
               </div>
               <div class="accounts20-ledger-meta">
                 <span><small>Spent</small><b>${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })}</b></span>
-                <span><small>Activity</small><b>${account.txMeta?.count > 0 ? "Today" : "No activity"}</b></span>
-                <span><small>Updated</small><b>${account.txMeta?.count > 0 ? escapeHtml(getAccounts20ActivityLabel(account)) : "Just now"}</b></span>
+                <span><small>Activity</small><b>Today</b></span>
+                <span><small>Updated</small><b>Just now</b></span>
               </div>
             </article>
           `;
