@@ -7999,28 +7999,24 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
         ${rows.map((account) => {
           const state = getAccounts20FundingState(account);
           return `
-            <article class="accounts20-card accounts20-card-bars accounts20-card-rich accounts20-${escapeHtml(account.categoryType)}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
+            <article class="accounts20-card accounts20-card-bars accounts20-card-ledger accounts20-${escapeHtml(account.categoryType)}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
               <span class="accounts20-card-icon">${getAccounts20Icon(account.categoryType)}</span>
-              <div class="accounts20-card-main">
-                <div class="accounts20-card-titleline">
-                  <div class="accounts20-card-nameblock">
-                    <strong>${escapeHtml(account.bucket.name)}</strong>
-                    <span class="accounts20-status ${escapeHtml(state.className)}"><i></i>${Number(getAccounts20FundedPercent(account).toFixed(0))}% Funded</span>
-                  </div>
-                  <b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available balance` })}</b>
-                </div>
-                <div class="accounts20-card-targetline accounts20-card-targetline-primary">
-                  <span>Target ${renderMoneyValue(account.allocated, { compactAt: 1_000_000, label: `${account.bucket.name} target amount` })}</span>
-                  <em>Available ${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available` })}</em>
-                </div>
+              <div class="accounts20-ledger-main">
+                <span class="accounts20-ledger-status"><i></i>Active</span>
+                <strong>${escapeHtml(account.bucket.name)}</strong>
+                <p><span>Available</span><b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available balance` })}</b></p>
                 <div class="accounts20-card-progress" style="--progress:${getAccounts20FundedPercent(account)}%"><span></span></div>
-                <div class="accounts20-card-detailgrid">
-                  <span><small>Type</small><b>${escapeHtml(getAccounts20TypeLabel(account))}</b></span>
-                  <span><small>Spent</small><b>${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })}</b></span>
-                  <span><small>Activity</small><b>${escapeHtml(getAccounts20ActivityLabel(account))}</b></span>
-                </div>
               </div>
-              <button class="accounts20-more" data-accounts20-menu data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" type="button" aria-label="Open ${escapeHtml(account.bucket.name)} actions">&rsaquo;</button>
+              <div class="accounts20-ledger-side">
+                <b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available balance` })}</b>
+                <span class="accounts20-ledger-ring" style="--ring:${getAccounts20FundedPercent(account)}%"><strong>${Number(getAccounts20FundedPercent(account).toFixed(0))}%</strong><small>Funded</small></span>
+                <button class="accounts20-more" data-accounts20-menu data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" type="button" aria-label="Open ${escapeHtml(account.bucket.name)} actions">&rsaquo;</button>
+              </div>
+              <div class="accounts20-ledger-meta">
+                <span><small>Spent</small><b>${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })}</b></span>
+                <span><small>Activity</small><b>${account.txMeta?.count > 0 ? "Today" : "No activity"}</b></span>
+                <span><small>Updated</small><b>${account.txMeta?.count > 0 ? escapeHtml(getAccounts20ActivityLabel(account)) : "Just now"}</b></span>
+              </div>
             </article>
           `;
         }).join("")}

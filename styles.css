@@ -22697,3 +22697,273 @@ body {
     grid-template-columns: 1fr 0.62fr 0.92fr;
   }
 }
+/* Accounts 2.0 reference ledger cards 2026-06-07 */
+@media (max-width: 768px) {
+  .accounts20-card-ledger {
+    align-items: stretch;
+    background: linear-gradient(145deg, rgba(18, 28, 58, 0.96), rgba(7, 12, 30, 0.98));
+    border: 1px solid rgba(128, 151, 210, 0.22);
+    border-radius: 21px;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    display: grid;
+    gap: 10px 12px;
+    grid-template-columns: 68px minmax(0, 1fr) 132px;
+    grid-template-areas:
+      "icon main side"
+      "icon main side"
+      "meta meta meta";
+    min-height: 168px;
+    padding: 14px 14px 12px;
+  }
+
+  .accounts20-card-ledger .accounts20-card-icon {
+    align-self: center;
+    border-radius: 17px;
+    grid-area: icon;
+    height: 64px;
+    width: 64px;
+  }
+
+  .accounts20-ledger-main {
+    align-self: center;
+    display: grid;
+    gap: 7px;
+    grid-area: main;
+    min-width: 0;
+  }
+
+  .accounts20-ledger-status {
+    align-items: center;
+    color: #18d69a;
+    display: inline-flex;
+    font-size: 0.72rem;
+    font-weight: 850;
+    gap: 5px;
+    line-height: 1;
+  }
+
+  .accounts20-ledger-status i {
+    background: #18d69a;
+    border-radius: 999px;
+    box-shadow: 0 0 10px rgba(24, 214, 154, 0.55);
+    height: 7px;
+    width: 7px;
+  }
+
+  .accounts20-ledger-main > strong {
+    color: #fff;
+    font-size: 1.22rem;
+    font-weight: 950;
+    line-height: 1.05;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .accounts20-ledger-main p {
+    align-items: baseline;
+    color: #b7c2e0;
+    display: flex;
+    gap: 12px;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .accounts20-ledger-main p span {
+    flex: 0 0 auto;
+    font-size: 0.82rem;
+    font-weight: 750;
+  }
+
+  .accounts20-ledger-main p b {
+    color: #f7fbff;
+    font-size: 0.84rem;
+    font-weight: 900;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .accounts20-card-ledger .accounts20-card-progress {
+    height: 7px;
+    margin-top: 2px;
+  }
+
+  .accounts20-ledger-side {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-area: side;
+    grid-template-columns: minmax(0, 1fr) 54px 16px;
+    justify-items: end;
+    min-width: 0;
+  }
+
+  .accounts20-ledger-side > b {
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 950;
+    line-height: 1.05;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .accounts20-ledger-ring {
+    align-items: center;
+    background: conic-gradient(#ff5d86 var(--ring), rgba(36, 47, 77, 0.96) 0);
+    border-radius: 999px;
+    display: grid;
+    height: 58px;
+    justify-items: center;
+    padding: 5px;
+    width: 58px;
+  }
+
+  .accounts20-ledger-ring::before {
+    background: #071126;
+    border-radius: inherit;
+    content: "";
+    grid-area: 1 / 1;
+    height: 44px;
+    width: 44px;
+  }
+
+  .accounts20-ledger-ring strong,
+  .accounts20-ledger-ring small {
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .accounts20-ledger-ring strong {
+    align-self: center;
+    color: #fff;
+    font-size: 0.94rem;
+    font-weight: 950;
+    line-height: 0.9;
+    margin-top: -8px;
+  }
+
+  .accounts20-ledger-ring small {
+    align-self: center;
+    color: #fff;
+    font-size: 0.48rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    margin-top: 15px;
+    text-transform: uppercase;
+  }
+
+  .accounts20-card-ledger.accounts20-transport .accounts20-ledger-ring,
+  .accounts20-card-ledger.accounts20-travel .accounts20-ledger-ring { background: conic-gradient(#2f80ff var(--ring), rgba(36, 47, 77, 0.96) 0); }
+  .accounts20-card-ledger.accounts20-bills .accounts20-ledger-ring,
+  .accounts20-card-ledger.accounts20-tax .accounts20-ledger-ring { background: conic-gradient(#8b55ff var(--ring), rgba(36, 47, 77, 0.96) 0); }
+  .accounts20-card-ledger.accounts20-savings .accounts20-ledger-ring { background: conic-gradient(#ffbf4f var(--ring), rgba(36, 47, 77, 0.96) 0); }
+  .accounts20-card-ledger.accounts20-default .accounts20-ledger-ring { background: conic-gradient(#24d8cc var(--ring), rgba(36, 47, 77, 0.96) 0); }
+
+  .accounts20-card-ledger .accounts20-more {
+    align-self: center;
+    color: #aeb8d8;
+    font-size: 2rem;
+    line-height: 1;
+    padding: 0;
+  }
+
+  .accounts20-ledger-meta {
+    border-top: 1px solid rgba(149, 166, 218, 0.14);
+    display: grid;
+    gap: 10px;
+    grid-area: meta;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 10px 4px 0 82px;
+  }
+
+  .accounts20-ledger-meta span {
+    border-right: 1px solid rgba(149, 166, 218, 0.16);
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    padding-right: 10px;
+  }
+
+  .accounts20-ledger-meta span:last-child {
+    border-right: 0;
+  }
+
+  .accounts20-ledger-meta small {
+    color: #9ba8cc;
+    font-size: 0.76rem;
+    font-weight: 750;
+  }
+
+  .accounts20-ledger-meta b {
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 900;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 430px) {
+  .accounts20-card-ledger {
+    gap: 8px 10px;
+    grid-template-columns: 58px minmax(0, 1fr) 112px;
+    min-height: 154px;
+    padding: 12px 10px 11px;
+  }
+
+  .accounts20-card-ledger .accounts20-card-icon {
+    border-radius: 15px;
+    height: 54px;
+    width: 54px;
+  }
+
+  .accounts20-ledger-main > strong {
+    font-size: 1.05rem;
+  }
+
+  .accounts20-ledger-side {
+    gap: 6px;
+    grid-template-columns: minmax(0, 1fr) 48px 12px;
+  }
+
+  .accounts20-ledger-side > b {
+    font-size: 0.92rem;
+  }
+
+  .accounts20-ledger-ring {
+    height: 50px;
+    width: 50px;
+  }
+
+  .accounts20-ledger-ring::before {
+    height: 38px;
+    width: 38px;
+  }
+
+  .accounts20-ledger-ring strong {
+    font-size: 0.82rem;
+  }
+
+  .accounts20-ledger-ring small {
+    font-size: 0.42rem;
+    margin-top: 13px;
+  }
+
+  .accounts20-ledger-meta {
+    padding-left: 68px;
+  }
+
+  .accounts20-ledger-meta small {
+    font-size: 0.68rem;
+  }
+
+  .accounts20-ledger-meta b {
+    font-size: 0.74rem;
+  }
+}
