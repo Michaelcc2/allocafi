@@ -7948,8 +7948,9 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
   const healthLabel = healthScore >= 80 ? "Excellent" : healthScore >= 55 ? "Stable" : "Needs Funding";
   const availablePercent = totalBudgeted > 0 ? Math.min((totalAvailable / totalBudgeted) * 100, 100) : 0;
   const walletAsset = getWalletAssetLabel(primaryWallet) || rows[0]?.walletAssetLabel || "Wallet";
+  const walletTokenSymbol = normalizeStablecoinSymbol(NETWORKS[primaryWallet.network]?.asset || primaryWallet.asset || rows[0]?.tokenLabel || walletAsset);
   const networkSymbol = getNetworkAssetSymbol(NETWORKS[primaryWallet.network]) || "ETH";
-  const heroLogo = renderAssetLogo(networkSymbol) || renderAssetLogo("ETH") || getBucketCategoryIcon("default");
+  const heroLogo = renderStablecoinLogo(walletTokenSymbol, walletTokenSymbol.slice(0, 1) || "$", { decorative: false, className: "accounts20-owner-token-logo" }) || renderAssetLogo(networkSymbol) || renderAssetLogo("ETH") || getBucketCategoryIcon("default");
 
   target.innerHTML = `
     <section class="accounts20-shell" aria-label="Accounts 2.0">
@@ -7984,9 +7985,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
         </div>
         <div class="accounts20-hero-line"><span style="width:${availablePercent}%"></span></div>
         <div class="accounts20-hero-metrics accounts20-hero-metrics-rich">
-          <article><small>Monthly Burn</small><strong>${renderMoneyValue(totalSpent, { compactAt: 1_000_000, label: "Monthly burn rate" })}</strong><b>${totalBudgeted > 0 ? `${Math.min((totalSpent / totalBudgeted) * 100, 100).toFixed(0)}% used</b>` : "No spend yet</b>"}</article>
-          <article><small>Active Accounts</small><strong>${rows.length}</strong><b>Budget accounts</b></article>
-          <article><small>Upcoming Bills</small><strong>${rows.filter((account) => account.monthlyRequired > 0).length}</strong><b>Tracked this cycle</b></article>
+          <article><small>This week spent</small><strong>${renderMoneyValue(totalSpent, { compactAt: 1_000_000, label: "This week spent" })}</strong></article>
           <article><small>Health</small><strong>${healthScore}<em>/100</em></strong><b>${escapeHtml(healthLabel)}</b></article>
         </div>
       </section>
