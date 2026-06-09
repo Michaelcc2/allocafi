@@ -7997,18 +7997,20 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
       <div class="accounts20-list">
         ${rows.map((account) => {
           const state = getAccounts20FundingState(account);
+          const fundedPercent = getAccounts20FundedPercent(account);
+          const fundingBand = fundedPercent < 35 ? "danger" : fundedPercent < 70 ? "warning" : "healthy";
           return `
-            <article class="accounts20-card accounts20-card-bars accounts20-card-ledger accounts20-${escapeHtml(account.categoryType)}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
+            <article class="accounts20-card accounts20-card-bars accounts20-card-ledger accounts20-${escapeHtml(account.categoryType)} accounts20-funded-${fundingBand}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
               <span class="accounts20-card-icon">${getAccounts20Icon(account.categoryType)}</span>
               <div class="accounts20-ledger-main">
                 <span class="accounts20-ledger-status"><i></i>Active</span>
                 <strong title="${escapeHtml(account.bucket.name)}">${escapeHtml(account.bucket.name)}</strong>
-                <p><span>Available</span><b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available balance` })}</b></p>
-                <div class="accounts20-card-progress" style="--progress:${getAccounts20FundedPercent(account)}%"><span></span></div>
+                <p><span>Allocated</span><b>${Number(account.allocationPercent.toFixed(1))}% of template</b></p>
+                <div class="accounts20-card-progress" style="--progress:${fundedPercent}%"><span></span></div>
               </div>
               <div class="accounts20-ledger-side">
                 <b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available balance` })}</b>
-                <span class="accounts20-ledger-ring" style="--ring:${getAccounts20FundedPercent(account)}%"><strong>${Number(getAccounts20FundedPercent(account).toFixed(0))}%</strong><small>Funded</small></span>
+                <span class="accounts20-ledger-ring" style="--ring:${fundedPercent}%"><strong>${Number(fundedPercent.toFixed(0))}%</strong><small>Funded</small></span>
                 <button class="accounts20-more" data-accounts20-menu data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" type="button" aria-label="Open ${escapeHtml(account.bucket.name)} actions">&rsaquo;</button>
               </div>
 

@@ -23386,3 +23386,31 @@ body {
     font-size: 0.36rem !important;
   }
 }
+/* Accounts 2.0 funded bar alerts 2026-06-09 */
+@media (max-width: 768px) {
+  .accounts20-card-ledger.accounts20-funded-warning .accounts20-card-progress span {
+    background: linear-gradient(90deg, #ffb84d, #ffdf6d) !important;
+  }
+
+  .accounts20-card-ledger.accounts20-funded-danger .accounts20-card-progress span {
+    background: linear-gradient(90deg, #ff5d6c, #ff8a4d) !important;
+  }
+
+  .accounts20-card-ledger.accounts20-funded-warning .accounts20-ledger-status {
+    color: #ffdf6d !important;
+  }
+
+  .accounts20-card-ledger.accounts20-funded-warning .accounts20-ledger-status i {
+    background: #ffdf6d !important;
+    box-shadow: 0 0 10px rgba(255, 223, 109, 0.55) !important;
+  }
+
+  .accounts20-card-ledger.accounts20-funded-danger .accounts20-ledger-status {
+    color: #ff7c83 !important;
+  }
+
+  .accounts20-card-ledger.accounts20-funded-danger .accounts20-ledger-status i {
+    background: #ff5d6c !important;
+    box-shadow: 0 0 10px rgba(255, 93, 108, 0.6) !important;
+  }
+}
