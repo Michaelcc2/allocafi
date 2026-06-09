@@ -8002,7 +8002,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
               <span class="accounts20-card-icon">${getAccounts20Icon(account.categoryType)}</span>
               <div class="accounts20-ledger-main">
                 <span class="accounts20-ledger-status"><i></i>Active</span>
-                <strong>${escapeHtml(account.bucket.name)}</strong>
+                <strong title="${escapeHtml(account.bucket.name)}">${escapeHtml(account.bucket.name)}</strong>
                 <p><span>Available</span><b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available balance` })}</b></p>
                 <div class="accounts20-card-progress" style="--progress:${getAccounts20FundedPercent(account)}%"><span></span></div>
               </div>
@@ -8011,11 +8011,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
                 <span class="accounts20-ledger-ring" style="--ring:${getAccounts20FundedPercent(account)}%"><strong>${Number(getAccounts20FundedPercent(account).toFixed(0))}%</strong><small>Funded</small></span>
                 <button class="accounts20-more" data-accounts20-menu data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" type="button" aria-label="Open ${escapeHtml(account.bucket.name)} actions">&rsaquo;</button>
               </div>
-              <div class="accounts20-ledger-meta">
-                <span><small>Spent</small><b>${renderMoneyValue(account.spent, { compactAt: 1_000_000, label: `${account.bucket.name} spent this week` })}</b></span>
-                <span><small>Activity</small><b>Today</b></span>
-                <span><small>Updated</small><b>Just now</b></span>
-              </div>
+
             </article>
           `;
         }).join("")}
@@ -8265,7 +8261,7 @@ function renderBucketAccounts() {
                           <div class="account-title-cluster">
                             <span class="account-icon">${getBucketCategoryIcon(account.categoryType)}</span>
                             <div class="account-name">
-                              <span class="account-title-row"><strong>${escapeHtml(account.bucket.name)}</strong><span class="account-title-edit" aria-hidden="true">${getWalletActionIcon("edit")}</span></span>
+                              <span class="account-title-row"><strong title="${escapeHtml(account.bucket.name)}">${escapeHtml(account.bucket.name)}</strong><span class="account-title-edit" aria-hidden="true">${getWalletActionIcon("edit")}</span></span>
                               <span class="account-source-line">
                                 <em>${escapeHtml(account.tokenLabel)} on ${escapeHtml(account.networkLabel)}</em>
                                 <em class="account-purpose-chip">${escapeHtml(account.group)}</em>

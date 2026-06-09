@@ -23282,3 +23282,107 @@ body {
     padding-left: 62px !important;
   }
 }
+/* Accounts 2.0 cleaner funded cards 2026-06-09 */
+@media (max-width: 768px) {
+  .accounts20-card-ledger {
+    align-items: center !important;
+    gap: 10px !important;
+    grid-template-columns: 64px minmax(0, 1fr) minmax(96px, 128px) 58px 16px !important;
+    grid-template-areas: "icon main amount ring arrow" !important;
+    min-height: 118px !important;
+    padding: 14px !important;
+  }
+
+  .accounts20-ledger-meta {
+    display: none !important;
+  }
+
+  .accounts20-ledger-main {
+    align-content: center !important;
+    display: grid !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+  }
+
+  .accounts20-ledger-main > strong {
+    display: -webkit-box !important;
+    font-size: clamp(0.98rem, 4vw, 1.18rem) !important;
+    line-height: 1.08 !important;
+    max-height: 2.2em !important;
+    overflow: hidden !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    white-space: normal !important;
+    word-break: normal !important;
+  }
+
+  .accounts20-ledger-main p {
+    align-items: baseline !important;
+    display: flex !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+  }
+
+  .accounts20-ledger-main p span {
+    flex: 0 0 auto !important;
+  }
+
+  .accounts20-ledger-main p b {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .accounts20-card-ledger .accounts20-card-progress {
+    width: min(100%, 220px) !important;
+  }
+
+  .accounts20-ledger-side > b {
+    font-size: clamp(0.95rem, 3.9vw, 1.18rem) !important;
+    justify-self: end !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .accounts20-card-ledger {
+    grid-template-columns: 54px minmax(0, 1fr) minmax(76px, 88px) 46px 12px !important;
+    min-height: 112px !important;
+    padding: 12px 8px !important;
+  }
+
+  .accounts20-ledger-main > strong {
+    font-size: clamp(0.88rem, 3.8vw, 1rem) !important;
+  }
+
+  .accounts20-ledger-main p span,
+  .accounts20-ledger-main p b {
+    font-size: 0.72rem !important;
+  }
+
+  .accounts20-ledger-side > b {
+    font-size: clamp(0.74rem, 3.2vw, 0.88rem) !important;
+  }
+
+  .accounts20-ledger-ring {
+    height: 44px !important;
+    width: 44px !important;
+  }
+
+  .accounts20-ledger-ring::before {
+    height: 33px !important;
+    width: 33px !important;
+  }
+
+  .accounts20-ledger-ring strong {
+    font-size: 0.72rem !important;
+  }
+
+  .accounts20-ledger-ring small {
+    font-size: 0.36rem !important;
+  }
+}
