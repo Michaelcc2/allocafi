@@ -23460,3 +23460,17 @@ body {
     white-space: nowrap !important;
   }
 }
+/* Mobile Wallets tab wallet-list only 2026-06-09 */
+@media (max-width: 768px) {
+  [data-panel="wallets"] #walletList {
+    display: none !important;
+  }
+
+  [data-panel="wallets"] .wallet-workspace {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-panel="wallets"] .wallets-sidebar {
+    width: 100% !important;
+  }
+}
