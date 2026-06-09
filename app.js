@@ -8005,7 +8005,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
               <div class="accounts20-ledger-main">
                 <span class="accounts20-ledger-status"><i></i>Active</span>
                 <strong title="${escapeHtml(account.bucket.name)}">${escapeHtml(account.bucket.name)}</strong>
-                <p><span>Allocated</span><b>${Number(account.allocationPercent.toFixed(1))}%</b></p>
+                <p><span>Allocated</span><b>${Math.round(account.allocationPercent)}%</b></p>
               </div>
               <div class="accounts20-ledger-side">
                 <b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available balance` })}</b>

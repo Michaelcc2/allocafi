@@ -23444,3 +23444,19 @@ body {
     grid-template-columns: 1fr !important;
   }
 }
+/* Accounts 2.0 allocated percent visibility 2026-06-09 */
+@media (max-width: 768px) {
+  .accounts20-ledger-main p {
+    flex-wrap: nowrap !important;
+    overflow: visible !important;
+  }
+
+  .accounts20-ledger-main p b {
+    flex: 0 0 auto !important;
+    max-width: none !important;
+    min-width: max-content !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+  }
+}
