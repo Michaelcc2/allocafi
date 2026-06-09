@@ -23431,3 +23431,16 @@ body {
     width: 100% !important;
   }
 }
+/* Mobile New Monthly Dashboard simplification 2026-06-09 */
+@media (max-width: 768px) {
+  .monthly-dashboard-shell .liquidity-monitor-card,
+  .monthly-dashboard-shell .vba-summary-card,
+  .monthly-dashboard-shell .asset-ratio-legal-core-card {
+    display: none !important;
+  }
+
+  .monthly-dashboard-shell .overview-feature-pair,
+  .monthly-dashboard-shell .overview-secondary-pair {
+    grid-template-columns: 1fr !important;
+  }
+}
