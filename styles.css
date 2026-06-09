@@ -23414,3 +23414,20 @@ body {
     box-shadow: 0 0 10px rgba(255, 93, 108, 0.6) !important;
   }
 }
+
+/* Accounts 2.0 full-width funded usage bar 2026-06-09 */
+@media (max-width: 768px) {
+  .accounts20-card-ledger {
+    grid-template-areas:
+      "icon main amount ring arrow"
+      "progress progress progress progress progress" !important;
+    grid-template-rows: auto auto !important;
+  }
+
+  .accounts20-card-ledger .accounts20-ledger-progress {
+    grid-area: progress !important;
+    margin-top: 2px !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+}

@@ -8006,13 +8006,13 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
                 <span class="accounts20-ledger-status"><i></i>Active</span>
                 <strong title="${escapeHtml(account.bucket.name)}">${escapeHtml(account.bucket.name)}</strong>
                 <p><span>Allocated</span><b>${Number(account.allocationPercent.toFixed(1))}%</b></p>
-                <div class="accounts20-card-progress" style="--progress:${fundedPercent}%"><span></span></div>
               </div>
               <div class="accounts20-ledger-side">
                 <b>${renderMoneyValue(account.balance, { compactAt: 1_000_000, label: `${account.bucket.name} available balance` })}</b>
                 <span class="accounts20-ledger-ring" style="--ring:${fundedPercent}%"><strong>${Number(fundedPercent.toFixed(0))}%</strong><small>Funded</small></span>
                 <button class="accounts20-more" data-accounts20-menu data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" type="button" aria-label="Open ${escapeHtml(account.bucket.name)} actions">&rsaquo;</button>
               </div>
+              <div class="accounts20-card-progress accounts20-ledger-progress" style="--progress:${fundedPercent}%"><span></span></div>
 
             </article>
           `;
