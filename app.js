@@ -8005,7 +8005,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
               <div class="accounts20-ledger-main">
                 <span class="accounts20-ledger-status"><i></i>Active</span>
                 <strong title="${escapeHtml(account.bucket.name)}">${escapeHtml(account.bucket.name)}</strong>
-                <p><span>Allocated</span><b>${Number(account.allocationPercent.toFixed(1))}% of template</b></p>
+                <p><span>Allocated</span><b>${Number(account.allocationPercent.toFixed(1))}%</b></p>
                 <div class="accounts20-card-progress" style="--progress:${fundedPercent}%"><span></span></div>
               </div>
               <div class="accounts20-ledger-side">
