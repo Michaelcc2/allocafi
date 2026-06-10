@@ -8094,7 +8094,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
         </div>
         <div class="accounts20-top-actions">
           <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg></button>
-          <button class="accounts20-icon-button accounts20-bell" type="button" aria-label="Budget alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg></button>
+          <button class="accounts20-icon-button accounts20-bell" type="button" data-accounts20-activity aria-label="Open activity"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg></button>
           <button class="accounts20-icon-button" type="button" data-accounts20-sort aria-label="Sort budget accounts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10"></path><path d="M18 7h2"></path><circle cx="16" cy="7" r="2"></circle><path d="M4 17h2"></path><path d="M10 17h10"></path><circle cx="8" cy="17" r="2"></circle></svg></button>
           <button class="accounts20-icon-button" type="button" data-accounts20-add aria-label="Add budget account">+</button>
         </div>
@@ -8176,7 +8176,7 @@ function renderAccounts20Isolated() {
           <h2>Virtual Budget Accounts</h2>
           <div class="accounts20-top-actions">
             <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg></button>
-            <button class="accounts20-icon-button accounts20-bell" type="button" aria-label="Budget alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg></button>
+            <button class="accounts20-icon-button accounts20-bell" type="button" data-accounts20-activity aria-label="Open activity"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg></button>
             <button class="accounts20-icon-button" type="button" data-accounts20-add aria-label="Add budget account">+</button>
           </div>
         </header>
@@ -8218,6 +8218,10 @@ function bindAccounts20Controls(root = document) {
     accounts20SearchState.query = "";
     accounts20SearchState.active = false;
     refreshAccounts20View(root);
+  });
+  root.querySelector("[data-accounts20-activity]")?.addEventListener("click", () => {
+    switchTab("activity");
+    showToast("Activity opened");
   });
   root.querySelector("[data-accounts20-sort]")?.addEventListener("click", openAccounts20SortDialog);
   root.querySelectorAll(".accounts20-card").forEach((card) => {
