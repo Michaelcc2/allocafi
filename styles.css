@@ -23820,6 +23820,104 @@ body {
     font-size: 0.86rem;
     font-weight: 750;
   }
+
+  .accounts20-ai-alerts {
+    background:
+      radial-gradient(circle at 12% 0%, rgba(32, 240, 208, 0.16), transparent 38%),
+      linear-gradient(145deg, rgba(13, 22, 50, 0.96), rgba(7, 12, 30, 0.96));
+    border-color: rgba(47, 128, 255, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 14px 36px rgba(0, 0, 0, 0.24);
+  }
+
+  .accounts20-ai-alerts-head {
+    align-items: end;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .accounts20-ai-alerts-head span {
+    color: #20f0d0;
+    font-size: 0.72rem;
+    font-weight: 950;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .accounts20-ai-alerts-head strong {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 950;
+    text-align: right;
+  }
+
+  .accounts20-ai-alerts > p {
+    color: #b9c4e6;
+    font-size: 0.86rem;
+    font-weight: 750;
+    line-height: 1.35;
+    margin: 0;
+  }
+
+  .accounts20-ai-alert-list {
+    display: grid;
+    gap: 9px;
+  }
+
+  .accounts20-ai-alert {
+    align-items: start;
+    background: rgba(8, 15, 35, 0.72);
+    border: 1px solid rgba(132, 153, 193, 0.12);
+    border-radius: 15px;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 10px minmax(0, 1fr);
+    padding: 10px;
+  }
+
+  .accounts20-ai-alert i {
+    background: #20f0d0;
+    border-radius: 999px;
+    box-shadow: 0 0 14px rgba(32, 240, 208, 0.45);
+    height: 8px;
+    margin-top: 5px;
+    width: 8px;
+  }
+
+  .accounts20-ai-alert span {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .accounts20-ai-alert b {
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 950;
+    line-height: 1.15;
+  }
+
+  .accounts20-ai-alert small {
+    color: #aeb8d8;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .accounts20-ai-alert.warning i {
+    background: #ffb84d;
+    box-shadow: 0 0 14px rgba(255, 184, 77, 0.48);
+  }
+
+  .accounts20-ai-alert.danger i {
+    background: #ff5d6c;
+    box-shadow: 0 0 14px rgba(255, 93, 108, 0.48);
+  }
+
+  .accounts20-ai-alert.success i {
+    background: #16d68a;
+    box-shadow: 0 0 14px rgba(22, 214, 138, 0.48);
+  }
 }
 
 @media (max-width: 420px) {

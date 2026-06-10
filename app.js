@@ -8299,6 +8299,106 @@ function renderAccounts20BillsPreview(account, walletId, bucketId) {
   `;
 }
 
+function renderAccounts20InsightCenter(account) {
+  const fundedPercent = getAccounts20FundedPercent(account);
+  const state = getAccounts20FundingState(account);
+  const alerts = [];
+  const spent = Number(account?.spent || 0);
+  const allocated = Number(account?.allocated || 0);
+  const balance = Number(account?.balance || 0);
+  const walletOverbalance = Number(account?.walletOverbalance || 0);
+  const monthlyRequired = Number(account?.monthlyRequired || 0);
+  const weeklyTarget = Number(account?.weeklyTarget || 0);
+  const rulesMinimum = Number(account?.bucket?.rules?.minimum || 0);
+
+  if (walletOverbalance > 0.01) {
+    alerts.push({
+      tone: "danger",
+      title: "Refresh recommended",
+      detail: `This account is above the real wallet balance by ${formatUsd(walletOverbalance)}. Refresh VBAs to reconcile.`,
+    });
+  }
+
+  if (fundedPercent < 35) {
+    alerts.push({
+      tone: "danger",
+      title: "Funding alert",
+      detail: `${account.bucket.name} is ${Number(fundedPercent.toFixed(0))}% funded. Add funds or move money from another budget account.`,
+    });
+  } else if (fundedPercent < 75) {
+    alerts.push({
+      tone: "warning",
+      title: "Watch this account",
+      detail: `${account.bucket.name} is ${Number(fundedPercent.toFixed(0))}% funded after weekly activity.`,
+    });
+  } else {
+    alerts.push({
+      tone: "success",
+      title: "Account healthy",
+      detail: `${account.bucket.name} is ${Number(fundedPercent.toFixed(0))}% funded with ${formatUsd(balance)} available.`,
+    });
+  }
+
+  if (spent > 0) {
+    alerts.push({
+      tone: spent > allocated * 0.65 ? "warning" : "info",
+      title: "Spending update",
+      detail: `${formatUsd(spent)} spent this week from a ${formatUsd(allocated)} budget.`,
+    });
+  } else {
+    alerts.push({
+      tone: "info",
+      title: "No weekly spend recorded",
+      detail: "This account has no spending recorded this week.",
+    });
+  }
+
+  if (monthlyRequired > 0) {
+    alerts.push({
+      tone: balance >= monthlyRequired ? "success" : "warning",
+      title: "Bills tracker",
+      detail: `${formatUsd(monthlyRequired)} monthly bills tracked. Weekly target is ${formatUsd(weeklyTarget)}.`,
+    });
+  }
+
+  if (rulesMinimum > 0) {
+    alerts.push({
+      tone: balance >= rulesMinimum ? "success" : "warning",
+      title: "Rule monitor",
+      detail: `Minimum target is ${formatUsd(rulesMinimum)}. Current available is ${formatUsd(balance)}.`,
+    });
+  }
+
+  if (account?.autoFunding) {
+    alerts.push({
+      tone: "info",
+      title: "Auto refill enabled",
+      detail: "Saved rules can help refill this account during allocation review.",
+    });
+  }
+
+  return `
+    <section class="accounts20-insights accounts20-ai-alerts">
+      <div class="accounts20-ai-alerts-head">
+        <span>AI Insights</span>
+        <strong>Account Alerts</strong>
+      </div>
+      <p>${escapeHtml(account.status || state.label)}</p>
+      <div class="accounts20-ai-alert-list">
+        ${alerts.slice(0, 4).map((alert) => `
+          <article class="accounts20-ai-alert ${escapeHtml(alert.tone)}">
+            <i></i>
+            <span>
+              <b>${escapeHtml(alert.title)}</b>
+              <small>${escapeHtml(alert.detail)}</small>
+            </span>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function openAccounts20DetailDialog(walletId, bucketId) {
   const account = getAccounts20Record(walletId, bucketId);
   const wallet = wallets.find((item) => item.id === walletId);
@@ -8332,11 +8432,8 @@ function openAccounts20DetailDialog(walletId, bucketId) {
         <button class="secondary-button detail-rules" type="button">${getWalletActionIcon("rules")}<span><b>Rules</b><small>Automation rules</small></span></button>
         <button class="secondary-button detail-customize" type="button">${getWalletActionIcon("edit")}<span><b>Customize</b><small>Edit budget</small></span></button>
       </section>
-      <section class="accounts20-insights">
-        <strong>Budget Insights</strong>
-        <span>${escapeHtml(account.status)}</span>
-      </section>
       ${renderAccounts20BillsPreview(account, walletId, bucketId)}
+      ${renderAccounts20InsightCenter(account)}
       <button class="primary-button accounts20-add-transaction detail-spend" type="button">+ Add Transaction</button>
     </div>
   `);
