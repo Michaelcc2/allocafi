@@ -22267,6 +22267,52 @@ body {
   padding: 0;
 }
 
+.asset-reserve-isolated-route-panel {
+  background: #050816;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: 0;
+}
+
+.asset-reserve-isolated-shell {
+  background: #050816;
+  color: #f8fbff;
+  margin: 0 auto;
+  max-width: 720px;
+  min-height: 100dvh;
+  padding: 24px 18px calc(104px + env(safe-area-inset-bottom));
+}
+
+.asset-reserve-isolated-head {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.asset-reserve-isolated-head h2 {
+  color: #fff;
+  font-size: clamp(1.7rem, 7vw, 2.35rem);
+  line-height: 1;
+  margin: 0;
+}
+
+.asset-reserve-isolated-head p {
+  color: #aeb8d8;
+  font-size: 0.92rem;
+  font-weight: 750;
+  line-height: 1.3;
+  margin: 8px 0 0;
+}
+
+.asset-reserve-isolated-shell .virtual-asset-accounts-section {
+  margin: 0;
+}
+
 .accounts20-isolated-route-panel #accounts20IsolatedView {
   min-height: 100dvh;
 }
@@ -22297,6 +22343,24 @@ body {
 }
 
 @media (max-width: 768px) {
+  .asset-reserve-isolated-shell {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .asset-reserve-isolated-shell .wallet-account-heading,
+  .asset-reserve-isolated-shell .asset-account-heading {
+    gap: 10px;
+  }
+
+  .asset-reserve-isolated-shell .asset-account-summary-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .asset-reserve-isolated-shell .asset-account-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .accounts20-isolated-route-panel .accounts20-shell {
     padding-left: 14px;
     padding-right: 14px;

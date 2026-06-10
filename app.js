@@ -120,6 +120,7 @@ const ONBOARDING_ALLOWED_OWNER_ASSETS = new Set(["USDC", "USDT", "PYUSD"]);
 const ONBOARDING_FREE_BUCKET_LIMIT = 3;
 const ACCOUNTS_20_ENABLED_KEY = "allocafi-accounts-20-enabled-v1";
 const ACCOUNTS_20_ISOLATED_TAB = "accounts20-isolated";
+const ASSET_RESERVE_ISOLATED_TAB = "asset-reserve-isolated";
 const VAULT_KDF_ITERATIONS = 250000;
 const VAULT_FILE_VERSION = 1;
 const SOLANA_TOKEN_INDEXERS = [
@@ -820,13 +821,10 @@ function getReserveAssetWallets() {
 }
 
 function openMobileAssetReserveAccounts() {
-  const reserveWallet = getReserveAssetWallets()[0];
-  if (reserveWallet) {
-    openReserveAccountForWallet(reserveWallet.id);
-    return;
+  switchTab(ASSET_RESERVE_ISOLATED_TAB);
+  if (window.location.hash !== "#asset-reserve-isolated") {
+    window.history.pushState({ tab: ASSET_RESERVE_ISOLATED_TAB }, "", "#asset-reserve-isolated");
   }
-  switchTab("accounts");
-  showToast("Add a reserve asset wallet to open Asset Reserve Accounts");
 }
 function openReserveAccountForWallet(walletId) {
   const wallet = wallets.find((item) => item.id === walletId);
@@ -1000,6 +998,11 @@ function ensureUnifiedFinanceShell() {
         <div id="accounts20IsolatedView"></div>
       </section>
     </section>
+    <section class="tab-panel" data-panel="asset-reserve-isolated">
+      <section class="asset-reserve-isolated-route-panel" aria-label="Asset Reserve Account Isolated Test Screen">
+        <div id="assetReserveIsolatedView"></div>
+      </section>
+    </section>
   `);
 }
 
@@ -1008,7 +1011,7 @@ ensureUnifiedFinanceShell();
 function moveAdvancedSectionsIntoSettings() {
   const settingsPanel = document.querySelector('[data-panel="settings"] .dashboard-panel');
   if (!settingsPanel || document.querySelector("#advancedSystemsView")) return;
-  const advancedIds = ["pay", "ledgercore", "allocafi-connect", "accounts1", "accounts20-isolated", "unified", "banks", "monthly", "family", "business", "rewards", "ai", "admin"];
+  const advancedIds = ["pay", "ledgercore", "allocafi-connect", "accounts1", "accounts20-isolated", "asset-reserve-isolated", "unified", "banks", "monthly", "family", "business", "rewards", "ai", "admin"];
 
   advancedIds.forEach((id) => {
     document.querySelector(`[data-tab="${id}"]`)?.remove();
@@ -1020,6 +1023,7 @@ function moveAdvancedSectionsIntoSettings() {
     "allocafi-connect": ["AllocaFi Connect", "Secure wallet messaging and app-to-app calls"],
     accounts1: ["Accounts 1.0", "Original Wallets & Accounts screen with existing account tools"],
     "accounts20-isolated": ["Accounts 2.0 Isolated", "Standalone mobile Virtual Budget Accounts test screen"],
+    "asset-reserve-isolated": ["Asset Reserve Isolated", "Standalone mobile Reserve Asset Accounts test screen"],
     unified: ["Unified Finance", "Bank + crypto command center foundation"],
     banks: ["Bank Accounts", "Plaid-ready bank connection foundation"],
     monthly: ["Monthly Budget", "Plaid-ready income, spending, and percentage view"],
@@ -1200,6 +1204,7 @@ const allocafiPayView = document.querySelector("#allocafiPayView");
 const ledgerCoreView = document.querySelector("#ledgerCoreView");
 const allocafiConnectView = document.querySelector("#allocafiConnectView");
 const accounts20IsolatedView = document.querySelector("#accounts20IsolatedView");
+const assetReserveIsolatedView = document.querySelector("#assetReserveIsolatedView");
 const addGoalButton = document.querySelector("#addGoal");
 const addAddressBookButton = document.querySelector("#addAddressBook");
 const suggestCategoriesButton = document.querySelector("#suggestCategories");
@@ -3407,7 +3412,9 @@ function switchTab(tabName) {
     panel.classList.toggle("active", panel.dataset.panel === tabName);
   });
   const visibleButton = [...tabButtons].find((button) => button.dataset.tab === tabName);
-  if (!visibleButton && tabName !== "settings") {
+  if (!visibleButton && tabName === ASSET_RESERVE_ISOLATED_TAB && isMobileViewport()) {
+    document.querySelector('[data-tab="accounts"]')?.classList.add("active");
+  } else if (!visibleButton && tabName !== "settings") {
     document.querySelector('[data-tab="settings"]')?.classList.add("active");
   }
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -3441,6 +3448,8 @@ function openAdvancedSystem(tabName) {
     window.history.pushState({ tab: "allocafi-connect" }, "", "#allocafi-connect");
   } else if (tabName === ACCOUNTS_20_ISOLATED_TAB && window.location.hash !== "#accounts-20-isolated") {
     window.history.pushState({ tab: ACCOUNTS_20_ISOLATED_TAB }, "", "#accounts-20-isolated");
+  } else if (tabName === ASSET_RESERVE_ISOLATED_TAB && window.location.hash !== "#asset-reserve-isolated") {
+    window.history.pushState({ tab: ASSET_RESERVE_ISOLATED_TAB }, "", "#asset-reserve-isolated");
   } else if (tabName === "ai" && window.location.hash !== "#allocafi-ai") {
     window.history.pushState({ tab: "ai" }, "", "#allocafi-ai");
   } else if (tabName === "admin" && window.location.hash !== "#admin") {
@@ -3455,6 +3464,7 @@ function getRouteTab(pathname = window.location.pathname, hash = window.location
   if (["#ledgercore", "#allocafi-ledgercore", "#settings-ledgercore"].includes(normalizedHash)) return "ledgercore";
   if (["#allocafi-connect", "#connect", "#settings-connect"].includes(normalizedHash)) return "allocafi-connect";
   if (["#accounts-20-isolated", "#accounts20-isolated", "#settings-accounts20"].includes(normalizedHash)) return ACCOUNTS_20_ISOLATED_TAB;
+  if (["#asset-reserve-isolated", "#asset-reserve", "#settings-asset-reserve"].includes(normalizedHash)) return ASSET_RESERVE_ISOLATED_TAB;
   if (["#pay", "#allocafi-pay", "#settings-pay"].includes(normalizedHash)) return canAccessAllocaFiPayModule() ? "pay" : null;
   const normalized = String(pathname || "").replace(/\/+$/, "") || "/";
   if (["/business", "/enterprise", "/enterprise/dashboard"].includes(normalized)) return "business";
@@ -8194,6 +8204,24 @@ function renderAccounts20Isolated() {
   renderAccounts20Mobile(accounts, "", accounts20IsolatedView);
 }
 
+function renderAssetReserveIsolated() {
+  if (!assetReserveIsolatedView) return;
+  assetReserveIsolatedView.innerHTML = `
+    <section class="asset-reserve-isolated-shell">
+      <header class="asset-reserve-isolated-head">
+        <div>
+          <h2>Asset Reserve Accounts</h2>
+          <p>Reserve assets, Legal Core records, and non-custodial wealth organization.</p>
+        </div>
+        <button class="accounts20-icon-button" type="button" data-asset-reserve-close aria-label="Back to overview">&lsaquo;</button>
+      </header>
+      ${renderVirtualAssetAccountsSection()}
+    </section>
+  `;
+  bindVirtualAssetAccountControls(assetReserveIsolatedView);
+  assetReserveIsolatedView.querySelector("[data-asset-reserve-close]")?.addEventListener("click", () => switchTab("overview"));
+}
+
 function bindAccounts20Controls(root = document) {
   root.querySelector("[data-accounts20-add]")?.addEventListener("click", openAddBucketAccountDialog);
   root.querySelector("[data-accounts20-search]")?.addEventListener("click", () => {
@@ -10206,6 +10234,7 @@ function render() {
   renderAllocaFiLedgerCore();
   renderAllocaFiConnect();
   renderAccounts20Isolated();
+  renderAssetReserveIsolated();
   renderRewardsDashboard();
   renderAdminDashboard();
   renderAccountCloudPanel();
