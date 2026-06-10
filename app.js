@@ -819,6 +819,15 @@ function getReserveAssetWallets() {
   return getSupportedWallets().filter((wallet) => isReserveAssetWallet(wallet));
 }
 
+function openMobileAssetReserveAccounts() {
+  const reserveWallet = getReserveAssetWallets()[0];
+  if (reserveWallet) {
+    openReserveAccountForWallet(reserveWallet.id);
+    return;
+  }
+  switchTab("accounts");
+  showToast("Add a reserve asset wallet to open Asset Reserve Accounts");
+}
 function openReserveAccountForWallet(walletId) {
   const wallet = wallets.find((item) => item.id === walletId);
   if (!wallet) return;
@@ -999,7 +1008,7 @@ ensureUnifiedFinanceShell();
 function moveAdvancedSectionsIntoSettings() {
   const settingsPanel = document.querySelector('[data-panel="settings"] .dashboard-panel');
   if (!settingsPanel || document.querySelector("#advancedSystemsView")) return;
-  const advancedIds = ["pay", "ledgercore", "allocafi-connect", "accounts20-isolated", "unified", "banks", "monthly", "family", "business", "rewards", "ai", "admin"];
+  const advancedIds = ["pay", "ledgercore", "allocafi-connect", "accounts1", "accounts20-isolated", "unified", "banks", "monthly", "family", "business", "rewards", "ai", "admin"];
 
   advancedIds.forEach((id) => {
     document.querySelector(`[data-tab="${id}"]`)?.remove();
@@ -1009,6 +1018,7 @@ function moveAdvancedSectionsIntoSettings() {
     pay: ["AllocaFi Pay", "Non-custodial payment routing, QR profiles, methods, contacts"],
     ledgercore: ["AllocaFi LedgerCore&trade;", "Receipt, tax, and transaction intelligence engine"],
     "allocafi-connect": ["AllocaFi Connect", "Secure wallet messaging and app-to-app calls"],
+    accounts1: ["Accounts 1.0", "Original Wallets & Accounts screen with existing account tools"],
     "accounts20-isolated": ["Accounts 2.0 Isolated", "Standalone mobile Virtual Budget Accounts test screen"],
     unified: ["Unified Finance", "Bank + crypto command center foundation"],
     banks: ["Bank Accounts", "Plaid-ready bank connection foundation"],
@@ -3404,6 +3414,11 @@ function switchTab(tabName) {
 }
 
 function openAdvancedSystem(tabName) {
+  if (tabName === "accounts1") {
+    switchTab("accounts");
+    showToast("Accounts 1.0 opened");
+    return;
+  }
   if (tabName === "ai") {
     switchTab("settings");
     showToast("AllocaFi AI is parked in Settings as a future premium project");
@@ -10033,9 +10048,25 @@ function isMobileViewport() {
   return Boolean(window.matchMedia?.("(max-width: 768px)")?.matches) || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
 }
 
+function updateMobileNavLabels() {
+  const accountsTab = document.querySelector('.tab-button[data-tab="accounts"]');
+  if (!accountsTab) return;
+  const mobile = isMobileViewport();
+  const svg = accountsTab.querySelector("svg");
+  if (svg) {
+    if (!svg.dataset.originalIcon) svg.dataset.originalIcon = svg.innerHTML;
+    svg.innerHTML = mobile
+      ? '<circle class="fin-stroke pink" cx="34" cy="34" r="13" /><circle class="fin-stroke blue" cx="60" cy="34" r="13" /><path class="fin-stroke pink" d="M24 59h48M30 70h36" /><path class="fin-stroke blue" d="M48 47v28" />'
+      : svg.dataset.originalIcon;
+  }
+  const textNode = [...accountsTab.childNodes].find((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+  if (textNode) textNode.textContent = mobile ? "Assets" : "Accounts";
+}
+
 function updateMobileToolbarLabels() {
   const refreshLabel = refreshAllButton?.querySelector(".control-label");
   if (refreshLabel) refreshLabel.textContent = isMobileViewport() ? "Accounts 2.0" : "Refresh";
+  updateMobileNavLabels();
 }
 
 function updateWalletConnectionUi() {
@@ -16788,7 +16819,13 @@ importVaultInput?.addEventListener("change", async () => {
 });
 
 tabButtons.forEach((button) => {
-  button.addEventListener("click", () => switchTab(button.dataset.tab));
+  button.addEventListener("click", () => {
+    if (button.dataset.tab === "accounts" && isMobileViewport()) {
+      openMobileAssetReserveAccounts();
+      return;
+    }
+    switchTab(button.dataset.tab);
+  });
 });
 transactionSearch?.addEventListener("input", renderTransactionLog);
 transactionMonth?.addEventListener("change", renderTransactionLog);

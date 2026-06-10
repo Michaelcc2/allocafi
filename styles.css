@@ -23640,3 +23640,30 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+/* Mobile hero height fill and Assets nav 2026-06-10 */
+@media (max-width: 768px) {
+  .summary-band.reference-cover {
+    align-items: stretch !important;
+    display: flex !important;
+    min-height: clamp(205px, 58vw, 310px) !important;
+  }
+
+  .summary-band.reference-cover .hero-reference-art {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+
+  .controls-reference-cover .tab-button[data-tab="accounts"] .tab-fin-icon circle,
+  .controls-reference-cover .tab-button[data-tab="accounts"] .tab-fin-icon path {
+    fill: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .summary-band.reference-cover {
+    min-height: clamp(198px, 62vw, 286px) !important;
+  }
+}
