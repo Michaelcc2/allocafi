@@ -23667,3 +23667,33 @@ body {
     min-height: clamp(198px, 62vw, 286px) !important;
   }
 }
+/* Mobile hero vertical fill correction 2026-06-10 */
+@media (max-width: 768px) {
+  .summary-band.reference-cover {
+    padding: 2px !important;
+  }
+
+  .summary-band.reference-cover .hero-reference-art {
+    border-radius: 22px !important;
+    height: 100% !important;
+    margin-left: -5% !important;
+    min-height: inherit !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    transform: scale(1.03, 1.16) !important;
+    transform-origin: center !important;
+    width: 110% !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .summary-band.reference-cover {
+    padding: 0 !important;
+  }
+
+  .summary-band.reference-cover .hero-reference-art {
+    margin-left: -6% !important;
+    transform: scale(1.04, 1.18) !important;
+    width: 112% !important;
+  }
+}
