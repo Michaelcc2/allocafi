@@ -23474,3 +23474,106 @@ body {
     width: 100% !important;
   }
 }
+/* Mobile shortcut and Accounts 2.0 organization updates 2026-06-09 */
+.mobile-accounts20-icon { display: none; }
+
+@media (max-width: 768px) {
+  .summary-band.reference-cover {
+    margin: 0 -4px 18px !important;
+    max-width: none !important;
+    padding: 8px !important;
+    width: calc(100% + 8px) !important;
+  }
+
+  .summary-band.reference-cover .hero-reference-art {
+    width: 108% !important;
+    max-width: none !important;
+    margin-left: -4% !important;
+  }
+
+  .desktop-refresh-icon { display: none !important; }
+  .mobile-accounts20-icon { display: block !important; }
+
+  .controls-reference-cover .tab-button[data-tab="wallets"] {
+    display: none !important;
+  }
+
+  .controls-reference-cover .tab-nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .accounts20-card.dragging {
+    opacity: 0.58 !important;
+    transform: scale(0.985) !important;
+  }
+
+  .accounts20-icon-button[data-accounts20-sort] {
+    color: #20f0d0 !important;
+    font-size: 1.15rem !important;
+    font-weight: 950 !important;
+  }
+
+  .accounts20-bills-panel {
+    background: linear-gradient(145deg, rgba(9, 16, 36, 0.96), rgba(14, 27, 57, 0.9));
+    border: 1px solid rgba(80, 115, 190, 0.24);
+    border-radius: 18px;
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .accounts20-bills-panel > div {
+    align-items: start;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+  }
+
+  .accounts20-bills-panel strong {
+    color: #fff;
+    font-size: 0.98rem;
+  }
+
+  .accounts20-bills-panel span,
+  .accounts20-bills-panel small {
+    color: #aeb8d8;
+  }
+
+  .accounts20-bills-panel ul {
+    display: grid;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .accounts20-bills-panel li {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    display: grid;
+    gap: 6px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 10px;
+  }
+
+  .accounts20-bills-panel li small {
+    grid-column: 1 / -1;
+  }
+
+  .accounts20-bills-panel li.empty {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .summary-band.reference-cover {
+    padding: 6px !important;
+  }
+
+  .summary-band.reference-cover .hero-reference-art {
+    width: 114% !important;
+    margin-left: -7% !important;
+  }
+}

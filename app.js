@@ -3164,6 +3164,7 @@ async function hydrateClientConfig() {
     if (serverSolanaRpcConfigured) shouldUpdateWalletUi = true;
     if (shouldUpdateWalletUi) {
       updateWalletConnectionUi();
+  updateMobileToolbarLabels();
       renderAccountCloudPanel();
     }
   } catch {
@@ -3177,6 +3178,7 @@ function saveSolanaRpcUrl() {
     localStorage.removeItem(SOLANA_RPC_URL_KEY);
     showToast(serverSolanaRpcConfigured ? "Using server Solana RPC automatically" : "Solana RPC URL cleared");
     updateWalletConnectionUi();
+  updateMobileToolbarLabels();
     return;
   }
   if (value.includes("*") || value.includes("...")) {
@@ -7930,6 +7932,49 @@ function getAccounts20MetricIcon(type = "health") {
   if (type === "spent") return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3v5h-5"/><path d="M7 21v-5h5"/><path d="M17 8a7 7 0 0 0-11.5 2"/><path d="M7 16a7 7 0 0 0 11.5-2"/></svg>';
   return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10Z"/><path d="M8.5 12h2l1.2-2.5 2.1 5 1.2-2.5h2.5"/></svg>';
 }
+const ACCOUNTS20_SORT_KEY = "allocafi-accounts20-sort-mode-v1";
+
+function getAccounts20SortMode() {
+  return localStorage.getItem(ACCOUNTS20_SORT_KEY) || "custom";
+}
+
+function setAccounts20SortMode(mode) {
+  localStorage.setItem(ACCOUNTS20_SORT_KEY, mode);
+}
+
+function sortAccounts20Rows(rows) {
+  const mode = getAccounts20SortMode();
+  const sorted = [...rows];
+  if (mode === "value-desc") sorted.sort((a, b) => Number(b.balance || 0) - Number(a.balance || 0));
+  else if (mode === "value-asc") sorted.sort((a, b) => Number(a.balance || 0) - Number(b.balance || 0));
+  else if (mode === "allocated-desc") sorted.sort((a, b) => Number(b.allocationPercent || 0) - Number(a.allocationPercent || 0));
+  return sorted;
+}
+
+function cycleAccounts20SortMode() {
+  const modes = ["custom", "value-desc", "value-asc", "allocated-desc"];
+  const next = modes[(modes.indexOf(getAccounts20SortMode()) + 1) % modes.length] || "custom";
+  setAccounts20SortMode(next);
+  renderAccounts20Isolated();
+  showToast(next === "custom" ? "Custom order" : next === "value-desc" ? "Sorted highest to lowest" : next === "value-asc" ? "Sorted lowest to highest" : "Sorted by allocation percent");
+}
+
+function moveAccounts20Bucket(walletId, sourceBucketId, targetBucketId) {
+  if (!walletId || !sourceBucketId || !targetBucketId || sourceBucketId === targetBucketId) return;
+  const wallet = wallets.find((item) => item.id === walletId);
+  const buckets = wallet?.allocation?.buckets;
+  if (!Array.isArray(buckets)) return;
+  const fromIndex = buckets.findIndex((bucket) => bucket.id === sourceBucketId);
+  const toIndex = buckets.findIndex((bucket) => bucket.id === targetBucketId);
+  if (fromIndex < 0 || toIndex < 0) return;
+  const [moved] = buckets.splice(fromIndex, 1);
+  buckets.splice(toIndex, 0, moved);
+  setAccounts20SortMode("custom");
+  saveWallets();
+  render();
+  showToast("Budget account order updated");
+}
+
 function renderAccounts20Circle(percent, label = "of budget") {
   const safePercent = Math.max(0, Math.min(Number(percent || 0), 100));
   return `<span class="accounts20-ring" style="--ring:${safePercent}%"><b>${Number(safePercent.toFixed(1))}%</b><small>${escapeHtml(label)}</small></span>`;
@@ -7940,7 +7985,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
   const budgetWallets = getBudgetWallets();
   const primaryWallet = budgetWallets.find((wallet) => /owner/i.test(`${wallet.name || ""} ${wallet.role || ""}`)) || budgetWallets[0] || getSupportedWallets()[0] || {};
   const primaryAccounts = accounts.filter((account) => account.walletId === primaryWallet.id);
-  const rows = primaryAccounts.length ? primaryAccounts : accounts;
+  const rows = sortAccounts20Rows(primaryAccounts.length ? primaryAccounts : accounts);
   const totalBudgeted = rows.reduce((sum, account) => sum + Number(account.allocated || 0), 0);
   const totalAvailable = rows.reduce((sum, account) => sum + Number(account.balance || 0), 0);
   const totalSpent = rows.reduce((sum, account) => sum + Number(account.spent || 0), 0);
@@ -7962,6 +8007,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
         <div class="accounts20-top-actions">
           <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg></button>
           <button class="accounts20-icon-button accounts20-bell" type="button" aria-label="Budget alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg></button>
+          <button class="accounts20-icon-button" type="button" data-accounts20-sort aria-label="Sort budget accounts">Sort</button>
           <button class="accounts20-icon-button" type="button" data-accounts20-add aria-label="Add budget account">+</button>
         </div>
       </header>
@@ -8000,7 +8046,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
           const fundedPercent = getAccounts20FundedPercent(account);
           const fundingBand = fundedPercent < 35 ? "danger" : fundedPercent < 70 ? "warning" : "healthy";
           return `
-            <article class="accounts20-card accounts20-card-bars accounts20-card-ledger accounts20-${escapeHtml(account.categoryType)} accounts20-funded-${fundingBand}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
+            <article draggable="true" class="accounts20-card accounts20-card-bars accounts20-card-ledger accounts20-${escapeHtml(account.categoryType)} accounts20-funded-${fundingBand}" data-wallet-id="${account.walletId}" data-bucket-id="${account.bucket.id}" role="button" tabindex="0" aria-label="Open ${escapeHtml(account.bucket.name)} account">
               <span class="accounts20-card-icon">${getAccounts20Icon(account.categoryType)}</span>
               <div class="accounts20-ledger-main">
                 <span class="accounts20-ledger-status"><i></i>Active</span>
@@ -8057,7 +8103,23 @@ function renderAccounts20Isolated() {
 function bindAccounts20Controls(root = document) {
   root.querySelector("[data-accounts20-add]")?.addEventListener("click", openAddBucketAccountDialog);
   root.querySelector("[data-accounts20-search]")?.addEventListener("click", () => showToast("Search is coming to Accounts 2.0 testing"));
+  root.querySelector("[data-accounts20-sort]")?.addEventListener("click", cycleAccounts20SortMode);
   root.querySelectorAll(".accounts20-card").forEach((card) => {
+    card.addEventListener("dragstart", (event) => {
+      card.classList.add("dragging");
+      event.dataTransfer?.setData("text/plain", `${card.dataset.walletId}|${card.dataset.bucketId}`);
+    });
+    card.addEventListener("dragend", () => card.classList.remove("dragging"));
+    card.addEventListener("dragover", (event) => event.preventDefault());
+    card.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const [sourceWalletId, sourceBucketId] = (event.dataTransfer?.getData("text/plain") || "").split("|");
+      if (sourceWalletId !== card.dataset.walletId) {
+        showToast("Move budget accounts inside the same wallet");
+        return;
+      }
+      moveAccounts20Bucket(card.dataset.walletId, sourceBucketId, card.dataset.bucketId);
+    });
     card.addEventListener("click", (event) => {
       if (event.target.closest("button")) return;
       openAccounts20DetailDialog(card.dataset.walletId, card.dataset.bucketId);
@@ -8104,6 +8166,23 @@ function openAccounts20ActionsDialog(walletId, bucketId) {
   });
 }
 
+function renderAccounts20BillsPreview(account, walletId, bucketId) {
+  if (!isBillsBucket(account?.bucket)) return "";
+  const bills = normalizeSubaccounts(account.bucket.subaccounts || []);
+  const total = bills.reduce((sum, bill) => sum + Number(bill.required || 0), 0);
+  const rows = bills.length ? bills.slice(0, 4).map((bill) => {
+    const due = Number(bill.dueDay || 0) > 0 ? `Due ${bill.dueDay}` : "No due date";
+    return `<li><span>${escapeHtml(bill.name)}</span><b>${renderMoneyValue(bill.required || 0, { compactAt: 1_000_000, label: `${bill.name} amount` })}</b><small>${escapeHtml(due)}</small></li>`;
+  }).join("") : `<li class="empty"><span>No bills entered yet</span><small>Add household bills to track due dates and targets.</small></li>`;
+  return `
+    <section class="accounts20-bills-panel">
+      <div><strong>Bills inside this account</strong><span>${renderMoneyValue(total, { compactAt: 1_000_000, label: "Monthly bill total" })} monthly total</span></div>
+      <ul>${rows}</ul>
+      <button class="secondary-button detail-bills" type="button">Customize bill entries</button>
+    </section>
+  `;
+}
+
 function openAccounts20DetailDialog(walletId, bucketId) {
   const account = getAccounts20Record(walletId, bucketId);
   const wallet = wallets.find((item) => item.id === walletId);
@@ -8141,6 +8220,7 @@ function openAccounts20DetailDialog(walletId, bucketId) {
         <strong>Budget Insights</strong>
         <span>${escapeHtml(account.status)}</span>
       </section>
+      ${renderAccounts20BillsPreview(account, walletId, bucketId)}
       <button class="primary-button accounts20-add-transaction detail-spend" type="button">+ Add Transaction</button>
     </div>
   `);
@@ -8153,6 +8233,7 @@ function openAccounts20DetailDialog(walletId, bucketId) {
     if (isBillsBucket(account.bucket)) openBillsPlannerDialog(walletId, bucketId);
     else openEditBucketDialog(walletId, bucketId);
   });
+  dialogContent.querySelector(".detail-bills")?.addEventListener("click", () => openBillsPlannerDialog(walletId, bucketId));
   dialogContent.querySelector(".detail-spend")?.addEventListener("click", () => openSpendDialog(walletId, bucketId));
 }
 function renderBucketAccounts() {
@@ -9915,6 +9996,16 @@ function render() {
   applyAdminDisplayControls();
   updateDemoModeControls();
   updateWalletConnectionUi();
+  updateMobileToolbarLabels();
+}
+
+function isMobileViewport() {
+  return Boolean(window.matchMedia?.("(max-width: 768px)")?.matches) || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+}
+
+function updateMobileToolbarLabels() {
+  const refreshLabel = refreshAllButton?.querySelector(".control-label");
+  if (refreshLabel) refreshLabel.textContent = isMobileViewport() ? "Accounts 2.0" : "Refresh";
 }
 
 function updateWalletConnectionUi() {
@@ -9924,9 +10015,9 @@ function updateWalletConnectionUi() {
   if (connectWalletButton) {
     const label = connectWalletButton.querySelector(".control-label");
     if (label) {
-      label.textContent = "Add Wallet Address";
+      label.textContent = isMobileViewport() ? "Wallets" : "Add Wallet Address";
     } else {
-      connectWalletButton.textContent = "Add Wallet Address";
+      connectWalletButton.textContent = isMobileViewport() ? "Wallets" : "Add Wallet Address";
     }
   }
   if (walletConnectionStatus) {
@@ -12492,14 +12583,17 @@ async function connectInjectedEthereumProvider(walletType = "auto") {
   injected.on?.("accountsChanged", (accounts) => {
     connectedAccount = accounts?.[0] || "";
     updateWalletConnectionUi();
+  updateMobileToolbarLabels();
   });
   injected.on?.("disconnect", () => {
     connectedAccount = "";
     connectedProvider = null;
     connectedWalletLabel = "";
     updateWalletConnectionUi();
+  updateMobileToolbarLabels();
   });
   updateWalletConnectionUi();
+  updateMobileToolbarLabels();
   showToast(connectedAccount ? `${connectedWalletLabel} connected ${shortAddress(connectedAccount)}` : `${connectedWalletLabel} connected`);
   return connectedProvider;
 }
@@ -12532,12 +12626,14 @@ async function connectWalletConnectProvider(label = "WalletConnect/Reown") {
   connectedProvider.on?.("accountsChanged", (accounts) => {
     connectedAccount = accounts?.[0] || "";
     updateWalletConnectionUi();
+  updateMobileToolbarLabels();
   });
   connectedProvider.on?.("disconnect", () => {
     connectedAccount = "";
     connectedProvider = null;
     connectedWalletLabel = "";
     updateWalletConnectionUi();
+  updateMobileToolbarLabels();
   });
 
   await connectedProvider.connect();
@@ -12545,6 +12641,7 @@ async function connectWalletConnectProvider(label = "WalletConnect/Reown") {
   connectedAccount = accounts?.[0] || "";
   connectedWalletLabel = label;
   updateWalletConnectionUi();
+  updateMobileToolbarLabels();
   showToast(connectedAccount ? `${label} connected ${shortAddress(connectedAccount)}` : `${label} connected`);
   return connectedProvider;
 }
@@ -12605,6 +12702,7 @@ async function connectInjectedSolanaProvider(walletType = "auto") {
   if (connectedSolanaProvider && connectedSolanaProvider === injected) {
     connectedSolanaAccount = connectedSolanaAccount || connectedSolanaProvider.publicKey?.toString?.() || "";
     updateWalletConnectionUi();
+  updateMobileToolbarLabels();
     return connectedSolanaProvider;
   }
 
@@ -12618,14 +12716,17 @@ async function connectInjectedSolanaProvider(walletType = "auto") {
     injected.on?.("accountChanged", (publicKey) => {
       connectedSolanaAccount = publicKey?.toString?.() || injected.publicKey?.toString?.() || "";
       updateWalletConnectionUi();
+  updateMobileToolbarLabels();
     });
     injected.on?.("disconnect", () => {
       connectedSolanaAccount = "";
       connectedSolanaProvider = null;
       connectedSolanaWalletLabel = "";
       updateWalletConnectionUi();
+  updateMobileToolbarLabels();
     });
     updateWalletConnectionUi();
+  updateMobileToolbarLabels();
     showToast(connectedSolanaAccount ? `${connectedSolanaWalletLabel} connected ${shortAddress(connectedSolanaAccount)}` : `${connectedSolanaWalletLabel} connected`);
     return connectedSolanaProvider;
   }
@@ -12674,6 +12775,7 @@ async function connectWalletConnectSolanaProvider(label = "WalletConnect/Reown")
   connectedSolanaAccount = accounts?.[0]?.pubkey || provider.session?.namespaces?.solana?.accounts?.[0]?.split(":").pop() || "";
   connectedSolanaWalletLabel = label;
   updateWalletConnectionUi();
+  updateMobileToolbarLabels();
   showToast(connectedSolanaAccount ? `${label} connected ${shortAddress(connectedSolanaAccount)}` : `${label} connected`);
   return connectedSolanaProvider;
 }
@@ -12682,6 +12784,7 @@ async function getSolanaProvider(walletType = "auto") {
   if (connectedSolanaProvider && walletType === "auto") {
     connectedSolanaAccount = connectedSolanaAccount || connectedSolanaProvider.publicKey?.toString?.() || "";
     updateWalletConnectionUi();
+  updateMobileToolbarLabels();
     return connectedSolanaProvider;
   }
   if (isWalletConnectSolanaProviderId(walletType)) {
@@ -12869,6 +12972,7 @@ async function sendNativeTransaction(id, bucketId = null, buttonLabel = "Send wi
     const from = accounts[0];
     connectedAccount = from || connectedAccount;
     updateWalletConnectionUi();
+  updateMobileToolbarLabels();
     if (!from || from.toLowerCase() !== wallet.address.toLowerCase()) {
       throw new Error("Connected wallet does not match this budget account address");
     }
@@ -13944,7 +14048,7 @@ async function refreshAll() {
     await refreshWallet(wallet.id);
   }
   refreshAllButton.disabled = false;
-  refreshAllButton.querySelector(".control-label")?.replaceChildren("Refresh");
+  updateMobileToolbarLabels();
   showToast("Refresh complete");
 }
 
@@ -13965,10 +14069,20 @@ form.addEventListener("submit", (event) => {
   form.classList.remove("open");
 });
 
-refreshAllButton.addEventListener("click", refreshAll);
+refreshAllButton.addEventListener("click", () => {
+  if (isMobileViewport()) {
+    switchTab("accounts20-isolated");
+    return;
+  }
+  refreshAll();
+});
 filterNetwork.addEventListener("change", render);
 connectWalletButton?.addEventListener("click", async () => {
   try {
+    if (isMobileViewport()) {
+      switchTab("wallets");
+      return;
+    }
     openStablecoinAddressEntry();
   } catch (error) {
     showToast(error?.message || "Wallet address setup did not finish");
