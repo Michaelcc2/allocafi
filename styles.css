@@ -24016,3 +24016,437 @@ body {
     width: 100% !important;
   }
 }
+/* Asset Reserve Isolated fintech makeover 2026-06-10
+   Scope: Advanced Systems isolated Asset Reserve screen only. */
+.asset-reserve-isolated-shell {
+  background:
+    radial-gradient(circle at 18% 4%, rgba(255, 184, 77, 0.11), transparent 30%),
+    radial-gradient(circle at 88% 10%, rgba(32, 240, 208, 0.12), transparent 34%),
+    linear-gradient(180deg, #050816 0%, #071126 52%, #050816 100%);
+}
+
+.asset-reserve-isolated-head {
+  align-items: flex-start;
+}
+
+.asset-reserve-isolated-head h2 {
+  letter-spacing: -0.02em;
+}
+
+.asset-reserve20 {
+  display: grid;
+  gap: 16px;
+}
+
+.asset-reserve20-hero,
+.asset-reserve20-card,
+.asset-reserve20-locked,
+.asset-reserve20-empty {
+  border: 1px solid rgba(255, 184, 77, 0.18);
+  border-radius: 28px;
+  background:
+    linear-gradient(145deg, rgba(17, 25, 58, 0.95), rgba(6, 13, 31, 0.96)),
+    radial-gradient(circle at 18% 10%, rgba(255, 184, 77, 0.16), transparent 36%),
+    radial-gradient(circle at 84% 20%, rgba(32, 240, 208, 0.12), transparent 34%);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.asset-reserve20-hero {
+  display: grid;
+  gap: 16px;
+  overflow: hidden;
+  padding: 20px;
+  position: relative;
+}
+
+.asset-reserve20-hero::after {
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.2), rgba(32, 240, 208, 0.08));
+  border-radius: 999px;
+  content: "";
+  height: 120px;
+  opacity: 0.55;
+  position: absolute;
+  right: -36px;
+  top: 24px;
+  transform: rotate(-18deg);
+  width: 220px;
+}
+
+.asset-reserve20-hero-copy,
+.asset-reserve20-metrics,
+.asset-reserve20-spark {
+  position: relative;
+  z-index: 1;
+}
+
+.asset-reserve20-hero-copy span {
+  color: #ffcf70;
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.asset-reserve20-hero-copy h3 {
+  color: #fff;
+  font-size: clamp(2.35rem, 10vw, 4rem);
+  letter-spacing: -0.055em;
+  line-height: 0.95;
+  margin: 8px 0;
+}
+
+.asset-reserve20-hero-copy p {
+  color: rgba(210, 219, 244, 0.82);
+  font-size: 0.95rem;
+  font-weight: 760;
+  line-height: 1.35;
+  margin: 0;
+  max-width: 34rem;
+}
+
+.asset-reserve20-spark {
+  align-items: end;
+  display: flex;
+  gap: 8px;
+  height: 72px;
+  justify-content: flex-end;
+  margin-top: -28px;
+  opacity: 0.95;
+}
+
+.asset-reserve20-spark i {
+  background: linear-gradient(180deg, rgba(32, 240, 208, 0.08), rgba(32, 240, 208, 0.9));
+  border-radius: 999px;
+  box-shadow: 0 0 18px rgba(32, 240, 208, 0.35);
+  display: block;
+  width: 10px;
+}
+
+.asset-reserve20-spark i:nth-child(1) { height: 26px; }
+.asset-reserve20-spark i:nth-child(2) { height: 42px; }
+.asset-reserve20-spark i:nth-child(3) { height: 58px; }
+.asset-reserve20-spark i:nth-child(4) { height: 72px; }
+
+.asset-reserve20-metrics {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.asset-reserve20-metrics article,
+.asset-reserve20-data span {
+  background: rgba(4, 10, 23, 0.46);
+  border: 1px solid rgba(132, 153, 193, 0.14);
+  border-radius: 18px;
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.asset-reserve20-metrics small,
+.asset-reserve20-data small,
+.asset-reserve20-title small,
+.asset-reserve20-value small {
+  color: rgba(198, 211, 241, 0.72);
+  font-size: 0.74rem;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.asset-reserve20-metrics strong,
+.asset-reserve20-data b {
+  color: #f8fbff;
+  font-size: 1.02rem;
+  overflow-wrap: anywhere;
+}
+
+.asset-reserve20-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.asset-reserve20-toolbar strong {
+  color: #fff;
+  display: block;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
+.asset-reserve20-toolbar small {
+  color: rgba(198, 211, 241, 0.72);
+  display: block;
+  font-weight: 850;
+  margin-top: 3px;
+}
+
+.asset-reserve20-toolbar .primary-button {
+  border-radius: 16px;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.asset-reserve20-list {
+  display: grid;
+  gap: 14px;
+}
+
+.asset-reserve20-card {
+  cursor: pointer;
+  display: grid;
+  gap: 13px;
+  padding: 16px;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.asset-reserve20-card:hover,
+.asset-reserve20-card:focus-visible {
+  border-color: rgba(32, 240, 208, 0.38);
+  box-shadow:
+    0 28px 78px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(32, 240, 208, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.asset-reserve20-card-main {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+}
+
+.asset-reserve20-logo,
+.asset-reserve20-logo .asset-logo {
+  height: 58px;
+  width: 58px;
+}
+
+.asset-reserve20-logo {
+  align-items: center;
+  border-radius: 20px;
+  display: inline-flex;
+  justify-content: center;
+  filter: drop-shadow(0 12px 28px rgba(32, 240, 208, 0.14));
+  overflow: hidden;
+}
+
+.asset-reserve20-title span {
+  color: #fff;
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.asset-reserve20-value {
+  text-align: right;
+}
+
+.asset-reserve20-value strong {
+  color: #fff;
+  display: block;
+  font-size: 1.12rem;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+.asset-reserve20-bar {
+  background: rgba(132, 153, 193, 0.14);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.asset-reserve20-bar span {
+  background: linear-gradient(90deg, #ffb84d, #ff4fd8, #2f80ff, #20f0d0);
+  border-radius: inherit;
+  box-shadow: 0 0 18px rgba(32, 240, 208, 0.28);
+  display: block;
+  height: 100%;
+}
+
+.asset-reserve20-data {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.asset-reserve20-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.asset-reserve20-actions button {
+  align-items: center;
+  border-radius: 15px;
+  display: inline-flex;
+  font-size: 0.78rem;
+  gap: 6px;
+  justify-content: center;
+  min-height: 42px;
+  padding: 8px 9px;
+}
+
+.asset-reserve20-actions svg {
+  flex: 0 0 auto;
+  height: 16px;
+  width: 16px;
+}
+
+.asset-reserve20-empty,
+.asset-reserve20-locked {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+}
+
+.asset-reserve20-lock-icon {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.2), rgba(32, 240, 208, 0.14));
+  border: 1px solid rgba(255, 184, 77, 0.2);
+  border-radius: 20px;
+  color: #ffcf70;
+  display: inline-flex;
+  height: 54px;
+  justify-content: center;
+  width: 54px;
+}
+
+.asset-reserve20-empty strong,
+.asset-reserve20-locked h3 {
+  color: #fff;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.asset-reserve20-empty span,
+.asset-reserve20-locked p {
+  color: rgba(210, 219, 244, 0.78);
+  font-weight: 750;
+  line-height: 1.38;
+  margin: 0;
+}
+
+.asset-reserve20 .positive { color: #20f0d0; }
+.asset-reserve20 .negative { color: #ff5d6c; }
+
+@media (max-width: 768px) {
+  .asset-reserve-isolated-shell {
+    max-width: none;
+    padding: 18px 12px calc(104px + env(safe-area-inset-bottom));
+  }
+
+  .asset-reserve20-hero {
+    border-radius: 26px;
+    padding: 18px;
+  }
+
+  .asset-reserve20-spark {
+    height: 54px;
+    margin-top: -18px;
+  }
+
+  .asset-reserve20-metrics,
+  .asset-reserve20-data {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .asset-reserve20-card {
+    border-radius: 24px;
+    padding: 14px;
+  }
+
+  .asset-reserve20-card-main {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+  }
+
+  .asset-reserve20-logo,
+  .asset-reserve20-logo .asset-logo {
+    height: 52px;
+    width: 52px;
+  }
+
+  .asset-reserve20-title span {
+    font-size: 1.02rem;
+  }
+
+  .asset-reserve20-value strong {
+    font-size: 1rem;
+  }
+
+  .asset-reserve20-actions {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .asset-reserve20-actions button {
+    min-height: 40px;
+    padding: 7px 5px;
+  }
+
+  .asset-reserve20-actions button span {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .asset-reserve-isolated-head p {
+    font-size: 0.82rem;
+  }
+
+  .asset-reserve20-hero-copy h3 {
+    font-size: clamp(2.2rem, 12vw, 3.1rem);
+  }
+
+  .asset-reserve20-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .asset-reserve20-toolbar .primary-button {
+    width: 100%;
+  }
+
+  .asset-reserve20-card-main {
+    grid-template-columns: 50px minmax(0, 1fr);
+  }
+
+  .asset-reserve20-value {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .asset-reserve20-data {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .asset-reserve20-data span {
+    border-radius: 14px;
+    padding: 9px 8px;
+  }
+
+  .asset-reserve20-data b {
+    font-size: 0.84rem;
+  }
+
+  .asset-reserve20-actions {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .asset-reserve20-actions button {
+    flex-direction: column;
+    gap: 3px;
+  }
+}

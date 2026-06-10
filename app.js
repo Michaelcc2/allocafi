@@ -8204,6 +8204,92 @@ function renderAccounts20Isolated() {
   renderAccounts20Mobile(accounts, "", accounts20IsolatedView);
 }
 
+function renderAssetReserveIsolatedSection() {
+  if (!canUseReserveAssetAccounts()) {
+    return `
+      <section class="asset-reserve20-locked">
+        <span class="asset-reserve20-lock-icon">${getWalletActionIcon("layers")}</span>
+        <div>
+          <h3>Asset Reserve Accounts</h3>
+          <p>Reserve Asset Accounts and Legal Core are included with AllocaFi Core.</p>
+        </div>
+        <button class="primary-button asset-account-upgrade" type="button">Upgrade to AllocaFi Core</button>
+      </section>
+    `;
+  }
+
+  const accounts = getVirtualAssetAccounts();
+  const summary = getVirtualAssetAccountsSummary(accounts);
+  const totalValue = summary.totalValue || 0;
+  const totalGain = summary.totalGain || 0;
+  const gainClass = totalGain >= 0 ? "positive" : "negative";
+
+  return `
+    <section class="asset-reserve20">
+      <section class="asset-reserve20-hero">
+        <div class="asset-reserve20-hero-copy">
+          <span>Reserve Assets</span>
+          <h3>${renderMoneyValue(totalValue, { compactAt: 10_000_000, label: "Total reserve asset value" })}</h3>
+          <p>Tracked from connected asset addresses. Sending stays inside reserve accounts.</p>
+        </div>
+        <div class="asset-reserve20-spark" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="asset-reserve20-metrics">
+          <article><small>Accounts</small><strong>${accounts.length}</strong></article>
+          <article><small>Unrealized</small><strong class="${gainClass}">${totalGain >= 0 ? "+" : "-"}${formatUsd(Math.abs(totalGain))}</strong></article>
+          <article><small>Legal Core</small><strong>${summary.legalCoreTracked}</strong></article>
+        </div>
+      </section>
+
+      <div class="asset-reserve20-toolbar">
+        <div><strong>Reserve Accounts</strong><small>${accounts.length} asset${accounts.length === 1 ? "" : "s"} tracked</small></div>
+        <button class="primary-button create-asset-account" type="button">${getWalletActionIcon("layers")}<span>Create Reserve</span></button>
+      </div>
+
+      <div class="asset-reserve20-list">
+        ${accounts.length ? accounts.map((account) => {
+          const legal = buildLegalCoreRecordForAccount(account);
+          const gain = legal.costBasis > 0 ? account.currentValue - legal.costBasis : account.unrealizedGain;
+          const allocation = totalValue > 0 ? Math.max(0, Math.min(100, (account.currentValue / totalValue) * 100)) : 0;
+          const gainBadge = gain >= 0 ? "positive" : "negative";
+          return `
+            <article class="asset-reserve20-card virtual-asset-row asset-account-${escapeHtml(account.meta.className)} ${account.currentValue > 0 ? "has-balance" : "is-empty"}" data-asset-account-id="${escapeHtml(account.id)}" tabindex="0" role="button" aria-label="Open ${escapeHtml(account.name)}">
+              <div class="asset-reserve20-card-main">
+                <span class="asset-reserve20-logo">${renderAssetLogo(account.asset)}</span>
+                <div class="asset-reserve20-title">
+                  <span>${escapeHtml(account.name)}</span>
+                  <small>${escapeHtml(account.asset)} Reserve • ${escapeHtml(legal.legalCoreStatus)}</small>
+                </div>
+                <div class="asset-reserve20-value">
+                  <strong>${renderMoneyValue(account.currentValue, { compactAt: 1_000_000, label: `${account.name} current value` })}</strong>
+                  <small>${escapeHtml(formatAssetQuantity(account.quantity, account.asset))}</small>
+                </div>
+              </div>
+              <div class="asset-reserve20-bar" aria-label="${allocation.toFixed(1)}% of reserve portfolio"><span style="width:${allocation.toFixed(2)}%"></span></div>
+              <div class="asset-reserve20-data">
+                <span><small>Allocation</small><b>${allocation.toFixed(allocation >= 10 ? 0 : 1)}%</b></span>
+                <span><small>Cost Basis</small><b>${legal.costBasis > 0 ? renderMoneyValue(legal.costBasis, { compactAt: 1_000_000, label: `${account.name} cost basis` }) : "Verify"}</b></span>
+                <span><small>Gain/Loss</small><b class="${gainBadge}">${gain >= 0 ? "+" : "-"}${formatUsd(Math.abs(gain))}</b></span>
+              </div>
+              <div class="asset-reserve20-actions">
+                <button class="secondary-button asset-account-open" data-asset-account-id="${escapeHtml(account.id)}" type="button">${getWalletActionIcon("view")}<span>View</span></button>
+                <button class="secondary-button asset-account-receive" data-asset-account-id="${escapeHtml(account.id)}" type="button">${getWalletActionIcon("receive")}<span>Receive</span></button>
+                <button class="primary-button asset-account-send" data-asset-account-id="${escapeHtml(account.id)}" type="button">${getWalletActionIcon("send")}<span>Send</span></button>
+                <button class="secondary-button asset-account-legal" data-asset-account-id="${escapeHtml(account.id)}" type="button">${getWalletActionIcon("rules")}<span>Legal</span></button>
+                <button class="secondary-button asset-account-export" data-asset-account-id="${escapeHtml(account.id)}" type="button">${getWalletActionIcon("layers")}<span>Export</span></button>
+              </div>
+            </article>
+          `;
+        }).join("") : `
+          <article class="asset-reserve20-empty">
+            <strong>No reserve assets yet</strong>
+            <span>Add BTC, ETH, SOL, LTC, XRP, or another supported reserve asset address after Core activation.</span>
+            <button class="primary-button create-asset-account" type="button">${getWalletActionIcon("layers")}<span>Create Reserve</span></button>
+          </article>
+        `}
+      </div>
+    </section>
+  `;
+}
 function renderAssetReserveIsolated() {
   if (!assetReserveIsolatedView) return;
   assetReserveIsolatedView.innerHTML = `
@@ -8215,7 +8301,7 @@ function renderAssetReserveIsolated() {
         </div>
         <button class="accounts20-icon-button" type="button" data-asset-reserve-close aria-label="Back to overview">&lsaquo;</button>
       </header>
-      ${renderVirtualAssetAccountsSection()}
+      ${renderAssetReserveIsolatedSection()}
     </section>
   `;
   bindVirtualAssetAccountControls(assetReserveIsolatedView);
