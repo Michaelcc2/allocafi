@@ -23995,3 +23995,24 @@ body {
     width: 112% !important;
   }
 }
+
+/* Mobile hero no-crop correction 2026-06-10
+   Scope: mobile AllocaFi top hero only. Keeps the larger hero height but prevents text from being clipped. */
+@media (max-width: 768px) {
+  .summary-band.reference-cover .hero-reference-art {
+    height: 100% !important;
+    margin-left: 0 !important;
+    object-fit: fill !important;
+    object-position: center center !important;
+    transform: none !important;
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .summary-band.reference-cover .hero-reference-art {
+    margin-left: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+  }
+}
