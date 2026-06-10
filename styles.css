@@ -23509,8 +23509,16 @@ body {
 
   .accounts20-icon-button[data-accounts20-sort] {
     color: #20f0d0 !important;
-    font-size: 1.15rem !important;
-    font-weight: 950 !important;
+  }
+
+  .accounts20-icon-button[data-accounts20-sort] svg {
+    fill: none !important;
+    height: 21px !important;
+    stroke: currentColor !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+    stroke-width: 2.2 !important;
+    width: 21px !important;
   }
 
   .accounts20-bills-panel {
@@ -23576,4 +23584,59 @@ body {
     width: 114% !important;
     margin-left: -7% !important;
   }
+}
+/* Accounts 2.0 sort menu 2026-06-10 */
+.accounts20-sort-sheet {
+  gap: 16px;
+}
+
+.accounts20-sort-sheet h2 {
+  margin-bottom: 0;
+}
+
+.accounts20-sort-options {
+  display: grid;
+  gap: 10px;
+}
+
+.accounts20-sort-option {
+  align-items: center;
+  background: linear-gradient(145deg, rgba(10, 18, 40, 0.96), rgba(15, 28, 62, 0.9));
+  border: 1px solid rgba(93, 119, 190, 0.24);
+  border-radius: 16px;
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+  min-height: 68px;
+  padding: 13px 15px;
+  text-align: left;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.accounts20-sort-option span {
+  font-size: 0.98rem;
+  font-weight: 900;
+}
+
+.accounts20-sort-option small {
+  color: rgba(180, 195, 226, 0.78);
+  font-size: 0.78rem;
+}
+
+.accounts20-sort-option:hover,
+.accounts20-sort-option.active {
+  border-color: rgba(32, 240, 208, 0.65);
+  box-shadow: 0 14px 32px rgba(47, 128, 255, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.accounts20-sort-option.active::after {
+  color: #20f0d0;
+  content: "Selected";
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }

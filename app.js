@@ -7948,15 +7948,45 @@ function sortAccounts20Rows(rows) {
   if (mode === "value-desc") sorted.sort((a, b) => Number(b.balance || 0) - Number(a.balance || 0));
   else if (mode === "value-asc") sorted.sort((a, b) => Number(a.balance || 0) - Number(b.balance || 0));
   else if (mode === "allocated-desc") sorted.sort((a, b) => Number(b.allocationPercent || 0) - Number(a.allocationPercent || 0));
+  else if (mode === "needs-funding") sorted.sort((a, b) => getAccounts20FundedPercent(a) - getAccounts20FundedPercent(b));
+  else if (mode === "az") sorted.sort((a, b) => String(a.bucket?.name || "").localeCompare(String(b.bucket?.name || "")));
   return sorted;
 }
 
-function cycleAccounts20SortMode() {
-  const modes = ["custom", "value-desc", "value-asc", "allocated-desc"];
-  const next = modes[(modes.indexOf(getAccounts20SortMode()) + 1) % modes.length] || "custom";
-  setAccounts20SortMode(next);
-  renderAccounts20Isolated();
-  showToast(next === "custom" ? "Custom order" : next === "value-desc" ? "Sorted highest to lowest" : next === "value-asc" ? "Sorted lowest to highest" : "Sorted by allocation percent");
+const ACCOUNTS20_SORT_OPTIONS = [
+  { id: "value-desc", label: "Highest Balance", helper: "Largest funded accounts first" },
+  { id: "value-asc", label: "Lowest Balance", helper: "Smallest funded accounts first" },
+  { id: "allocated-desc", label: "Highest Allocation %", helper: "Largest template share first" },
+  { id: "needs-funding", label: "Needs Funding First", helper: "Lowest funded percentage first" },
+  { id: "az", label: "A-Z", helper: "Alphabetical by account name" },
+];
+
+function openAccounts20SortDialog() {
+  const currentMode = getAccounts20SortMode();
+  openDialog(`
+    <div class="dialog-content accounts20-sort-sheet">
+      <h2>Sort Accounts</h2>
+      <p class="wallet-note">Choose how Accounts 2.0 organizes your Virtual Budget Accounts.</p>
+      <div class="accounts20-sort-options">
+        ${ACCOUNTS20_SORT_OPTIONS.map((option) => `
+          <button class="accounts20-sort-option ${currentMode === option.id ? "active" : ""}" type="button" data-sort-mode="${escapeHtml(option.id)}">
+            <span>${escapeHtml(option.label)}</span>
+            <small>${escapeHtml(option.helper)}</small>
+          </button>
+        `).join("")}
+      </div>
+    </div>
+  `);
+  dialogContent.querySelectorAll("[data-sort-mode]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const mode = button.dataset.sortMode || "value-desc";
+      const option = ACCOUNTS20_SORT_OPTIONS.find((item) => item.id === mode);
+      setAccounts20SortMode(mode);
+      walletDialog.close();
+      renderAccounts20Isolated();
+      showToast(`${option?.label || "Sort"} applied`);
+    });
+  });
 }
 
 function moveAccounts20Bucket(walletId, sourceBucketId, targetBucketId) {
@@ -8007,7 +8037,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
         <div class="accounts20-top-actions">
           <button class="accounts20-icon-button" type="button" data-accounts20-search aria-label="Search budget accounts"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg></button>
           <button class="accounts20-icon-button accounts20-bell" type="button" aria-label="Budget alerts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg></button>
-          <button class="accounts20-icon-button" type="button" data-accounts20-sort aria-label="Sort budget accounts">Sort</button>
+          <button class="accounts20-icon-button" type="button" data-accounts20-sort aria-label="Sort budget accounts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10"></path><path d="M18 7h2"></path><circle cx="16" cy="7" r="2"></circle><path d="M4 17h2"></path><path d="M10 17h10"></path><circle cx="8" cy="17" r="2"></circle></svg></button>
           <button class="accounts20-icon-button" type="button" data-accounts20-add aria-label="Add budget account">+</button>
         </div>
       </header>
@@ -8103,7 +8133,7 @@ function renderAccounts20Isolated() {
 function bindAccounts20Controls(root = document) {
   root.querySelector("[data-accounts20-add]")?.addEventListener("click", openAddBucketAccountDialog);
   root.querySelector("[data-accounts20-search]")?.addEventListener("click", () => showToast("Search is coming to Accounts 2.0 testing"));
-  root.querySelector("[data-accounts20-sort]")?.addEventListener("click", cycleAccounts20SortMode);
+  root.querySelector("[data-accounts20-sort]")?.addEventListener("click", openAccounts20SortDialog);
   root.querySelectorAll(".accounts20-card").forEach((card) => {
     card.addEventListener("dragstart", (event) => {
       card.classList.add("dragging");
