@@ -23686,6 +23686,71 @@ body {
   }
 }
 
+/* Accounts 2.0 live search 2026-06-10 */
+@media (max-width: 768px) {
+  .accounts20-search-panel {
+    align-items: center;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    margin: 2px 0 8px;
+  }
+
+  .accounts20-search-panel label {
+    align-items: center;
+    background: rgba(8, 14, 34, 0.92);
+    border: 1px solid rgba(47, 128, 255, 0.32);
+    border-radius: 18px;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 20px minmax(0, 1fr);
+    min-height: 52px;
+    padding: 0 14px;
+  }
+
+  .accounts20-search-panel svg {
+    fill: none;
+    height: 20px;
+    stroke: #7dd9ff;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+    width: 20px;
+  }
+
+  .accounts20-search-panel input {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    font: inherit;
+    font-size: 0.96rem;
+    font-weight: 800;
+    min-width: 0;
+    outline: 0;
+    width: 100%;
+  }
+
+  .accounts20-search-panel input::placeholder {
+    color: #7f8daf;
+  }
+
+  .accounts20-search-clear {
+    background: rgba(124, 77, 255, 0.16);
+    border: 1px solid rgba(255, 79, 216, 0.28);
+    border-radius: 16px;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 900;
+    min-height: 46px;
+    padding: 0 13px;
+  }
+
+  .accounts20-search-empty {
+    margin-top: 4px;
+  }
+}
+
 @media (max-width: 420px) {
   .summary-band.reference-cover {
     padding: 0 !important;

@@ -7948,6 +7948,10 @@ function getAccounts20MetricIcon(type = "health") {
   return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10Z"/><path d="M8.5 12h2l1.2-2.5 2.1 5 1.2-2.5h2.5"/></svg>';
 }
 const ACCOUNTS20_SORT_KEY = "allocafi-accounts20-sort-mode-v1";
+const accounts20SearchState = {
+  active: false,
+  query: "",
+};
 
 function getAccounts20SortMode() {
   return localStorage.getItem(ACCOUNTS20_SORT_KEY) || "custom";
@@ -7966,6 +7970,44 @@ function sortAccounts20Rows(rows) {
   else if (mode === "needs-funding") sorted.sort((a, b) => getAccounts20FundedPercent(a) - getAccounts20FundedPercent(b));
   else if (mode === "az") sorted.sort((a, b) => String(a.bucket?.name || "").localeCompare(String(b.bucket?.name || "")));
   return sorted;
+}
+
+function getAccounts20SearchText(account) {
+  return [
+    account?.bucket?.name,
+    account?.walletName,
+    account?.walletAssetLabel,
+    account?.tokenLabel,
+    account?.categoryType,
+    account?.status,
+  ].filter(Boolean).join(" ").toLowerCase();
+}
+
+function filterAccounts20Rows(rows) {
+  const query = accounts20SearchState.query.trim().toLowerCase();
+  if (!query) return rows;
+  return rows.filter((account) => getAccounts20SearchText(account).includes(query));
+}
+
+function renderAccounts20SearchPanel() {
+  if (!accounts20SearchState.active) return "";
+  return `
+    <div class="accounts20-search-panel">
+      <label>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
+        <input id="accounts20SearchInput" type="search" autocomplete="off" placeholder="Search budget accounts..." value="${escapeHtml(accounts20SearchState.query)}" />
+      </label>
+      <button class="accounts20-search-clear" type="button" data-accounts20-clear-search>${accounts20SearchState.query ? "Clear" : "Close"}</button>
+    </div>
+  `;
+}
+
+function refreshAccounts20View(root = document) {
+  if (accounts20IsolatedView && root === accounts20IsolatedView) {
+    renderAccounts20Isolated();
+    return;
+  }
+  renderBucketAccounts();
 }
 
 const ACCOUNTS20_SORT_OPTIONS = [
@@ -8030,10 +8072,11 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
   const budgetWallets = getBudgetWallets();
   const primaryWallet = budgetWallets.find((wallet) => /owner/i.test(`${wallet.name || ""} ${wallet.role || ""}`)) || budgetWallets[0] || getSupportedWallets()[0] || {};
   const primaryAccounts = accounts.filter((account) => account.walletId === primaryWallet.id);
-  const rows = sortAccounts20Rows(primaryAccounts.length ? primaryAccounts : accounts);
-  const totalBudgeted = rows.reduce((sum, account) => sum + Number(account.allocated || 0), 0);
-  const totalAvailable = rows.reduce((sum, account) => sum + Number(account.balance || 0), 0);
-  const totalSpent = rows.reduce((sum, account) => sum + Number(account.spent || 0), 0);
+  const allRows = sortAccounts20Rows(primaryAccounts.length ? primaryAccounts : accounts);
+  const rows = filterAccounts20Rows(allRows);
+  const totalBudgeted = allRows.reduce((sum, account) => sum + Number(account.allocated || 0), 0);
+  const totalAvailable = allRows.reduce((sum, account) => sum + Number(account.balance || 0), 0);
+  const totalSpent = allRows.reduce((sum, account) => sum + Number(account.spent || 0), 0);
   const healthScore = totalBudgeted > 0 ? Math.max(0, Math.min(100, Math.round((totalAvailable / totalBudgeted) * 100))) : 100;
   const healthLabel = healthScore >= 80 ? "Excellent" : healthScore >= 55 ? "Stable" : "Needs Funding";
   const availablePercent = totalBudgeted > 0 ? Math.min((totalAvailable / totalBudgeted) * 100, 100) : 0;
@@ -8056,6 +8099,7 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
           <button class="accounts20-icon-button" type="button" data-accounts20-add aria-label="Add budget account">+</button>
         </div>
       </header>
+      ${renderAccounts20SearchPanel()}
 
       <section class="accounts20-hero">
         <div class="accounts20-hero-head">
@@ -8083,10 +8127,10 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
 
       <div class="accounts20-list-head">
         <h3>Budget Accounts</h3>
-        <strong>Total: ${renderMoneyValue(totalAvailable, { compactAt: 1_000_000, label: "Available total" })}</strong>
+        <strong>${accounts20SearchState.query ? `${rows.length} match${rows.length === 1 ? "" : "es"}` : `Total: ${renderMoneyValue(totalAvailable, { compactAt: 1_000_000, label: "Available total" })}`}</strong>
       </div>
       <div class="accounts20-list">
-        ${rows.map((account) => {
+        ${rows.length ? rows.map((account) => {
           const state = getAccounts20FundingState(account);
           const fundedPercent = getAccounts20FundedPercent(account);
           const fundingBand = fundedPercent < 35 ? "danger" : fundedPercent < 70 ? "warning" : "healthy";
@@ -8107,7 +8151,12 @@ function renderAccounts20Mobile(accounts, assetAccountsSection = "", target = bu
 
             </article>
           `;
-        }).join("")}
+        }).join("") : `
+          <section class="accounts20-empty-card accounts20-search-empty">
+            <h3>No budget accounts found</h3>
+            <p>Try another account name, wallet, asset, or category.</p>
+          </section>
+        `}
       </div>
     </section>
     ${assetAccountsSection}
@@ -8147,7 +8196,29 @@ function renderAccounts20Isolated() {
 
 function bindAccounts20Controls(root = document) {
   root.querySelector("[data-accounts20-add]")?.addEventListener("click", openAddBucketAccountDialog);
-  root.querySelector("[data-accounts20-search]")?.addEventListener("click", () => showToast("Search is coming to Accounts 2.0 testing"));
+  root.querySelector("[data-accounts20-search]")?.addEventListener("click", () => {
+    accounts20SearchState.active = true;
+    refreshAccounts20View(root);
+    requestAnimationFrame(() => {
+      const input = document.querySelector("#accounts20SearchInput");
+      input?.focus();
+      input?.setSelectionRange(input.value.length, input.value.length);
+    });
+  });
+  root.querySelector("#accounts20SearchInput")?.addEventListener("input", (event) => {
+    accounts20SearchState.query = event.target.value || "";
+    refreshAccounts20View(root);
+    requestAnimationFrame(() => {
+      const input = document.querySelector("#accounts20SearchInput");
+      input?.focus();
+      input?.setSelectionRange(input.value.length, input.value.length);
+    });
+  });
+  root.querySelector("[data-accounts20-clear-search]")?.addEventListener("click", () => {
+    accounts20SearchState.query = "";
+    accounts20SearchState.active = false;
+    refreshAccounts20View(root);
+  });
   root.querySelector("[data-accounts20-sort]")?.addEventListener("click", openAccounts20SortDialog);
   root.querySelectorAll(".accounts20-card").forEach((card) => {
     card.addEventListener("dragstart", (event) => {
