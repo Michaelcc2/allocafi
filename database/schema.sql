@@ -256,6 +256,36 @@ on conflict (symbol) do update set
   metadata = excluded.metadata,
   updated_at = now();
 
+
+insert into public.coin_logo_references (
+  symbol,
+  display_name,
+  issuer,
+  logo_family,
+  reference_image_path,
+  logo_image_path,
+  canonical_class,
+  metadata
+) values
+  ('BTC', 'Bitcoin', 'Bitcoin', 'reserve_asset', './assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg', './assets/reference-icons/reserve-assets/btc-reference.svg', 'btc', '{"reference_order": 1, "reference_note": "Canonical AllocaFi Bitcoin logo for Asset Reserve and Legal Core."}'::jsonb),
+  ('ETH', 'Ethereum', 'Ethereum', 'reserve_asset', './assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg', './assets/reference-icons/reserve-assets/eth-reference.svg', 'eth', '{"reference_order": 2, "reference_note": "Canonical AllocaFi Ethereum logo for Asset Reserve and Legal Core."}'::jsonb),
+  ('SOL', 'Solana', 'Solana', 'reserve_asset', './assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg', './assets/reference-icons/reserve-assets/sol-reference.svg', 'sol', '{"reference_order": 3, "reference_note": "Canonical AllocaFi Solana logo for Asset Reserve and Legal Core."}'::jsonb),
+  ('LTC', 'Litecoin', 'Litecoin', 'reserve_asset', './assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg', './assets/reference-icons/reserve-assets/ltc-reference.svg', 'ltc', '{"reference_order": 4, "reference_note": "Canonical AllocaFi Litecoin logo for Asset Reserve and Legal Core."}'::jsonb),
+  ('ADA', 'Cardano', 'Cardano', 'reserve_asset', './assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg', './assets/reference-icons/reserve-assets/ada-reference.svg', 'ada', '{"reference_order": 5, "reference_note": "Canonical AllocaFi Cardano logo for Asset Reserve and Legal Core."}'::jsonb),
+  ('XRP', 'XRP', 'XRP Ledger', 'reserve_asset', './assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg', './assets/reference-icons/reserve-assets/xrp-reference.svg', 'xrp', '{"reference_order": 6, "reference_note": "Canonical AllocaFi XRP logo for Asset Reserve and Legal Core."}'::jsonb),
+  ('AVAX', 'Avalanche', 'Avalanche', 'reserve_asset', './assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg', './assets/reference-icons/reserve-assets/avax-reference.svg', 'avax', '{"reference_order": 7, "reference_note": "Canonical AllocaFi Avalanche logo for Asset Reserve and Legal Core."}'::jsonb),
+  ('HBAR', 'Hedera', 'Hedera', 'reserve_asset', './assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg', './assets/reference-icons/reserve-assets/hbar-reference.svg', 'hbar', '{"reference_order": 8, "reference_note": "Canonical AllocaFi Hedera logo for Asset Reserve and Legal Core."}'::jsonb),
+  ('BNB', 'BNB', 'BNB Chain', 'reserve_asset', './assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg', './assets/reference-icons/reserve-assets/bnb-reference.svg', 'bnb', '{"reference_order": 9, "reference_note": "Canonical AllocaFi BNB logo for Asset Reserve and Legal Core."}'::jsonb),
+  ('POL', 'Polygon', 'Polygon', 'reserve_asset', './assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg', './assets/reference-icons/reserve-assets/pol-reference.svg', 'pol', '{"reference_order": 10, "reference_note": "Canonical AllocaFi Polygon/POL logo for Asset Reserve and Legal Core."}'::jsonb)
+on conflict (symbol) do update set
+  display_name = excluded.display_name,
+  issuer = excluded.issuer,
+  logo_family = excluded.logo_family,
+  reference_image_path = excluded.reference_image_path,
+  logo_image_path = excluded.logo_image_path,
+  canonical_class = excluded.canonical_class,
+  metadata = excluded.metadata,
+  updated_at = now();
 create table if not exists public.wallet_metadata (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,

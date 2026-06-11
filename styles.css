@@ -17214,9 +17214,11 @@ body.family-route-active .app-shell {
   padding: 0;
 }
 
-.asset-logo svg {
+.asset-logo svg,
+.asset-logo img {
   display: block;
   height: 100%;
+  object-fit: contain;
   width: 100%;
 }
 

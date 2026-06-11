@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="AllocaFi reserve asset logo reference sheet">
+  <defs>
+    <style>
+      .bg{fill:#f8fafc}.label{font:700 36px Arial,sans-serif;fill:#20242d}.sub{font:600 20px Arial,sans-serif;fill:#5d6472}.title{font:900 44px Arial,sans-serif;fill:#0d1730}.cell{fill:#fff;stroke:#e2e8f0;stroke-width:2;rx:28}.logo{width:150px;height:150px}.note{font:600 18px Arial,sans-serif;fill:#667085}
+    </style>
+  </defs>
+  <rect width="1600" height="900" class="bg"/>
+  <text x="60" y="68" class="title">AllocaFi Asset &amp; Legal Core Logo Reference</text>
+  <text x="60" y="100" class="note">Canonical logo mapping for Asset Reserve Accounts, Asset Ratio, Legal Core, Tax Ledger, and Vault exports.</text>
+  <g transform="translate(50 145)">
+    <g transform="translate(0 0)"><rect class="cell" width="250" height="260"/><image href="btc-reference.svg" x="50" y="28" width="150" height="150"/><text class="label" x="125" y="220" text-anchor="middle">Bitcoin</text><text class="sub" x="125" y="246" text-anchor="middle">BTC</text></g>
+    <g transform="translate(290 0)"><rect class="cell" width="250" height="260"/><image href="eth-reference.svg" x="50" y="28" width="150" height="150"/><text class="label" x="125" y="220" text-anchor="middle">Ethereum</text><text class="sub" x="125" y="246" text-anchor="middle">ETH</text></g>
+    <g transform="translate(580 0)"><rect class="cell" width="250" height="260"/><image href="sol-reference.svg" x="50" y="28" width="150" height="150"/><text class="label" x="125" y="220" text-anchor="middle">Solana</text><text class="sub" x="125" y="246" text-anchor="middle">SOL</text></g>
+    <g transform="translate(870 0)"><rect class="cell" width="250" height="260"/><image href="ltc-reference.svg" x="50" y="28" width="150" height="150"/><text class="label" x="125" y="220" text-anchor="middle">Litecoin</text><text class="sub" x="125" y="246" text-anchor="middle">LTC</text></g>
+    <g transform="translate(1160 0)"><rect class="cell" width="250" height="260"/><image href="ada-reference.svg" x="50" y="28" width="150" height="150"/><text class="label" x="125" y="220" text-anchor="middle">Cardano</text><text class="sub" x="125" y="246" text-anchor="middle">ADA</text></g>
+    <g transform="translate(0 300)"><rect class="cell" width="250" height="260"/><image href="xrp-reference.svg" x="50" y="28" width="150" height="150"/><text class="label" x="125" y="220" text-anchor="middle">XRP</text><text class="sub" x="125" y="246" text-anchor="middle">XRP</text></g>
+    <g transform="translate(290 300)"><rect class="cell" width="250" height="260"/><image href="avax-reference.svg" x="50" y="28" width="150" height="150"/><text class="label" x="125" y="220" text-anchor="middle">Avalanche</text><text class="sub" x="125" y="246" text-anchor="middle">AVAX</text></g>
+    <g transform="translate(580 300)"><rect class="cell" width="250" height="260"/><image href="hbar-reference.svg" x="50" y="28" width="150" height="150"/><text class="label" x="125" y="220" text-anchor="middle">Hedera</text><text class="sub" x="125" y="246" text-anchor="middle">HBAR</text></g>
+    <g transform="translate(870 300)"><rect class="cell" width="250" height="260"/><image href="bnb-reference.svg" x="50" y="28" width="150" height="150"/><text class="label" x="125" y="220" text-anchor="middle">BNB</text><text class="sub" x="125" y="246" text-anchor="middle">BNB</text></g>
+    <g transform="translate(1160 300)"><rect class="cell" width="250" height="260"/><image href="pol-reference.svg" x="50" y="28" width="150" height="150"/><text class="label" x="125" y="220" text-anchor="middle">Polygon</text><text class="sub" x="125" y="246" text-anchor="middle">POL</text></g>
+    <g transform="translate(0 600)"><rect class="cell" width="250" height="220"/><image href="usdc-reference.svg" x="60" y="20" width="130" height="130"/><text class="label" x="125" y="178" text-anchor="middle">USD Coin</text><text class="sub" x="125" y="204" text-anchor="middle">USDC</text></g>
+  </g>
+</svg>

@@ -1,0 +1,28 @@
+{
+  "referenceId": "reserve-asset-logo-reference-2026-06-11",
+  "referenceImage": "./reserve-asset-logo-reference-2026-06-11.svg",
+  "purpose": "Permanent visual reference for AllocaFi Asset Ratio, Virtual Asset Accounts, Asset Reserve, and Legal Core reserve asset symbols.",
+  "rule": "The same asset symbol mapping must be used anywhere the same reserve asset appears.",
+  "symbols": {
+    "BTC": { "name": "Bitcoin", "accountName": "Bitcoin Reserve", "referenceLabel": "Bitcoin", "logoImage": "./btc-reference.svg" },
+    "ETH": { "name": "Ethereum", "accountName": "Ethereum Reserve", "referenceLabel": "Ethereum", "logoImage": "./eth-reference.svg" },
+    "SOL": { "name": "Solana", "accountName": "Solana Reserve", "referenceLabel": "Solana", "logoImage": "./sol-reference.svg" },
+    "LTC": { "name": "Litecoin", "accountName": "Litecoin Reserve", "referenceLabel": "Litecoin", "logoImage": "./ltc-reference.svg" },
+    "ADA": { "name": "Cardano", "accountName": "Cardano Reserve", "referenceLabel": "Cardano", "logoImage": "./ada-reference.svg" },
+    "XRP": { "name": "XRP", "accountName": "XRP Reserve", "referenceLabel": "XRP", "logoImage": "./xrp-reference.svg" },
+    "AVAX": { "name": "Avalanche", "accountName": "Avalanche Reserve", "referenceLabel": "Avalanche", "logoImage": "./avax-reference.svg" },
+    "HBAR": { "name": "Hedera", "accountName": "Hedera Reserve", "referenceLabel": "Hedera", "logoImage": "./hbar-reference.svg" },
+    "BNB": { "name": "BNB", "accountName": "BNB Reserve", "referenceLabel": "BNB", "logoImage": "./bnb-reference.svg" },
+    "POL": { "name": "Polygon", "accountName": "Polygon Reserve", "referenceLabel": "Polygon", "logoImage": "./pol-reference.svg" },
+    "USDC": { "name": "USD Coin", "accountName": "USD Coin", "referenceLabel": "USD Coin (USDC)", "logoImage": "./usdc-reference.svg" }
+  },
+  "protectedUse": [
+    "Asset Ratio & Legal Core Tracker rows",
+    "Virtual Asset Account cards",
+    "Asset Reserve isolated cards",
+    "Asset Account detail headers",
+    "Legal Core records",
+    "Tax Ledger asset records",
+    "Vault export asset references"
+  ]
+}

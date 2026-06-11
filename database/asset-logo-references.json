@@ -1,0 +1,19 @@
+{
+  "reference_set": "reserve-asset-logos-20260611",
+  "source_image": "./assets/reference-icons/reserve-assets/reserve-asset-logo-reference-2026-06-11.svg",
+  "purpose": "Canonical AllocaFi reserve asset logo reference for Asset Reserve Accounts, Asset Ratio, Legal Core, Tax Ledger, and Vault export rendering.",
+  "rule": "Every occurrence of a supported reserve asset must use the same logo_image_path and canonical_class mapping.",
+  "coins": [
+    { "symbol": "BTC", "display_name": "Bitcoin", "issuer": "Bitcoin", "canonical_class": "btc", "logo_image_path": "./assets/reference-icons/reserve-assets/btc-reference.svg" },
+    { "symbol": "ETH", "display_name": "Ethereum", "issuer": "Ethereum", "canonical_class": "eth", "logo_image_path": "./assets/reference-icons/reserve-assets/eth-reference.svg" },
+    { "symbol": "SOL", "display_name": "Solana", "issuer": "Solana", "canonical_class": "sol", "logo_image_path": "./assets/reference-icons/reserve-assets/sol-reference.svg" },
+    { "symbol": "LTC", "display_name": "Litecoin", "issuer": "Litecoin", "canonical_class": "ltc", "logo_image_path": "./assets/reference-icons/reserve-assets/ltc-reference.svg" },
+    { "symbol": "ADA", "display_name": "Cardano", "issuer": "Cardano", "canonical_class": "ada", "logo_image_path": "./assets/reference-icons/reserve-assets/ada-reference.svg" },
+    { "symbol": "XRP", "display_name": "XRP", "issuer": "XRP Ledger", "canonical_class": "xrp", "logo_image_path": "./assets/reference-icons/reserve-assets/xrp-reference.svg" },
+    { "symbol": "AVAX", "display_name": "Avalanche", "issuer": "Avalanche", "canonical_class": "avax", "logo_image_path": "./assets/reference-icons/reserve-assets/avax-reference.svg" },
+    { "symbol": "HBAR", "display_name": "Hedera", "issuer": "Hedera", "canonical_class": "hbar", "logo_image_path": "./assets/reference-icons/reserve-assets/hbar-reference.svg" },
+    { "symbol": "BNB", "display_name": "BNB", "issuer": "BNB Chain", "canonical_class": "bnb", "logo_image_path": "./assets/reference-icons/reserve-assets/bnb-reference.svg" },
+    { "symbol": "POL", "display_name": "Polygon", "issuer": "Polygon", "canonical_class": "pol", "logo_image_path": "./assets/reference-icons/reserve-assets/pol-reference.svg" },
+    { "symbol": "USDC", "display_name": "USD Coin", "issuer": "Circle", "canonical_class": "usdc", "logo_image_path": "./assets/reference-icons/reserve-assets/usdc-reference.svg" }
+  ]
+}

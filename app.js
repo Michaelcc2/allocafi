@@ -4796,19 +4796,20 @@ function renderStablecoinLogo(asset, fallbackMark = "$", options = {}) {
 
 const SUPPORTED_STABLECOIN_ASSETS = ["USDC", "USDT", "PYUSD", "FDUSD", "DAI", "USDS"];
 const SUPPORTED_RESERVE_ASSETS = ["BTC", "ETH", "SOL", "LTC", "ADA", "XRP", "AVAX", "HBAR", "BNB", "POL"];
-const RESERVE_ASSET_SYMBOL_REFERENCE_ID = "legal-core-asset-symbol-reference-2026-05-31";
-const RESERVE_ASSET_SYMBOL_REFERENCE_PATH = "./assets/reference-icons/legal-core-assets/legal-core-asset-symbol-reference-2026-05-31.png";
+const RESERVE_ASSET_LOGO_ASSET_PATH = "./assets/reference-icons/reserve-assets";
+const RESERVE_ASSET_SYMBOL_REFERENCE_ID = "reserve-asset-logo-reference-2026-06-11";
+const RESERVE_ASSET_SYMBOL_REFERENCE_PATH = `${RESERVE_ASSET_LOGO_ASSET_PATH}/reserve-asset-logo-reference-2026-06-11.svg`;
 const RESERVE_ASSET_METADATA = {
-  BTC: { name: "Bitcoin", defaultAccountName: "Bitcoin Reserve", mark: "B", className: "btc", priceId: "bitcoin", fallbackPrice: 100000, change24h: 1.8 },
-  ETH: { name: "Ethereum", defaultAccountName: "Ethereum Reserve", mark: "E", className: "eth", priceId: "ethereum", fallbackPrice: 3800, change24h: 1.2 },
-  SOL: { name: "Solana", defaultAccountName: "Solana Reserve", mark: "S", className: "sol", priceId: "solana", fallbackPrice: 165, change24h: 2.4 },
-  LTC: { name: "Litecoin", defaultAccountName: "Litecoin Reserve", mark: "L", className: "ltc", priceId: "litecoin", fallbackPrice: 88, change24h: 0.6 },
-  ADA: { name: "Cardano", defaultAccountName: "Cardano Reserve", mark: "A", className: "ada", priceId: "cardano", fallbackPrice: 0.62, change24h: 0.9 },
-  XRP: { name: "XRP", defaultAccountName: "XRP Reserve", mark: "X", className: "xrp", priceId: "ripple", fallbackPrice: 0.58, change24h: 0.7 },
-  AVAX: { name: "Avalanche", defaultAccountName: "Avalanche Reserve", mark: "A", className: "avax", priceId: "avalanche-2", fallbackPrice: 36, change24h: 1.4 },
-  HBAR: { name: "Hedera", defaultAccountName: "Hedera Reserve", mark: "H", className: "hbar", priceId: "hedera-hashgraph", fallbackPrice: 0.095, change24h: 0.4 },
-  BNB: { name: "BNB", defaultAccountName: "BNB Reserve", mark: "B", className: "bnb", priceId: "binancecoin", fallbackPrice: 610, change24h: 0.8 },
-  POL: { name: "Polygon", defaultAccountName: "Polygon Reserve", mark: "P", className: "pol", priceId: "polygon-ecosystem-token", fallbackPrice: 0.72, change24h: 0.5 },
+  BTC: { name: "Bitcoin", defaultAccountName: "Bitcoin Reserve", mark: "BTC", className: "btc", logoImage: `${RESERVE_ASSET_LOGO_ASSET_PATH}/btc-reference.svg`, priceId: "bitcoin", fallbackPrice: 100000, change24h: 1.8 },
+  ETH: { name: "Ethereum", defaultAccountName: "Ethereum Reserve", mark: "ETH", className: "eth", logoImage: `${RESERVE_ASSET_LOGO_ASSET_PATH}/eth-reference.svg`, priceId: "ethereum", fallbackPrice: 3800, change24h: 1.2 },
+  SOL: { name: "Solana", defaultAccountName: "Solana Reserve", mark: "SOL", className: "sol", logoImage: `${RESERVE_ASSET_LOGO_ASSET_PATH}/sol-reference.svg`, priceId: "solana", fallbackPrice: 165, change24h: 2.4 },
+  LTC: { name: "Litecoin", defaultAccountName: "Litecoin Reserve", mark: "LTC", className: "ltc", logoImage: `${RESERVE_ASSET_LOGO_ASSET_PATH}/ltc-reference.svg`, priceId: "litecoin", fallbackPrice: 88, change24h: 0.6 },
+  ADA: { name: "Cardano", defaultAccountName: "Cardano Reserve", mark: "ADA", className: "ada", logoImage: `${RESERVE_ASSET_LOGO_ASSET_PATH}/ada-reference.svg`, priceId: "cardano", fallbackPrice: 0.62, change24h: 0.9 },
+  XRP: { name: "XRP", defaultAccountName: "XRP Reserve", mark: "XRP", className: "xrp", logoImage: `${RESERVE_ASSET_LOGO_ASSET_PATH}/xrp-reference.svg`, priceId: "ripple", fallbackPrice: 0.58, change24h: 0.7 },
+  AVAX: { name: "Avalanche", defaultAccountName: "Avalanche Reserve", mark: "AVAX", className: "avax", logoImage: `${RESERVE_ASSET_LOGO_ASSET_PATH}/avax-reference.svg`, priceId: "avalanche-2", fallbackPrice: 36, change24h: 1.4 },
+  HBAR: { name: "Hedera", defaultAccountName: "Hedera Reserve", mark: "HBAR", className: "hbar", logoImage: `${RESERVE_ASSET_LOGO_ASSET_PATH}/hbar-reference.svg`, priceId: "hedera-hashgraph", fallbackPrice: 0.095, change24h: 0.4 },
+  BNB: { name: "BNB", defaultAccountName: "BNB Reserve", mark: "BNB", className: "bnb", logoImage: `${RESERVE_ASSET_LOGO_ASSET_PATH}/bnb-reference.svg`, priceId: "binancecoin", fallbackPrice: 610, change24h: 0.8 },
+  POL: { name: "Polygon", defaultAccountName: "Polygon Reserve", mark: "POL", className: "pol", logoImage: `${RESERVE_ASSET_LOGO_ASSET_PATH}/pol-reference.svg`, priceId: "polygon-ecosystem-token", fallbackPrice: 0.72, change24h: 0.5 },
 };
 const LEGAL_CORE_PRICE_SOURCE_LABELS = {
   user_entered_cost_basis: "User-entered cost basis",
@@ -4940,8 +4941,11 @@ function renderAssetLogo(asset, options = {}) {
   const symbol = normalizeReserveAssetSymbol(asset);
   const meta = getReserveAssetMeta(symbol);
   const extraClass = options.className ? ` ${escapeHtml(options.className)}` : "";
-  const symbolSvg = renderReserveAssetSymbolSvg(symbol, meta.name);
   const referenceAttrs = `data-symbol-reference="${RESERVE_ASSET_SYMBOL_REFERENCE_ID}" data-symbol-reference-path="${RESERVE_ASSET_SYMBOL_REFERENCE_PATH}" data-asset-symbol="${escapeHtml(symbol)}"`;
+  if (meta.logoImage) {
+    return `<span class="asset-logo canonical-asset-logo asset-logo-${escapeHtml(meta.className)}${extraClass}" role="img" aria-label="${escapeHtml(meta.name)} logo" ${referenceAttrs}><img src="${escapeHtml(meta.logoImage)}" alt="" loading="lazy" decoding="async" /></span>`;
+  }
+  const symbolSvg = renderReserveAssetSymbolSvg(symbol, meta.name);
   if (symbolSvg) {
     return `<span class="asset-logo canonical-asset-logo asset-logo-${escapeHtml(meta.className)}${extraClass}" ${referenceAttrs}>${symbolSvg}</span>`;
   }
