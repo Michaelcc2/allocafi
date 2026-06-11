@@ -24450,3 +24450,59 @@ body {
     gap: 3px;
   }
 }
+/* Mobile themed scrollbars 2026-06-10
+   Scope: app-owned mobile scroll areas only. Browser chrome scroll indicators may still use OS styling. */
+@media (max-width: 768px) {
+  .app-shell,
+  .tab-panel,
+  .dialog-panel,
+  .wallet-dialog:has(.accounts20-detail-modal) .dialog-panel,
+  .wallet-dialog:has(.accounts20-action-sheet) .dialog-panel,
+  .accounts20-detail-modal,
+  .accounts20-shell,
+  .accounts20-isolated-route-panel,
+  .asset-reserve-isolated-route-panel {
+    scrollbar-color: #ff4fd8 rgba(7, 16, 38, 0.52);
+    scrollbar-width: thin;
+  }
+
+  .app-shell::-webkit-scrollbar,
+  .tab-panel::-webkit-scrollbar,
+  .dialog-panel::-webkit-scrollbar,
+  .wallet-dialog:has(.accounts20-detail-modal) .dialog-panel::-webkit-scrollbar,
+  .wallet-dialog:has(.accounts20-action-sheet) .dialog-panel::-webkit-scrollbar,
+  .accounts20-detail-modal::-webkit-scrollbar,
+  .accounts20-shell::-webkit-scrollbar,
+  .accounts20-isolated-route-panel::-webkit-scrollbar,
+  .asset-reserve-isolated-route-panel::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .app-shell::-webkit-scrollbar-track,
+  .tab-panel::-webkit-scrollbar-track,
+  .dialog-panel::-webkit-scrollbar-track,
+  .wallet-dialog:has(.accounts20-detail-modal) .dialog-panel::-webkit-scrollbar-track,
+  .wallet-dialog:has(.accounts20-action-sheet) .dialog-panel::-webkit-scrollbar-track,
+  .accounts20-detail-modal::-webkit-scrollbar-track,
+  .accounts20-shell::-webkit-scrollbar-track,
+  .accounts20-isolated-route-panel::-webkit-scrollbar-track,
+  .asset-reserve-isolated-route-panel::-webkit-scrollbar-track {
+    background: linear-gradient(180deg, rgba(7, 16, 38, 0.1), rgba(32, 240, 208, 0.08), rgba(255, 79, 216, 0.1));
+    border-radius: 999px;
+  }
+
+  .app-shell::-webkit-scrollbar-thumb,
+  .tab-panel::-webkit-scrollbar-thumb,
+  .dialog-panel::-webkit-scrollbar-thumb,
+  .wallet-dialog:has(.accounts20-detail-modal) .dialog-panel::-webkit-scrollbar-thumb,
+  .wallet-dialog:has(.accounts20-action-sheet) .dialog-panel::-webkit-scrollbar-thumb,
+  .accounts20-detail-modal::-webkit-scrollbar-thumb,
+  .accounts20-shell::-webkit-scrollbar-thumb,
+  .accounts20-isolated-route-panel::-webkit-scrollbar-thumb,
+  .asset-reserve-isolated-route-panel::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff4fd8 0%, #7c4dff 48%, #20f0d0 100%);
+    border: 2px solid rgba(5, 8, 22, 0.92);
+    border-radius: 999px;
+    box-shadow: 0 0 14px rgba(255, 79, 216, 0.28), 0 0 18px rgba(32, 240, 208, 0.2);
+  }
+}
