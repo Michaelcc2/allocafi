@@ -24506,3 +24506,37 @@ body {
     box-shadow: 0 0 14px rgba(255, 79, 216, 0.28), 0 0 18px rgba(32, 240, 208, 0.2);
   }
 }
+/* Accounts 2.0 detail title center fix 2026-06-11 */
+@media (max-width: 768px) {
+  .wallet-dialog:has(.accounts20-detail-modal) .accounts20-detail-hero {
+    align-items: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .wallet-dialog:has(.accounts20-detail-modal) .accounts20-detail-hero h2 {
+    align-self: center !important;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: min(100%, 320px) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    text-align: center !important;
+    transform: none !important;
+    width: 100% !important;
+  }
+
+  .wallet-dialog:has(.accounts20-detail-modal) .accounts20-detail-hero .accounts20-status {
+    align-self: center !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
+    width: auto !important;
+  }
+}
