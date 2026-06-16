@@ -1,0 +1,14 @@
+﻿{
+    "developerNotes":  "Future asset reserve templates remain stored as future definitions but are hidden from current production template list. Logo validation is exposed as window.allocafiValidateReserveAssetLogos().",
+    "id":  "update-2026-06-14-june-upgrade-pack",
+    "version":  "2026.06.14",
+    "deploymentStatus":  "Local implementation ready for commit",
+    "testingStatus":  "Passed static verification: app.js module syntax OK, change-management JSON valid, git diff --check clean. Local server/browser smoke test blocked by Windows node.exe access denied.",
+    "time":  "12:00:00",
+    "date":  "2026-06-14",
+    "module":  "June 2026 Upgrade Pack",
+    "rollbackInstructions":  "Revert commit implementing June 2026 Upgrade Pack, or restore app.js/styles.css/index.html/database/schema.sql and database/change-management from the prior commit.",
+    "reason":  "Improve mobile/desktop UI quality, prevent crypto logo mismatches, clarify premium limitations, and establish permanent release tracking.",
+    "expectedImprovement":  "More professional monthly dashboard, safer asset branding, clearer upgrade paths, better Accounts 2.0 sorting, and auditable development history.",
+    "changeDescription":  "Monthly Dashboard alignment and bills containment fixes; asset reserve logo integrity validation; current-release asset reserve simplification; standardized premium feature gate; Accounts 2.0 sort card refresh; change management database records."
+}

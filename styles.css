@@ -24542,3 +24542,212 @@ body {
     width: auto !important;
   }
 }
+
+/* June 2026 Upgrade Pack: monthly dashboard, premium gates, sort cards */
+.monthly-dashboard-shell #dashboardMonth.status-pill {
+  margin-inline: auto;
+}
+
+@media (max-width: 768px) {
+  .monthly-dashboard-shell > .panel-heading {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .monthly-dashboard-shell > .panel-heading::before {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .monthly-dashboard-shell > .panel-heading h2,
+  .monthly-dashboard-shell > .panel-heading p {
+    margin-left: 0;
+  }
+
+  .upcoming-bills-card {
+    min-height: auto;
+    overflow: hidden;
+  }
+
+  .upcoming-bills-head {
+    align-items: center;
+    grid-template-columns: 50px minmax(0, 1fr);
+  }
+
+  .upcoming-bills-total {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    grid-column: 1 / -1;
+    justify-content: space-between;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .bill-status-card {
+    grid-template-columns: 42px minmax(0, 1fr) max-content;
+    overflow: hidden;
+  }
+
+  .bill-status-card em {
+    align-items: center;
+    display: inline-flex;
+    gap: 5px;
+    grid-column: auto;
+    justify-self: end;
+  }
+
+  .upcoming-bill-list {
+    display: grid;
+    gap: 10px;
+    overflow-x: hidden;
+  }
+
+  .upcoming-bill-row {
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) 54px;
+    min-height: 0;
+    overflow: hidden;
+    padding: 12px;
+  }
+
+  .upcoming-bill-main {
+    gap: 10px;
+    grid-template-columns: 46px minmax(0, 1fr) minmax(78px, max-content);
+    overflow: hidden;
+  }
+
+  .upcoming-bill-copy,
+  .upcoming-bill-amount {
+    min-width: 0;
+  }
+
+  .upcoming-bill-copy strong,
+  .upcoming-bill-copy small,
+  .upcoming-bill-copy em,
+  .upcoming-bill-amount strong,
+  .upcoming-bill-amount small,
+  .upcoming-bill-amount b {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .upcoming-bill-pay {
+    align-self: stretch;
+    grid-column: auto;
+    grid-row: auto;
+    min-width: 50px;
+    padding: 0;
+  }
+
+  .upcoming-bill-pay span {
+    display: none;
+  }
+
+  .upcoming-bill-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.premium-gate-modal {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(255, 79, 216, 0.2), transparent 32%),
+    radial-gradient(circle at 92% 2%, rgba(47, 128, 255, 0.18), transparent 34%),
+    linear-gradient(145deg, rgba(8, 17, 35, 0.98), rgba(4, 10, 23, 0.94));
+  border: 1px solid rgba(255, 79, 216, 0.22);
+  border-radius: 18px;
+  padding: 4px;
+}
+
+.premium-gate-badge {
+  align-self: start;
+  background: rgba(255, 79, 216, 0.14);
+  border: 1px solid rgba(255, 79, 216, 0.28);
+  border-radius: 999px;
+  color: #ffb8f0;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  padding: 7px 10px;
+  text-transform: uppercase;
+}
+
+.premium-gate-benefits {
+  display: grid;
+  gap: 9px;
+}
+
+.premium-gate-benefits span {
+  align-items: center;
+  background: rgba(10, 18, 40, 0.78);
+  border: 1px solid rgba(132, 153, 193, 0.14);
+  border-radius: 14px;
+  color: #dce5ff;
+  display: flex;
+  gap: 10px;
+  padding: 11px 12px;
+}
+
+.premium-gate-benefits b {
+  color: #20f0d0;
+}
+
+.accounts20-sort-options {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.accounts20-sort-option {
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  min-height: 82px;
+  position: relative;
+}
+
+.accounts20-sort-option i {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 79, 216, 0.16), rgba(47, 128, 255, 0.14));
+  border: 1px solid rgba(132, 153, 193, 0.18);
+  border-radius: 14px;
+  color: #20f0d0;
+  display: grid;
+  grid-row: 1 / span 2;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+}
+
+.accounts20-sort-option svg {
+  fill: none;
+  height: 22px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 22px;
+}
+
+.accounts20-sort-option span,
+.accounts20-sort-option small {
+  grid-column: 2;
+}
+
+.accounts20-sort-option b {
+  align-items: center;
+  background: rgba(32, 240, 208, 0.12);
+  border: 1px solid rgba(32, 240, 208, 0.24);
+  border-radius: 999px;
+  color: #20f0d0;
+  display: grid;
+  font-size: 0.8rem;
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+
+.accounts20-sort-option.active::after {
+  content: "";
+}

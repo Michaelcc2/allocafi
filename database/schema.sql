@@ -1,4 +1,4 @@
-﻿create extension if not exists "pgcrypto";
+create extension if not exists "pgcrypto";
 
 create table if not exists public.users (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -1249,3 +1249,49 @@ alter table public.allocafi_snapshots enable row level security;
 alter table public.service_events enable row level security;
 alter table public.feature_flags enable row level security;
 alter table public.budget_templates enable row level security;
+
+-- AllocaFi Change Management System - June 2026 Upgrade Pack
+CREATE TABLE IF NOT EXISTS platform_update_log (
+  id TEXT PRIMARY KEY,
+  update_date TEXT NOT NULL,
+  update_time TEXT NOT NULL,
+  version TEXT NOT NULL,
+  module TEXT NOT NULL,
+  change_description TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  expected_improvement TEXT NOT NULL,
+  developer_notes TEXT,
+  testing_status TEXT NOT NULL,
+  deployment_status TEXT NOT NULL,
+  rollback_instructions TEXT NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS platform_bug_log (
+  id TEXT PRIMARY KEY,
+  issue TEXT NOT NULL,
+  discovery_date TEXT NOT NULL,
+  resolution_date TEXT,
+  resolution_notes TEXT,
+  status TEXT NOT NULL DEFAULT 'open',
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS platform_release_log (
+  id TEXT PRIMARY KEY,
+  release_version TEXT NOT NULL,
+  release_date TEXT NOT NULL,
+  new_features TEXT NOT NULL,
+  adoption_metrics TEXT,
+  deployment_status TEXT NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS platform_rollback_log (
+  id TEXT PRIMARY KEY,
+  reverted_change_id TEXT,
+  reason_for_reversion TEXT NOT NULL,
+  impact_analysis TEXT NOT NULL,
+  rollback_date TEXT NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);

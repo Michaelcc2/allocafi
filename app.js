@@ -3294,12 +3294,72 @@ function getBudgetAccountPlanLimit() {
   return getCurrentEntitlements().buckets;
 }
 
+const PREMIUM_FEATURE_GATES = {
+  unlimitedBudgetAccounts: {
+    title: "Unlock Unlimited Virtual Budget Accounts",
+    subtitle: "Free plans include 3 Virtual Budget Accounts. AllocaFi Core unlocks unlimited accounts for detailed budgeting.",
+    bullets: ["Create unlimited budget categories", "Keep template previews visible before upgrading", "Use advanced allocation layouts without losing current data"],
+  },
+  autoAllocation: {
+    title: "Unlock Auto Allocation",
+    subtitle: "Use automated allocation tools to distribute funds across your Virtual Budget Accounts.",
+    bullets: ["Apply templates faster", "Rebalance existing accounts", "Keep money organized without manual math"],
+  },
+  advancedAnalytics: {
+    title: "Unlock Advanced Analytics",
+    subtitle: "Go beyond daily budgeting with deeper portfolio and budget intelligence.",
+    bullets: ["Trend analysis", "Richer reports", "Portfolio-level insights"],
+  },
+  aiFeatures: {
+    title: "Unlock AllocaFi AI Features",
+    subtitle: "Use AI-assisted insights and future smart budgeting tools with protected boundaries.",
+    bullets: ["AI insights", "Smart suggestions", "Premium report generation"],
+  },
+  multiWallet: {
+    title: "Unlock Multi-Wallet Management",
+    subtitle: "Track more wallet addresses while keeping AllocaFi non-custodial.",
+    bullets: ["Add more tracked wallets", "Organize stablecoin and reserve assets", "Keep public-address-only tracking"],
+  },
+  familyBusiness: {
+    title: "Unlock Family and Business Systems",
+    subtitle: "Prepare for future shared dashboards, commerce, and team workflows.",
+    bullets: ["Family budgeting", "Business organization", "Future enterprise controls"],
+  },
+  premiumReports: {
+    title: "Unlock Premium Reports",
+    subtitle: "Export richer reports and future Ledger Core packages from AllocaFi Core.",
+    bullets: ["Advanced exports", "Ledger Core records", "Accountant-ready packages"],
+  },
+};
+
+function openPremiumFeatureGate(featureKey = "unlimitedBudgetAccounts", options = {}) {
+  const gate = { ...(PREMIUM_FEATURE_GATES[featureKey] || PREMIUM_FEATURE_GATES.unlimitedBudgetAccounts), ...options };
+  openDialog(`
+    <div class="dialog-content premium-gate-modal">
+      <span class="premium-gate-badge">AllocaFi Core</span>
+      <h2>${escapeHtml(gate.title)}</h2>
+      <p class="wallet-note">${escapeHtml(gate.subtitle)}</p>
+      <div class="premium-gate-benefits">
+        ${(gate.bullets || []).map((item) => `<span><b>✓</b>${escapeHtml(item)}</span>`).join("")}
+      </div>
+      <div class="dialog-actions">
+        <button class="primary-button" id="premiumGateUpgrade" type="button">Upgrade to AllocaFi Core</button>
+        <button class="ghost-button" id="premiumGateLater" type="button">Maybe later</button>
+      </div>
+      <p class="form-note">You can explore the feature, but completion requires an active Core plan.</p>
+    </div>
+  `);
+  dialogContent.querySelector("#premiumGateUpgrade")?.addEventListener("click", () => openSubscriptionCheckout("premium"));
+  dialogContent.querySelector("#premiumGateLater")?.addEventListener("click", () => walletDialog.close());
+}
+
 function showBudgetAccountLimitUpgradePrompt() {
   const limit = getBudgetAccountPlanLimit();
   const currentPlan = getCurrentSubscriptionPlan();
   const planLabel = currentPlan.code === "free" ? "Free" : currentPlan.name;
-  showToast(`${planLabel} allows ${formatPlanLimit(limit)} Virtual Budget Accounts. Upgrade to AllocaFi Core for unlimited budget accounts.`);
-  openSubscriptionCheckout("premium");
+  openPremiumFeatureGate("unlimitedBudgetAccounts", {
+    subtitle: `${planLabel} allows ${formatPlanLimit(limit)} Virtual Budget Accounts. AllocaFi Core unlocks unlimited budget accounts while preserving your current setup.`,
+  });
 }
 
 function canSendFromVirtualBucketAccounts() {
@@ -4824,12 +4884,21 @@ const LEGAL_CORE_CONFIDENCE_LABELS = {
   estimated_nearest_day: "Estimated nearest market day",
   missing: "Needs review",
 };
+const CURRENT_ASSET_RESERVE_TEMPLATE_IDS = new Set(SUPPORTED_RESERVE_ASSETS.map((asset) => `reserve-template-${asset.toLowerCase()}`));
+const FUTURE_VIRTUAL_ASSET_ACCOUNT_TEMPLATES = [
+  { id: "reserve-template-retirement", asset: "MULTI", name: "Retirement Crypto", accountType: "strategy", releaseStatus: "future" },
+  { id: "reserve-template-long-term", asset: "MULTI", name: "Long-Term Holdings", accountType: "strategy", releaseStatus: "future" },
+  { id: "reserve-template-trading", asset: "MULTI", name: "Trading Reserve", accountType: "strategy", releaseStatus: "future" },
+  { id: "reserve-template-custom", asset: "CUSTOM", name: "Custom Asset Account", accountType: "custom-template", releaseStatus: "future" },
+];
 const VIRTUAL_ASSET_ACCOUNT_TEMPLATES = [
-  ...SUPPORTED_RESERVE_ASSETS.map((asset) => ({ id: `reserve-template-${asset.toLowerCase()}`, asset, name: RESERVE_ASSET_METADATA[asset].defaultAccountName, accountType: "reserve" })),
-  { id: "reserve-template-retirement", asset: "MULTI", name: "Retirement Crypto", accountType: "strategy" },
-  { id: "reserve-template-long-term", asset: "MULTI", name: "Long-Term Holdings", accountType: "strategy" },
-  { id: "reserve-template-trading", asset: "MULTI", name: "Trading Reserve", accountType: "strategy" },
-  { id: "reserve-template-custom", asset: "CUSTOM", name: "Custom Asset Account", accountType: "custom-template" },
+  ...SUPPORTED_RESERVE_ASSETS.map((asset) => ({
+    id: `reserve-template-${asset.toLowerCase()}`,
+    asset,
+    name: RESERVE_ASSET_METADATA[asset].defaultAccountName,
+    accountType: "reserve",
+    releaseStatus: "current",
+  })),
 ];
 
 function loadVirtualAssetAccountState() {
@@ -4937,13 +5006,38 @@ function renderReserveAssetSymbolSvg(symbol, name) {
   return logos[symbol] || "";
 }
 
+function getReserveAssetExpectedLogoPath(symbol) {
+  const normalized = normalizeReserveAssetSymbol(symbol);
+  return `${RESERVE_ASSET_LOGO_ASSET_PATH}/${normalized.toLowerCase()}-reference.svg`;
+}
+
+function getReserveAssetLogoIntegrity(symbol) {
+  const normalized = normalizeReserveAssetSymbol(symbol);
+  const meta = getReserveAssetMeta(normalized);
+  const expectedPath = getReserveAssetExpectedLogoPath(normalized);
+  const actualPath = meta.logoImage || "";
+  return {
+    symbol: normalized,
+    expectedPath,
+    actualPath,
+    hasLogo: Boolean(actualPath),
+    valid: Boolean(actualPath && actualPath === expectedPath),
+    fallback: !actualPath,
+  };
+}
+
+function validateReserveAssetLogoIntegrity() {
+  return SUPPORTED_RESERVE_ASSETS.map(getReserveAssetLogoIntegrity);
+}
+
 function renderAssetLogo(asset, options = {}) {
   const symbol = normalizeReserveAssetSymbol(asset);
   const meta = getReserveAssetMeta(symbol);
+  const integrity = getReserveAssetLogoIntegrity(symbol);
   const extraClass = options.className ? ` ${escapeHtml(options.className)}` : "";
-  const referenceAttrs = `data-symbol-reference="${RESERVE_ASSET_SYMBOL_REFERENCE_ID}" data-symbol-reference-path="${RESERVE_ASSET_SYMBOL_REFERENCE_PATH}" data-asset-symbol="${escapeHtml(symbol)}"`;
-  if (meta.logoImage) {
-    return `<span class="asset-logo canonical-asset-logo asset-logo-${escapeHtml(meta.className)}${extraClass}" role="img" aria-label="${escapeHtml(meta.name)} logo" ${referenceAttrs}><img src="${escapeHtml(meta.logoImage)}" alt="" loading="lazy" decoding="async" /></span>`;
+  const referenceAttrs = `data-symbol-reference="${RESERVE_ASSET_SYMBOL_REFERENCE_ID}" data-symbol-reference-path="${RESERVE_ASSET_SYMBOL_REFERENCE_PATH}" data-asset-symbol="${escapeHtml(symbol)}" data-logo-valid="${integrity.valid ? "true" : "false"}" data-logo-fallback="${integrity.fallback ? "true" : "false"}"`;
+  if (integrity.valid) {
+    return `<span class="asset-logo canonical-asset-logo asset-logo-${escapeHtml(meta.className)}${extraClass}" role="img" aria-label="${escapeHtml(meta.name)} logo" ${referenceAttrs}><img src="${escapeHtml(integrity.actualPath)}" alt="" loading="lazy" decoding="async" /></span>`;
   }
   const symbolSvg = renderReserveAssetSymbolSvg(symbol, meta.name);
   if (symbolSvg) {
@@ -4951,6 +5045,8 @@ function renderAssetLogo(asset, options = {}) {
   }
   return `<span class="asset-logo asset-logo-${escapeHtml(meta.className)}${extraClass}" role="img" aria-label="${escapeHtml(meta.name)} logo" ${referenceAttrs}><i>${escapeHtml(meta.mark)}</i></span>`;
 }
+
+window.allocafiValidateReserveAssetLogos = validateReserveAssetLogoIntegrity;
 
 function getWalletReserveAssetSymbol(wallet) {
   const network = NETWORKS[wallet?.network];
@@ -7810,7 +7906,7 @@ function renderVirtualAssetAccountsSection() {
 }
 
 function bindVirtualAssetAccountControls(root = document) {
-  root.querySelector(".asset-account-upgrade")?.addEventListener("click", () => openSubscriptionCheckout("premium"));
+  root.querySelector(".asset-account-upgrade")?.addEventListener("click", () => openPremiumFeatureGate("advancedAnalytics", { title: "Unlock Asset Reserve Accounts", subtitle: "AllocaFi Core unlocks reserve asset accounts and Legal Core tracking.", bullets: ["Cryptocurrency reserve accounts", "Legal Core tracking", "Future ledger exports"] }));
   root.querySelectorAll(".virtual-asset-row").forEach((row) => {
     row.addEventListener("click", (event) => {
       if (event.target.closest("button")) return;
@@ -7978,11 +8074,17 @@ function setAccounts20SortMode(mode) {
 function sortAccounts20Rows(rows) {
   const mode = getAccounts20SortMode();
   const sorted = [...rows];
+  const updatedAt = (account) => Date.parse(account.bucket?.updatedAt || account.wallet?.allocation?.updatedAt || account.wallet?.createdAt || 0) || 0;
+  const favoriteRank = (account) => Number(Boolean(account.bucket?.favorite || account.bucket?.pinned || account.bucket?.isFavorite));
   if (mode === "value-desc") sorted.sort((a, b) => Number(b.balance || 0) - Number(a.balance || 0));
   else if (mode === "value-asc") sorted.sort((a, b) => Number(a.balance || 0) - Number(b.balance || 0));
   else if (mode === "allocated-desc") sorted.sort((a, b) => Number(b.allocationPercent || 0) - Number(a.allocationPercent || 0));
   else if (mode === "needs-funding") sorted.sort((a, b) => getAccounts20FundedPercent(a) - getAccounts20FundedPercent(b));
   else if (mode === "az") sorted.sort((a, b) => String(a.bucket?.name || "").localeCompare(String(b.bucket?.name || "")));
+  else if (mode === "za") sorted.sort((a, b) => String(b.bucket?.name || "").localeCompare(String(a.bucket?.name || "")));
+  else if (mode === "updated-desc") sorted.sort((a, b) => updatedAt(b) - updatedAt(a));
+  else if (mode === "updated-asc") sorted.sort((a, b) => updatedAt(a) - updatedAt(b));
+  else if (mode === "favorites") sorted.sort((a, b) => favoriteRank(b) - favoriteRank(a));
   return sorted;
 }
 
@@ -8025,24 +8127,46 @@ function refreshAccounts20View(root = document) {
 }
 
 const ACCOUNTS20_SORT_OPTIONS = [
-  { id: "value-desc", label: "Highest Balance", helper: "Largest funded accounts first" },
-  { id: "value-asc", label: "Lowest Balance", helper: "Smallest funded accounts first" },
-  { id: "allocated-desc", label: "Highest Allocation %", helper: "Largest template share first" },
-  { id: "needs-funding", label: "Needs Funding First", helper: "Lowest funded percentage first" },
-  { id: "az", label: "A-Z", helper: "Alphabetical by account name" },
+  { id: "value-desc", label: "Highest Balance", helper: "Largest funded accounts first", icon: "wallet" },
+  { id: "value-asc", label: "Lowest Balance", helper: "Smallest funded accounts first", icon: "balance-down" },
+  { id: "az", label: "A-Z", helper: "Alphabetical by account name", icon: "az" },
+  { id: "za", label: "Z-A", helper: "Reverse alphabetical order", icon: "za" },
+  { id: "updated-desc", label: "Recently Updated", helper: "Newest budget activity first", icon: "clock" },
+  { id: "updated-asc", label: "Oldest Updated", helper: "Oldest budget activity first", icon: "calendar" },
+  { id: "favorites", label: "Favorites First", helper: "Pinned or favorite accounts first", icon: "star" },
+  { id: "allocated-desc", label: "Highest Allocation %", helper: "Largest template share first", icon: "percent" },
+  { id: "needs-funding", label: "Needs Funding First", helper: "Lowest funded percentage first", icon: "alert" },
 ];
+
+function renderAccounts20SortIcon(type = "wallet") {
+  const icons = {
+    wallet: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"></path><path d="M16 12h4"></path><path d="M6 7.5V5.8A2 2 0 0 1 8 4h8"></path></svg>`,
+    "balance-down": `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"></path><path d="M7 16V9"></path><path d="M12 16V5"></path><path d="M17 16v-3"></path><path d="m9 12 3 3 3-3"></path></svg>`,
+    az: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 8 6l4 12"></path><path d="M5.5 14h5"></path><path d="M14 7h6l-6 10h6"></path></svg>`,
+    za: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h6L4 17h6"></path><path d="M14 18 18 6l4 12"></path><path d="M15.5 14h5"></path></svg>`,
+    clock: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg>`,
+    calendar: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M8 3v4"></path><path d="M16 3v4"></path><path d="M4 10h16"></path></svg>`,
+    star: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"></path></svg>`,
+    percent: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 19 14-14"></path><circle cx="7" cy="7" r="2"></circle><circle cx="17" cy="17" r="2"></circle></svg>`,
+    alert: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 3 20h18L12 4Z"></path><path d="M12 9v5"></path><path d="M12 17h.01"></path></svg>`,
+  };
+  return icons[type] || icons.wallet;
+}
 
 function openAccounts20SortDialog() {
   const currentMode = getAccounts20SortMode();
   openDialog(`
     <div class="dialog-content accounts20-sort-sheet">
+      <span class="premium-gate-badge">Accounts 2.0</span>
       <h2>Sort Accounts</h2>
       <p class="wallet-note">Choose how Accounts 2.0 organizes your Virtual Budget Accounts.</p>
       <div class="accounts20-sort-options">
         ${ACCOUNTS20_SORT_OPTIONS.map((option) => `
-          <button class="accounts20-sort-option ${currentMode === option.id ? "active" : ""}" type="button" data-sort-mode="${escapeHtml(option.id)}">
+          <button class="accounts20-sort-option ${currentMode === option.id ? "active" : ""}" type="button" data-sort-mode="${escapeHtml(option.id)}" aria-pressed="${currentMode === option.id ? "true" : "false"}">
+            <i>${renderAccounts20SortIcon(option.icon)}</i>
             <span>${escapeHtml(option.label)}</span>
             <small>${escapeHtml(option.helper)}</small>
+            <b>${currentMode === option.id ? "✓" : ""}</b>
           </button>
         `).join("")}
       </div>
@@ -10830,8 +10954,11 @@ function openAssignMoneyDialog(preferredWalletId = "") {
     const nextTemplateKey = card.dataset.templateSelect || "essentials";
     const template = BUCKET_TEMPLATES[nextTemplateKey];
     if (template && isBudgetTemplateLocked(template)) {
-      showToast("Upgrade to Premium to use that budget template");
-      openSubscriptionCheckout("premium");
+      openPremiumFeatureGate("unlimitedBudgetAccounts", {
+        title: "Unlock Premium Budget Templates",
+        subtitle: "AllocaFi Core unlocks premium template systems with deeper Virtual Budget Account structures.",
+        bullets: ["Premium budget templates", "Unlimited budget accounts", "Advanced allocation previews"],
+      });
       return;
     }
     selectedTemplateKey = nextTemplateKey;
@@ -10969,11 +11096,6 @@ function openAddBucketAccountDialog() {
     switchTab("wallets");
     return;
   }
-  if (!canUseBucketCountUnderPlan(countVirtualBucketAccounts() + 1)) {
-    showBudgetAccountLimitUpgradePrompt();
-    return;
-  }
-
   const defaultWalletId = wallets.some((wallet) => wallet.id === selectedWalletId)
     ? selectedWalletId
     : wallets[0].id;
@@ -11078,8 +11200,11 @@ function saveAssignedMoney() {
   }
   const selectedTemplate = BUCKET_TEMPLATES[templateKey];
   if (selectedTemplate && isBudgetTemplateLocked(selectedTemplate)) {
-    showToast("Upgrade to Premium to use that budget template");
-    openSubscriptionCheckout("premium");
+    openPremiumFeatureGate("unlimitedBudgetAccounts", {
+      title: "Unlock Premium Budget Templates",
+      subtitle: "AllocaFi Core unlocks premium template systems with deeper Virtual Budget Account structures.",
+      bullets: ["Premium budget templates", "Unlimited budget accounts", "Advanced allocation previews"],
+    });
     return;
   }
 
@@ -11526,8 +11651,7 @@ function saveWizardWallet() {
     return;
   }
   if (!canAddWalletUnderPlan()) {
-    showToast("Upgrade to Premium for multiple wallets");
-    openSubscriptionCheckout("premium");
+    openPremiumFeatureGate("multiWallet");
     return;
   }
   if (!canUseBucketCountUnderPlan(countVirtualBucketAccounts() + DEFAULT_BUCKETS.length)) {
@@ -11921,8 +12045,11 @@ function getVirtualAssetSourceWallet(account) {
 
 function openVirtualAssetAccountDialog(accountId) {
   if (!canUseReserveAssetAccounts()) {
-    showToast("AllocaFi Core unlocks Reserve Asset Accounts");
-    openSubscriptionCheckout("premium");
+    openPremiumFeatureGate("advancedAnalytics", {
+      title: "Unlock Reserve Asset Accounts",
+      subtitle: "AllocaFi Core unlocks cryptocurrency reserve organization and Legal Core tracking.",
+      bullets: ["Track reserve asset accounts", "Connect Legal Core records", "Prepare future tax ledger exports"],
+    });
     return;
   }
   const account = getVirtualAssetAccountById(accountId);
@@ -12011,8 +12138,11 @@ function openVirtualAssetAccountDialog(accountId) {
 
 function openCreateAssetAccountDialog() {
   if (!canUseReserveAssetAccounts()) {
-    showToast("AllocaFi Core unlocks Reserve Asset Accounts");
-    openSubscriptionCheckout("premium");
+    openPremiumFeatureGate("advancedAnalytics", {
+      title: "Unlock Reserve Asset Accounts",
+      subtitle: "AllocaFi Core unlocks cryptocurrency reserve organization and Legal Core tracking.",
+      bullets: ["Track reserve asset accounts", "Connect Legal Core records", "Prepare future tax ledger exports"],
+    });
     return;
   }
   openDialog(`
@@ -12145,8 +12275,11 @@ function openAssetAccountSendDialog(accountId) {
 
 function openAssetAccountRecordsDialog(accountId, mode = "timeline") {
   if (!canUseLegalCoreAddOns()) {
-    showToast("AllocaFi Core unlocks Legal Core records");
-    openSubscriptionCheckout("premium");
+    openPremiumFeatureGate("premiumReports", {
+      title: "Unlock Legal Core Records",
+      subtitle: "Legal Core records are included with AllocaFi Core for reserve asset tracking and future reporting.",
+      bullets: ["Cost-basis records", "Gain/loss tracking", "Export-ready ledger history"],
+    });
     return;
   }
   const account = getVirtualAssetAccountById(accountId);

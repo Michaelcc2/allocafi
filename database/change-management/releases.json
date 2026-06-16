@@ -1,0 +1,15 @@
+﻿{
+    "id":  "release-2026-06-14",
+    "releaseVersion":  "2026.06.14",
+    "newFeatures":  [
+                        "Monthly Dashboard mobile polish",
+                        "Asset logo integrity validation",
+                        "Premium feature gate modal",
+                        "Accounts 2.0 sort cards",
+                        "Asset reserve MVP simplification",
+                        "Change management records"
+                    ],
+    "deploymentStatus":  "Local pending commit",
+    "releaseDate":  "2026-06-14",
+    "adoptionMetrics":  "Not measured yet"
+}
