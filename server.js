@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import { createAccountService } from "./account-service.mjs";
 import { request as httpsRequest } from "node:https";
 import { createHmac, createPublicKey, randomBytes, randomUUID, timingSafeEqual, verify as verifySignature } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -42,7 +43,7 @@ const allowInsecureTlsFallback = !isProduction && process.env.ALLOCAFI_LOCAL_TLS
 const solanaPyusdMint = "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo";
 const solanaTokenPrograms = [
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
-  "TokenzQdBNbLqP5VEhdkAS6EPzYm3S5FWnW7zWuCxgu",
+  "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
 ];
 const solanaAllowlist = new Set([
   "https://api.mainnet-beta.solana.com",
@@ -329,7 +330,7 @@ function getConfiguredSolanaRpcEndpoint() {
 function getConfigStatus() {
   const services = {
     auth: envSet("SUPABASE_URL") && envSet("SUPABASE_ANON_KEY"),
-    database: envSet("DATABASE_URL") || (envSet("SUPABASE_URL") && envSet("SUPABASE_SERVICE_ROLE_KEY")),
+    database: envSet("SUPABASE_URL") && envSet("SUPABASE_ANON_KEY"),
     plaid: envSet("PLAID_CLIENT_ID") && envSet("PLAID_SECRET"),
     stripe: envSet("STRIPE_SECRET_KEY") && envSet("STRIPE_WEBHOOK_SECRET"),
     openai: envSet("OPENAI_API_KEY"),
@@ -340,7 +341,7 @@ function getConfigStatus() {
     mode: services.auth && services.database ? "production-ready" : "local-preview",
     configured: Object.values(services).some(Boolean),
     services,
-    requiredForPhase1: ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "DATABASE_URL"],
+    requiredForPhase1: ["SUPABASE_URL", "SUPABASE_ANON_KEY"],
     optionalNext: ["SOLANA_RPC_URL", "HELIUS_API_KEY", "HELIUS_RPC_URL", "ALCHEMY_SOLANA_RPC_URL", "OPENAI_API_KEY", "WALLETCONNECT_PROJECT_ID", "REOWN_PROJECT_ID", "PLAID_CLIENT_ID", "PLAID_SECRET", "STRIPE_SECRET_KEY"],
   };
 }
@@ -369,67 +370,6 @@ function checkRateLimit(req, res, url) {
   rateLimitHits.set(key, record);
   if (record.count <= rateLimitMaxRequests) return false;
   sendJson(res, 429, { message: "Too many requests. Try again shortly." });
-  return true;
-}
-
-async function callSupabaseAuth(path, payload) {
-  const supabaseUrl = (process.env.SUPABASE_URL || "").replace(/\/+$/, "");
-  const anonKey = process.env.SUPABASE_ANON_KEY || "";
-  if (!supabaseUrl || !anonKey) {
-    return { status: 503, data: { code: "supabase_not_configured", message: "Supabase Auth is not configured yet." } };
-  }
-  const response = await fetch(`${supabaseUrl}${path}`, {
-    method: "POST",
-    headers: {
-      "apikey": anonKey,
-      "Authorization": `Bearer ${anonKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-  const text = await response.text();
-  let data = {};
-  try {
-    data = text ? JSON.parse(text) : {};
-  } catch {
-    data = { message: text };
-  }
-  return { status: response.status, data };
-}
-
-async function handleAuthRoute(req, res, path) {
-  if (req.method !== "POST") {
-    sendJson(res, 405, { message: "Method not allowed" });
-    return true;
-  }
-  try {
-    const body = await readJsonBody(req);
-    if (path === "/api/auth/logout") {
-      sendJson(res, 200, { ok: true });
-      return true;
-    }
-    if (!body.email || (path !== "/api/auth/password-reset" && !body.password)) {
-      sendJson(res, 400, { message: "Email and password are required." });
-      return true;
-    }
-    const supabasePath = path === "/api/auth/signup"
-      ? "/auth/v1/signup"
-      : path === "/api/auth/login"
-        ? "/auth/v1/token?grant_type=password"
-        : "/auth/v1/recover";
-    const result = await callSupabaseAuth(supabasePath, body);
-    if (result.status >= 200 && result.status < 300) {
-      sendJson(res, result.status, {
-        provider: "supabase",
-        user: result.data.user || result.data,
-        session: result.data.session || result.data,
-      });
-      return true;
-    }
-    sendJson(res, result.status, { code: result.data.code || "auth_error", message: result.data.msg || result.data.message || "Authentication failed." });
-  } catch (error) {
-    sendJson(res, 400, { message: error?.message || "Authentication request failed." });
-  }
   return true;
 }
 
@@ -1891,28 +1831,6 @@ async function handleAiRoute(req, res, path) {
     sendJson(res, 400, { message: error?.message || "AI request failed" });
   }
 }
-async function handleCloudSnapshot(req, res) {
-  if (req.method !== "POST") {
-    sendJson(res, 405, { message: "Method not allowed" });
-    return;
-  }
-  const status = getConfigStatus();
-  if (!status.services.database) {
-    sendJson(res, 503, {
-      mode: "local-preview",
-      stored: false,
-      message: "Database environment keys are not connected yet, so this sync stays queued on this browser.",
-    });
-    return;
-  }
-  await readJsonBody(req);
-  sendJson(res, 202, {
-    mode: "cloud-route-ready",
-    stored: false,
-    message: "Snapshot route is ready. Connect the Supabase tables from database/schema.sql to persist this payload.",
-  });
-}
-
 function requestExternalJson(endpoint, body, timeoutMs = 20000) {
   return new Promise((resolvePromise, reject) => {
     const payload = typeof body === "string" ? body : JSON.stringify(body);
@@ -1997,6 +1915,7 @@ function parseTokenAccounts(accounts = [], mint = solanaPyusdMint) {
 
 async function fetchSolanaPyusdBalance(address, endpoints) {
   const errors = [];
+  let zeroResult = null;
   for (const endpoint of endpoints) {
     for (const programId of solanaTokenPrograms) {
       try {
@@ -2029,13 +1948,37 @@ async function fetchSolanaPyusdBalance(address, endpoints) {
         ],
       });
       const balance = parseTokenAccounts(result.result?.value || []).reduce((sum, token) => sum + token.amount, 0);
-      return { balance, endpoint, source: "mint scan" };
+      if (balance > 0) return { balance, endpoint, source: "mint scan" };
+      zeroResult = { balance: 0, endpoint, source: "mint scan" };
     } catch (error) {
       errors.push(error?.message || "Mint scan failed");
     }
+
+    try {
+      const result = await postRpc(endpoint, {
+        jsonrpc: "2.0",
+        id: Date.now(),
+        method: "getAccountInfo",
+        params: [
+          address,
+          { encoding: "jsonParsed" },
+        ],
+      });
+      const info = result.result?.value?.data?.parsed?.info;
+      if (info?.mint === solanaPyusdMint) {
+        return {
+          balance: Number(info.tokenAmount?.uiAmountString || info.tokenAmount?.uiAmount || 0),
+          endpoint,
+          source: "direct token account",
+        };
+      }
+    } catch (error) {
+      errors.push(error?.message || "Direct token account scan failed");
+    }
   }
 
-  return { balance: 0, errors: [...new Set(errors)].slice(0, 4) };
+  if (zeroResult) return zeroResult;
+  throw new Error("Unable to reach a working Solana balance provider. Balance is unavailable; refresh when connectivity is restored.");
 }
 
 async function handleSolanaPyusdBalance(req, res, url) {
@@ -2055,6 +1998,7 @@ async function handleSolanaPyusdBalance(req, res, url) {
   }
 }
 
+const accountService = createAccountService({ readBody: readJsonBody, sendJson });
 const server = createServer(async (req, res) => {
   const url = new URL(req.url || "/", `http://127.0.0.1:${port}`);
   if (checkRateLimit(req, res, url)) return;
@@ -2085,11 +2029,11 @@ const server = createServer(async (req, res) => {
     return;
   }
   if (url.pathname.startsWith("/api/auth/")) {
-    await handleAuthRoute(req, res, url.pathname);
+    await accountService(req, res, url.pathname);
     return;
   }
   if (url.pathname === "/api/sync/snapshot") {
-    await handleCloudSnapshot(req, res);
+    await accountService(req, res, url.pathname);
     return;
   }
   if (url.pathname.startsWith("/api/ai/")) {

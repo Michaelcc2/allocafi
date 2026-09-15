@@ -1,0 +1,62 @@
+import assert from "node:assert/strict";
+import { accountIdentity, createAccountService, CREATOR_EMAIL, CREATOR_WALLET } from "../account-service.mjs";
+
+assert.equal(accountIdentity({ id: "a", email: CREATOR_EMAIL }).creator, false);
+assert.equal(accountIdentity({ id: "a", email: "other@gmail.com", email_confirmed_at: "now", user_metadata: { creator: true } }).creator, false);
+assert.equal(accountIdentity({ id: "a", email: CREATOR_EMAIL.toUpperCase(), email_confirmed_at: "now" }).masterWallet, CREATOR_WALLET);
+
+const calls = [];
+let responseQueue = [];
+const env = { SUPABASE_URL: "https://example.supabase.co", SUPABASE_ANON_KEY: "public-key", NODE_ENV: "production", ALLOCAFI_PUBLIC_ORIGIN: "https://allocafi.test" };
+const handler = createAccountService({ env, readBody: async req => req.body, sendJson: (res, status, body) => { res.status = status; res.body = body; }, fetcher: async (url, options) => {
+  calls.push({ url, options });
+  const next = responseQueue.shift();
+  assert.ok(next, `Unexpected request ${url}`);
+  return { ok: next.status < 400, status: next.status, json: async () => next.body };
+} });
+async function request(path, { method = "POST", body = {}, cookie = "", origin = env.ALLOCAFI_PUBLIC_ORIGIN, userId = "verified-user" } = {}, responses = []) {
+  responseQueue = responses;
+  calls.length = 0;
+  const res = { headers: {}, setHeader(name, value) { this.headers[name] = value; } };
+  await handler({ method, body, headers: { cookie, origin, "x-allocafi-user": userId } }, res, path);
+  assert.equal(responseQueue.length, 0);
+  return res;
+}
+const okUser = { id: "verified-user", email: CREATOR_EMAIL, email_confirmed_at: "now" };
+let res = await request("/api/auth/login", { body: { email: CREATOR_EMAIL, password: "incorrect" } }, [{ status: 400, body: { message: "Invalid login credentials" } }]);
+assert.equal(res.status, 400);
+assert.equal(res.headers["Set-Cookie"], undefined);
+res = await request("/api/auth/signup", { body: { email: CREATOR_EMAIL, password: "test-password" } }, [{ status: 200, body: { user: { id: "new", email: CREATOR_EMAIL } } }]);
+assert.equal(res.body.verificationRequired, true);
+assert.equal(res.headers["Set-Cookie"], undefined);
+res = await request("/api/auth/login", { body: { email: CREATOR_EMAIL, password: "test-password" } }, [{ status: 200, body: { access_token: "access", refresh_token: "refresh", user: okUser } }]);
+assert.equal(res.body.session.creator, true);
+assert.ok(res.headers["Set-Cookie"].every(cookie => cookie.includes("HttpOnly") && cookie.includes("Secure") && cookie.includes("SameSite=Strict")));
+assert.equal(JSON.stringify(res.body).includes('"access"'), false);
+res = await request("/api/auth/session", { method: "GET", cookie: "allocafi_access=expired; allocafi_refresh=refresh" }, [{ status: 401, body: {} }, { status: 200, body: { access_token: "new", refresh_token: "renewed", user: okUser } }]);
+assert.equal(res.status, 200);
+assert.ok(calls[1].url.includes("grant_type=refresh_token"));
+res = await request("/api/sync/snapshot", { method: "GET" });
+assert.equal(res.status, 401);
+res = await request("/api/sync/snapshot", { origin: "https://attacker.test" });
+assert.equal(res.status, 403);
+res = await request("/api/sync/snapshot", { cookie: "allocafi_access=access", userId: "another-user" }, [{ status: 200, body: okUser }]);
+assert.equal(res.status, 409);
+const snapshot = { schemaVersion: 1, wallets: [{ address: "public-address", allocation: { buckets: [{ name: "Bills" }] } }], goals: [], addressBook: [], user: { id: "victim" }, creator: true };
+res = await request("/api/sync/snapshot", { body: { snapshot, revision: 0 }, cookie: "allocafi_access=access" }, [{ status: 200, body: okUser }, { status: 201, body: [{ revision: 1 }] }]);
+assert.equal(res.body.stored, true);
+const persisted = JSON.parse(calls[1].options.body);
+assert.equal(persisted.user_id, okUser.id);
+assert.equal(persisted.snapshot.user, undefined);
+assert.equal(persisted.snapshot.creator, undefined);
+assert.deepEqual(persisted.snapshot.wallets, snapshot.wallets);
+res = await request("/api/sync/snapshot", { method: "GET", cookie: "allocafi_access=access" }, [{ status: 200, body: okUser }, { status: 200, body: [{ snapshot: persisted.snapshot, revision: 1 }] }]);
+assert.deepEqual(res.body.snapshot.wallets, snapshot.wallets);
+assert.ok(calls[1].url.includes("user_id=eq.verified-user"));
+res = await request("/api/sync/snapshot", { body: { snapshot, revision: 1 }, cookie: "allocafi_access=access" }, [{ status: 200, body: okUser }, { status: 200, body: [] }]);
+assert.equal(res.status, 409);
+assert.ok(calls[1].url.includes("revision=eq.1"));
+res = await request("/api/auth/logout", { cookie: "allocafi_access=access" }, [{ status: 204, body: {} }]);
+assert.equal(res.status, 200);
+assert.ok(res.headers["Set-Cookie"].every(cookie => cookie.includes("Max-Age=0")));
+console.log("Account auth, creator identity, session renewal, logout, and snapshot isolation checks passed");

@@ -169,6 +169,32 @@ assert.doesNotMatch(
   /connectWalletButton\?\.[\s\S]{0,260}openWalletConnectDialog/,
   "Overview wallet action must not open a wallet-provider connect prompt"
 );
+assert.match(app, /step: "account"/, "Initial onboarding should include an account-first setup step");
+assert.match(app, /Create your AllocaFi account/, "Onboarding should ask users to create an AllocaFi account before wallet setup");
+assert.match(app, /Add a public wallet address/, "Onboarding wallet setup should be public-address tracking first");
+assert.match(app, /Wallet ownership verification stays separate/, "Onboarding should separate account signup from later wallet ownership verification");
+assert.match(app, /function shouldRequireOnboardingAccountStep/, "Onboarding should guard old saved flows until account setup is complete");
+assert.match(
+  app,
+  /flow\.step !== "welcome" && flow\.step !== "account" && shouldRequireOnboardingAccountStep\(flow\)/,
+  "Old onboarding states should be routed back through the account step"
+);
+assert.match(app, /AllocaFi account ready/, "Wallet onboarding should show account status before saving a public address");
+assert.match(app, /This wallet address will be saved to that AllocaFi account/, "Wallet onboarding should explain where public addresses are stored");
+assert.match(app, /accountPasswordConfirm/, "Account creation should require password confirmation");
+assert.match(app, /onboardingAccountPasswordConfirm/, "Onboarding account creation should require password confirmation");
+assert.match(app, /accountShowPassword/, "Account creation should let users preview the password");
+assert.match(app, /onboardingAccountShowPassword/, "Onboarding account creation should let users preview the password");
+assert.match(app, /Passwords do not match/, "Account creation should reject mismatched password confirmation");
+assert.match(styles, /\.inline-toggle \{[\s\S]*?display: inline-flex;/, "Password preview checkbox should have stable inline form styling");
+assert.match(app, /if \(localBalance > 0\) return localBalance;/, "Solana PYUSD zero balance shortcut should not block deeper wallet scans");
+assert.match(app, /if \(localBalance === 0\) zeroBalanceSeen = true;/, "Solana PYUSD zero balance shortcut should still record that a zero lookup completed");
+assert.match(server, /source: "direct token account"/, "Local Solana PYUSD lookup should detect direct PYUSD token account addresses");
+assert.doesNotMatch(
+  app,
+  /<h2>Add your Owner Wallet<\/h2>/,
+  "Initial onboarding should not frame the first wallet step as owner-wallet-first"
+);
 
 
 assert.match(app, /Asset Ratio & Legal Core Tracker/, "Asset Ratio dashboard card should be renamed in place");

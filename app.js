@@ -74,7 +74,7 @@ const WALLETCONNECT_UNIVERSAL_PROVIDER_URL = "https://esm.sh/@walletconnect/univ
 const SOLANA_WEB3_URL = "https://esm.sh/@solana/web3.js@1.95.8";
 const SOLANA_SPL_TOKEN_URL = "https://esm.sh/@solana/spl-token@0.4.9";
 const SOLANA_TOKEN_PROGRAM_ID = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
-const SOLANA_TOKEN_2022_PROGRAM_ID = "TokenzQdBNbLqP5VEhdkAS6EPzYm3S5FWnW7zWuCxgu";
+const SOLANA_TOKEN_2022_PROGRAM_ID = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 const PERSONAL_LIQUIDATION_ACTION = "__personal_liquidation";
 const VAULT_ACTIVITY_KEY = "allocafi-vault-activity-v1";
 const VAULT_LAST_BACKUP_KEY = "allocafi-vault-last-backup-v1";
@@ -1038,8 +1038,8 @@ function moveAdvancedSectionsIntoSettings() {
     <section class="settings-section cloud-account-section" id="productionAccountView">
       <div class="panel-heading">
         <div>
-          <h2>Account & cloud foundation</h2>
-          <p>Production account login, data migration, and cloud sync readiness without changing today's local workflow.</p>
+          <h2>Your account</h2>
+          <p>Sign-in and saved data</p>
         </div>
         <span id="cloudModeStatus" class="status-pill loading">Checking</span>
       </div>
@@ -1256,6 +1256,11 @@ let enterpriseDashboardQuery = "";
 let familyTreasuryMemberId = FAMILY_TREASURY_MOCK_DATA.familyProfile.activeMemberId;
 let familyTreasuryQuery = "";
 let accountSession = loadAccountSession();
+let accountAuthenticated = false;
+let accountSyncReady = false;
+let accountSyncTimer = null;
+let accountSyncPromise = null;
+let accountRevision = Number(localStorage.getItem("allocafi-account-revision") || 0);
 let accountProfile = loadAccountProfile();
 let cloudProviderStatus = loadCloudProviderStatus();
 let serverSolanaRpcConfigured = Boolean(cloudProviderStatus?.services?.solanaRpc);
@@ -1357,9 +1362,9 @@ async function fetchLocalSolanaPyusdBalance(wallet) {
   const params = new URLSearchParams({ address: wallet.address });
   if (endpoint) params.set("endpoint", endpoint);
   const response = await fetchWithTimeout(`/api/solana-pyusd-balance?${params.toString()}`, {}, 30000);
-  if (!response.ok) throw new Error(`Local Solana balance lookup failed (${response.status})`);
   const result = await response.json();
   if (result.error) throw new Error(result.error.message || "Local Solana balance lookup failed");
+  if (!response.ok) throw new Error(`Local Solana balance lookup failed (${response.status})`);
   return Number(result.balance || 0);
 }
 
@@ -2913,6 +2918,98 @@ function saveAccountSession(session) {
   }
 }
 
+function accountWorkspaceKeys() {
+  return Object.keys(localStorage).filter((key) => key === STORAGE_KEY ||
+    (key.startsWith("allocafi-") && !key.startsWith("allocafi-user-backup:") && key !== "allocafi-account-workspace-owner"));
+}
+
+function switchAccountWorkspace(userId) {
+  const ownerKey = "allocafi-account-workspace-owner";
+  const previous = localStorage.getItem(ownerKey) || "guest";
+  if (previous === userId) return;
+  const stored = Object.fromEntries(accountWorkspaceKeys().map(key => [key, localStorage.getItem(key)]));
+  delete stored[ACCOUNT_SESSION_KEY];
+  localStorage.setItem(`allocafi-user-backup:${previous}`, JSON.stringify(stored));
+  accountWorkspaceKeys().forEach(key => localStorage.removeItem(key));
+  const next = JSON.parse(localStorage.getItem(`allocafi-user-backup:${userId}`) || "{}");
+  for (const [key, value] of Object.entries(next)) {
+    if (key !== ACCOUNT_SESSION_KEY) localStorage.setItem(key, value);
+  }
+  localStorage.setItem(ownerKey, userId);
+}
+
+function storeAccountSnapshot(snapshot, revision) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot.wallets || []));
+  localStorage.setItem("allocafi-goals-v1", JSON.stringify(snapshot.goals || []));
+  localStorage.setItem("allocafi-address-book-v1", JSON.stringify(snapshot.addressBook || []));
+  localStorage.setItem(UNIFIED_FINANCE_KEY, JSON.stringify(snapshot.financeData || {}));
+  if (snapshot.onboarding) {
+    localStorage.setItem(ONBOARDING_FLOW_KEY, JSON.stringify(snapshot.onboarding));
+    localStorage.setItem(ONBOARDING_STATUS_KEY, snapshot.onboarding.completedAt ? "complete" : "started");
+  }
+  localStorage.setItem("allocafi-account-revision", String(revision));
+}
+
+async function accountRequest(path, options = {}) {
+  const response = await fetchWithTimeout(path, { credentials: "same-origin", ...options,
+    headers: { ...(path === "/api/sync/snapshot" && accountSession?.userId ? { "X-Allocafi-User": accountSession.userId } : {}), ...options.headers },
+  }, 30000);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(data.message || "Account request failed");
+    error.status = response.status;
+    throw error;
+  }
+  return data;
+}
+
+async function acceptAccountLogin(session) {
+  // Read first so a database failure cannot overwrite the existing workspace.
+  const saved = await accountRequest("/api/sync/snapshot", { headers: { "X-Allocafi-User": session.userId } });
+  switchAccountWorkspace(session.userId);
+  if (saved.snapshot && !loadCloudSyncQueue().length) storeAccountSnapshot(saved.snapshot, saved.revision);
+  if (!saved.snapshot && !localStorage.getItem(ONBOARDING_FLOW_KEY)) {
+    const flow = { ...createDefaultOnboardingFlow(), step: "template", startedAt: new Date().toISOString(), accountUserId: session.userId, accountEmail: session.email, accountProvider: session.provider };
+    localStorage.setItem(ONBOARDING_FLOW_KEY, JSON.stringify(flow));
+    localStorage.setItem(ONBOARDING_STATUS_KEY, "started");
+  }
+  saveAccountSession(session);
+  document.body.hidden = true;
+  location.reload();
+}
+
+async function restoreAccountSession() {
+  try {
+    const { session } = await accountRequest("/api/auth/session");
+    if (localStorage.getItem("allocafi-account-workspace-owner") !== session.userId) {
+      await acceptAccountLogin(session);
+      return;
+    }
+    saveAccountSession(session);
+    accountAuthenticated = true;
+    const saved = await accountRequest("/api/sync/snapshot");
+    if (!loadCloudSyncQueue().length && saved.snapshot) {
+      storeAccountSnapshot(saved.snapshot, saved.revision);
+      accountRevision = saved.revision;
+      wallets = loadWallets(); goals = loadGoals(); addressBook = loadAddressBook(); financeData = loadFinanceData();
+      selectedWalletId = wallets[0]?.id || "";
+    }
+    accountSyncReady = true;
+    if (loadCloudSyncQueue().length) await flushCloudSync("Saved changes");
+  } catch (error) {
+    accountSyncReady = false;
+    const owner = localStorage.getItem("allocafi-account-workspace-owner");
+    if (error.status === 401 && owner && !["guest", "signed-out"].includes(owner)) {
+      switchAccountWorkspace("signed-out");
+      saveAccountSession(null);
+      document.body.hidden = true;
+      location.reload();
+      return;
+    }
+    saveAccountProfile({ syncError: error.message });
+  }
+}
+
 function saveAccountProfile(profile) {
   accountProfile = { ...accountProfile, ...profile };
   localStorage.setItem(ACCOUNT_PROFILE_KEY, JSON.stringify(accountProfile));
@@ -2944,6 +3041,7 @@ function collectCloudSnapshot() {
     goals,
     addressBook,
     financeData,
+    onboarding: loadOnboardingFlow(),
     settings: {
       solanaRpcConfigured: hasConfiguredSolanaRpc(),
       walletConnectConfigured: Boolean(loadWalletConnectProjectId()),
@@ -2970,7 +3068,7 @@ function hasMigratedLocalData() {
 }
 
 function queueCloudSync(reason = "Data changed") {
-  if (!accountSession) return;
+  if (!accountAuthenticated && !(accountSession?.provider === "supabase" && localStorage.getItem("allocafi-account-workspace-owner") === accountSession.userId)) return;
   const queue = loadCloudSyncQueue();
   queue.push({
     id: crypto.randomUUID(),
@@ -2979,6 +3077,8 @@ function queueCloudSync(reason = "Data changed") {
     summary: getCloudDataSummary(),
   });
   saveCloudSyncQueue(queue);
+  clearTimeout(accountSyncTimer);
+  if (accountSyncReady) accountSyncTimer = setTimeout(() => flushCloudSync("Auto-save"), 800);
   renderAccountCloudPanel();
 }
 
@@ -3000,16 +3100,6 @@ async function refreshCloudProviderStatus() {
   renderAccountCloudPanel();
 }
 
-function createLocalAccountSession(email, provider = "local-preview") {
-  return {
-    userId: `local-user-${btoa(email).replace(/=+$/g, "").slice(0, 18)}`,
-    email,
-    provider,
-    signedInAt: new Date().toISOString(),
-    accessToken: "",
-  };
-}
-
 async function requestAccountAuth(mode, email, password) {
   const endpoint = mode === "signup" ? "/api/auth/signup" : "/api/auth/login";
   try {
@@ -3019,17 +3109,11 @@ async function requestAccountAuth(mode, email, password) {
       body: JSON.stringify({ email, password }),
     }, 9000);
     const data = await response.json().catch(() => ({}));
-    if (response.ok && data.user) {
+    if (response.ok && data.session?.userId) {
       return {
         ok: true,
-        session: {
-          userId: data.user.id || data.user.email || email,
-          email: data.user.email || email,
-          provider: data.provider || "supabase",
-          accessToken: data.session?.access_token || "",
-          signedInAt: new Date().toISOString(),
-        },
-        provider: data.provider || "supabase",
+        session: data.session,
+        provider: "supabase",
       };
     }
     return { ok: false, code: data.code || response.status, message: data.error?.message || data.message || "Cloud auth is not configured yet" };
@@ -3040,9 +3124,17 @@ async function requestAccountAuth(mode, email, password) {
 
 function openAccountAuthDialog(mode = "signup") {
   const title = mode === "signup" ? "Create account" : "Log in";
+  const confirmPasswordField = mode === "signup"
+    ? `
+      <label>
+        Confirm password
+        <input id="accountPasswordConfirm" type="password" autocomplete="new-password" placeholder="Re-enter password" />
+      </label>
+    `
+    : "";
   dialogContent.innerHTML = `
     <h2>${title}</h2>
-    <p class="wallet-note">This is the production account foundation. If Supabase keys are connected, this uses Supabase Auth. Otherwise it creates a local preview account for testing migration and sync flow.</p>
+    <p class="wallet-note">Sign in to restore your saved wallets and budget accounts.</p>
     <label>
       Email
       <input id="accountEmail" type="email" autocomplete="email" placeholder="you@example.com" value="${escapeHtml(accountSession?.email || "")}" />
@@ -3050,6 +3142,11 @@ function openAccountAuthDialog(mode = "signup") {
     <label>
       Password
       <input id="accountPassword" type="password" autocomplete="${mode === "signup" ? "new-password" : "current-password"}" placeholder="Minimum 8 characters" />
+    </label>
+    ${confirmPasswordField}
+    <label class="inline-toggle">
+      <input id="accountShowPassword" type="checkbox" />
+      Show password
     </label>
     <div class="dialog-actions">
       <button id="submitAccountAuth" class="primary-button" type="button">${title}</button>
@@ -3059,11 +3156,17 @@ function openAccountAuthDialog(mode = "signup") {
   walletDialog.showModal();
   dialogContent.querySelector("#submitAccountAuth")?.addEventListener("click", () => submitAccountAuth(mode));
   dialogContent.querySelector("#resetAccountPassword")?.addEventListener("click", sendPasswordReset);
+  dialogContent.querySelector("#accountShowPassword")?.addEventListener("change", (event) => {
+    const inputType = event.currentTarget.checked ? "text" : "password";
+    dialogContent.querySelector("#accountPassword")?.setAttribute("type", inputType);
+    dialogContent.querySelector("#accountPasswordConfirm")?.setAttribute("type", inputType);
+  });
 }
 
 async function submitAccountAuth(mode) {
   const email = dialogContent.querySelector("#accountEmail")?.value.trim().toLowerCase();
   const password = dialogContent.querySelector("#accountPassword")?.value || "";
+  const confirmPassword = dialogContent.querySelector("#accountPasswordConfirm")?.value || "";
   if (!email || !email.includes("@")) {
     showToast("Enter a valid email");
     return;
@@ -3072,19 +3175,15 @@ async function submitAccountAuth(mode) {
     showToast("Use at least 8 password characters");
     return;
   }
+  if (mode === "signup" && password !== confirmPassword) {
+    showToast("Passwords do not match");
+    return;
+  }
 
   const result = await requestAccountAuth(mode, email, password);
-  const session = result.ok ? result.session : createLocalAccountSession(email);
-  saveAccountSession(session);
-  saveAccountProfile({
-    provider: result.ok ? result.provider : "local-preview",
-    plan: accountProfile?.plan || "Free",
-  });
-  queueCloudSync(mode === "signup" ? "Account created" : "Account login");
-  walletDialog.close();
-  render();
-  const suffix = result.ok ? "with cloud auth" : "in local preview mode";
-  showToast(`${mode === "signup" ? "Account created" : "Logged in"} ${suffix}`);
+  if (!result.ok) { showToast(result.message); return; }
+  try { await acceptAccountLogin(result.session); }
+  catch (error) { showToast(`Sign-in succeeded, but saved data could not load: ${error.message}`); }
 }
 
 async function sendPasswordReset() {
@@ -3109,10 +3208,17 @@ async function sendPasswordReset() {
   showToast("Password reset is ready once Supabase env keys are added");
 }
 
-function logoutAccount() {
+async function logoutAccount() {
+  clearTimeout(accountSyncTimer);
+  if (loadCloudSyncQueue().length && !await flushCloudSync("Save before logout")) return;
+  try { await accountRequest("/api/auth/logout", { method: "POST" }); }
+  catch (error) { showToast(error.message); return; }
+  accountAuthenticated = false;
+  accountSyncReady = false;
+  switchAccountWorkspace("signed-out");
   saveAccountSession(null);
-  render();
-  showToast("Logged out");
+  document.body.hidden = true;
+  location.reload();
 }
 
 function migrateLocalDataToAccount() {
@@ -3130,30 +3236,32 @@ function migrateLocalDataToAccount() {
 }
 
 async function flushCloudSync(label = "Sync") {
-  if (!accountSession) {
-    showToast("Log in first");
-    return;
+  if (!accountAuthenticated || !accountSyncReady) return false;
+  if (accountSyncPromise) {
+    const ok = await accountSyncPromise;
+    return ok && loadCloudSyncQueue().length ? flushCloudSync(label) : ok;
   }
-  const snapshot = collectCloudSnapshot();
-  const queue = loadCloudSyncQueue();
-  try {
-    const response = await fetchWithTimeout("/api/sync/snapshot", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": accountSession.accessToken ? `Bearer ${accountSession.accessToken}` : "",
-      },
-      body: JSON.stringify({ snapshot, queue }),
-    }, 9000);
-    const data = await response.json().catch(() => ({}));
-    const syncedAt = new Date().toISOString();
-    saveAccountProfile({ lastSyncedAt: syncedAt, lastSyncMode: data.mode || "local-preview" });
-    if (response.ok) saveCloudSyncQueue([]);
-    showToast(response.ok ? `${label} complete` : data.message || "Cloud sync waiting on production keys");
-  } catch {
-    showToast("Cloud sync queued locally");
-  }
-  renderAccountCloudPanel();
+  accountSyncPromise = (async () => {
+    const queueIds = new Set(loadCloudSyncQueue().map(item => item.id));
+    try {
+      const data = await accountRequest("/api/sync/snapshot", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ snapshot: collectCloudSnapshot(), revision: accountRevision }),
+      });
+      if (!data.stored) throw new Error("The server did not save this account.");
+      accountRevision = data.revision;
+      localStorage.setItem("allocafi-account-revision", String(accountRevision));
+      saveCloudSyncQueue(loadCloudSyncQueue().filter(item => !queueIds.has(item.id)));
+      saveAccountProfile({ lastSyncedAt: new Date().toISOString(), syncError: "" });
+      return true;
+    } catch (error) {
+      saveAccountProfile({ syncError: error.message });
+      if (label !== "Auto-save") showToast(error.message);
+      return false;
+    } finally { renderAccountCloudPanel(); }
+  })();
+  try { return await accountSyncPromise; }
+  finally { accountSyncPromise = null; }
 }
 
 function loadWalletConnectProjectId() {
@@ -3265,6 +3373,7 @@ function getCurrentSubscriptionPlan() {
 }
 
 function getCurrentEntitlements() {
+  if (isCreatorAccount()) return { ...(getCurrentSubscriptionPlan().entitlements || SUBSCRIPTION_PLANS[0].entitlements), buckets: Infinity };
   if (isAdminPowerEnabled()) return ADMIN_ENTITLEMENTS;
   return getCurrentSubscriptionPlan().entitlements || SUBSCRIPTION_PLANS[0].entitlements;
 }
@@ -3354,6 +3463,31 @@ function openPremiumFeatureGate(featureKey = "unlimitedBudgetAccounts", options 
 }
 
 function showBudgetAccountLimitUpgradePrompt() {
+  if (!accountAuthenticated) {
+    const connected = Boolean(cloudProviderStatus?.services?.auth);
+    openDialog(`
+      <div class="dialog-content">
+        <h2>${connected ? "Sign in to check your account access" : "Account connection required"}</h2>
+        <p class="wallet-note">${connected
+          ? "Sign in to restore your plan and verified creator access. Creator accounts do not need a Core purchase for unlimited budget accounts."
+          : "Online sign-in and saved accounts are not connected yet. Until setup is complete, this device uses the Free limit of three budget accounts. Creator access will activate after verified sign-in; a Core purchase is not required."}</p>
+        <div class="dialog-actions">
+          <button class="primary-button" id="budgetLimitAccount" type="button">${connected ? "Log in" : "Account settings"}</button>
+          <button class="ghost-button" id="budgetLimitClose" type="button">Close</button>
+        </div>
+      </div>
+    `);
+    dialogContent.querySelector("#budgetLimitAccount")?.addEventListener("click", () => {
+      walletDialog.close();
+      if (connected) openAccountAuthDialog("login");
+      else {
+        switchTab("settings");
+        document.querySelector("#productionAccountView")?.scrollIntoView({ block: "start" });
+      }
+    });
+    dialogContent.querySelector("#budgetLimitClose")?.addEventListener("click", () => walletDialog.close());
+    return;
+  }
   const limit = getBudgetAccountPlanLimit();
   const currentPlan = getCurrentSubscriptionPlan();
   const planLabel = currentPlan.code === "free" ? "Free" : currentPlan.name;
@@ -9061,7 +9195,7 @@ function renderDashboard() {
         amount: overbalance,
       });
     }
-    if (!isReserveAssetWallet(wallet) && pendingIncrease > 0.01) {
+    if (!isReserveAssetWallet(wallet) && wallet.allocation?.buckets?.length && pendingIncrease > 0.01) {
       tasks.push({
         type: "newFunds",
         walletId: wallet.id,
@@ -9575,7 +9709,47 @@ function renderAdminDashboard() {
 
 function renderAccountCloudPanel() {
   if (!accountCloudView) return;
-  accountCloudView.innerHTML = `<div class="overview-card"><div class="overview-card-head"><span>Account Cloud</span><strong>${escapeHtml(accountProfile.provider || "local-preview")}</strong></div><p class="wallet-note">Local profile and sync queue preview.</p></div>`;
+  const section = document.querySelector("#productionAccountView");
+  if (section && section.parentElement?.firstElementChild !== section) section.parentElement?.prepend(section);
+  const modeStatus = document.querySelector("#cloudModeStatus");
+  if (modeStatus) modeStatus.textContent = accountAuthenticated ? "Signed in" : cloudProviderStatus?.services?.auth ? "Online" : "Device only";
+  const signedIn = accountAuthenticated;
+  const status = accountProfile.syncError || (loadCloudSyncQueue().length ? "Changes waiting to save" : accountProfile.lastSyncedAt ? `Saved ${new Date(accountProfile.lastSyncedAt).toLocaleString()}` : "Ready to save");
+  accountCloudView.innerHTML = `<div>
+    <strong>${signedIn ? escapeHtml(accountSession.email) : "Not signed in"}</strong>
+    <p>${signedIn ? isCreatorAccount() ? "Creator account - unlimited budget accounts" : "Personal account" : "Your current data is saved on this device only."}</p>
+    <p role="status">${escapeHtml(signedIn ? status : cloudProviderStatus?.services?.auth ? "Sign in to restore saved data." : "Online accounts are not connected yet.")}</p>
+    <div class="dialog-actions">${signedIn
+      ? `<button class="secondary-button" id="accountSyncNow" type="button">Save now</button><button class="secondary-button" id="accountReloadSaved" type="button">Reload saved data</button><button class="ghost-button" id="accountLogout" type="button">Log out</button>${localStorage.getItem("allocafi-user-backup:guest") ? '<button class="secondary-button" id="accountImportLocal" type="button">Import local wallet data</button>' : ""}`
+      : '<button class="primary-button" id="accountLogin" type="button">Log in</button><button class="secondary-button" id="accountSignup" type="button">Create account</button>'}</div>
+  </div>`;
+  accountCloudView.querySelector("#accountLogin")?.addEventListener("click", () => openAccountAuthDialog("login"));
+  accountCloudView.querySelector("#accountSignup")?.addEventListener("click", () => openAccountAuthDialog("signup"));
+  accountCloudView.querySelector("#accountLogout")?.addEventListener("click", logoutAccount);
+  accountCloudView.querySelector("#accountSyncNow")?.addEventListener("click", () => flushCloudSync());
+  accountCloudView.querySelector("#accountReloadSaved")?.addEventListener("click", async () => {
+    if (loadCloudSyncQueue().length && !window.confirm("Replace unsaved local changes with the version saved online? A local backup will be kept.")) return;
+    try {
+      const saved = await accountRequest("/api/sync/snapshot");
+      if (!saved.snapshot) { showToast("No online snapshot yet"); return; }
+      localStorage.setItem(`allocafi-user-backup:conflict-${accountSession.userId}`, JSON.stringify(collectCloudSnapshot()));
+      storeAccountSnapshot(saved.snapshot, saved.revision);
+      saveCloudSyncQueue([]);
+      location.reload();
+    } catch (error) { showToast(error.message); }
+  });
+  accountCloudView.querySelector("#accountImportLocal")?.addEventListener("click", async () => {
+    if (wallets.length) { showToast("Import is available for an empty account so existing wallets are preserved."); return; }
+    const backup = JSON.parse(localStorage.getItem("allocafi-user-backup:guest") || "{}");
+    wallets = (JSON.parse(backup[STORAGE_KEY] || "[]")).map(normalizeStoredWallet).filter(Boolean);
+    goals = JSON.parse(backup["allocafi-goals-v1"] || "[]");
+    addressBook = JSON.parse(backup["allocafi-address-book-v1"] || "[]");
+    financeData = mergeFinanceDefaults(JSON.parse(backup[UNIFIED_FINANCE_KEY] || "{}"));
+    if (backup[ONBOARDING_FLOW_KEY]) localStorage.setItem(ONBOARDING_FLOW_KEY, backup[ONBOARDING_FLOW_KEY]);
+    if (backup[ONBOARDING_STATUS_KEY]) localStorage.setItem(ONBOARDING_STATUS_KEY, backup[ONBOARDING_STATUS_KEY]);
+    saveWallets(); saveGoals(); saveAddressBook(); saveFinanceData();
+    if (await flushCloudSync("Import")) location.reload();
+  });
 }
 
 function renderSubscriptionPaymentsSystem() {
@@ -9878,6 +10052,7 @@ function validateBudgetTemplatePercentages(templateOrBuckets) {
 }
 
 function canUsePremiumBudgetTemplate(template) {
+  if (isCreatorAccount()) return true;
   if (!template?.isPremium) return true;
   if (isAdminPowerEnabled() || isDemoModeActive()) return true;
   const entitlements = getCurrentEntitlements();
@@ -10050,10 +10225,12 @@ function renderBudgetTemplateEmptyPreviewPanel() {
   `;
 }
 
-function renderBudgetTemplatePreviewPanel(wallet, selectedKey) {
+function renderBudgetTemplatePreviewPanel(wallet, selectedKey, options = {}) {
   const useSavedPlan = selectedKey === "__saved" && wallet?.allocation?.buckets?.length;
   const template = useSavedPlan ? null : BUCKET_TEMPLATES[selectedKey] || BUCKET_TEMPLATES.essentials;
-  const buckets = useSavedPlan ? wallet.allocation.buckets : template.buckets;
+  const buckets = options.useCurrentPlan
+    ? getAssignmentTemplateBucketsForCurrentPlan(wallet, selectedKey)
+    : useSavedPlan ? wallet.allocation.buckets : template.buckets;
   const accountCount = buckets.length;
   const total = getTemplatePercentTotal(buckets);
   const visualKey = useSavedPlan ? "__saved" : template.id;
@@ -10160,7 +10337,7 @@ function renderBudgetTemplateChoices(wallet = null, options = {}) {
           ${renderSavedBudgetPlanChoice(wallet, selectedKey)}
           <div class="budget-template-list">${browseCards}</div>
         </div>
-        ${hasSelectedTemplate ? renderBudgetTemplatePreviewPanel(wallet, selectedKey) : renderBudgetTemplateEmptyPreviewPanel()}
+        ${hasSelectedTemplate ? renderBudgetTemplatePreviewPanel(wallet, selectedKey, options) : renderBudgetTemplateEmptyPreviewPanel()}
       </div>
       <div class="budget-template-footer-actions budget-template-action-footer">
         <span class="budget-template-owner-wallet-summary">
@@ -10190,6 +10367,20 @@ function getAssignmentTemplateBuckets(wallet, templateKey = "") {
   }
   const template = BUCKET_TEMPLATES[templateKey] || BUCKET_TEMPLATES.essentials;
   return template.buckets.map((bucket) => ({ ...bucket }));
+}
+
+function isCreatorAccount() {
+  return accountAuthenticated && accountSession?.creator === true;
+}
+
+function usesFreeTemplateLimit() {
+  return getCurrentSubscriptionPlan().code === "free" && !isCreatorAccount();
+}
+
+function getAssignmentTemplateBucketsForCurrentPlan(wallet, templateKey = "") {
+  const buckets = getAssignmentTemplateBuckets(wallet, templateKey);
+  if (templateKey === "__saved" || !usesFreeTemplateLimit()) return buckets;
+  return normalizeOnboardingPercentages(buckets);
 }
 
 function createAllocationBucketsFromTemplate(templateBuckets, baseAmount = 0) {
@@ -10913,7 +11104,7 @@ function openAssignMoneyDialog(preferredWalletId = "") {
       </section>
 
       <div id="assignmentTemplateChoices" class="budget-template-library-scroll" data-wallet-id="${escapeHtml(firstWallet.id)}">
-        ${renderBudgetTemplateChoices(firstWallet, { selectedKey: selectedTemplateKey, activeCategory: activeTemplateCategory, search: templateSearch })}
+        ${renderBudgetTemplateChoices(firstWallet, { selectedKey: selectedTemplateKey, activeCategory: activeTemplateCategory, search: templateSearch, useCurrentPlan: true, allowLockedTemplates: getCurrentSubscriptionPlan().code === "free", actionLabel: usesFreeTemplateLimit() ? "Allocate on Free (up to 3 accounts)" : "Auto Allocate" })}
       </div>
     </div>
   `);
@@ -10926,6 +11117,9 @@ function openAssignMoneyDialog(preferredWalletId = "") {
       selectedKey: selectedTemplateKey,
       activeCategory: activeTemplateCategory,
       search: templateSearch,
+      useCurrentPlan: true,
+      allowLockedTemplates: getCurrentSubscriptionPlan().code === "free",
+      actionLabel: usesFreeTemplateLimit() ? "Allocate on Free (up to 3 accounts)" : "Auto Allocate",
     });
   };
 
@@ -10953,7 +11147,7 @@ function openAssignMoneyDialog(preferredWalletId = "") {
     if (!card) return;
     const nextTemplateKey = card.dataset.templateSelect || "essentials";
     const template = BUCKET_TEMPLATES[nextTemplateKey];
-    if (template && isBudgetTemplateLocked(template)) {
+    if (template && isBudgetTemplateLocked(template) && getCurrentSubscriptionPlan().code !== "free") {
       openPremiumFeatureGate("unlimitedBudgetAccounts", {
         title: "Unlock Premium Budget Templates",
         subtitle: "AllocaFi Core unlocks premium template systems with deeper Virtual Budget Account structures.",
@@ -11199,7 +11393,7 @@ function saveAssignedMoney() {
     return;
   }
   const selectedTemplate = BUCKET_TEMPLATES[templateKey];
-  if (selectedTemplate && isBudgetTemplateLocked(selectedTemplate)) {
+  if (selectedTemplate && isBudgetTemplateLocked(selectedTemplate) && getCurrentSubscriptionPlan().code !== "free") {
     openPremiumFeatureGate("unlimitedBudgetAccounts", {
       title: "Unlock Premium Budget Templates",
       subtitle: "AllocaFi Core unlocks premium template systems with deeper Virtual Budget Account structures.",
@@ -11226,7 +11420,7 @@ function saveAssignedMoney() {
   const safeAmount = useSavedPlan ? Math.min(amount, assignable) : Math.max(assignable, 0);
 
   if (!useSavedPlan) {
-    const templateBuckets = getAssignmentTemplateBuckets(wallet, templateKey);
+    const templateBuckets = getAssignmentTemplateBucketsForCurrentPlan(wallet, templateKey);
     const validation = validateBudgetTemplatePercentages(templateBuckets);
     if (!validation.ok) {
       showToast(`${getAssignmentTemplateName(templateKey)} must equal 100% before applying`);
@@ -13845,7 +14039,8 @@ async function fetchSolanaTokenBalance(wallet) {
   if (network.mint === NETWORKS.solanaPyusd.mint) {
     try {
       const localBalance = await fetchLocalSolanaPyusdBalance(wallet);
-      if (localBalance !== null) return localBalance;
+      if (localBalance > 0) return localBalance;
+      if (localBalance === 0) zeroBalanceSeen = true;
     } catch (error) {
       const message = error?.message || "";
       lastError = message.includes("Failed to fetch")
@@ -13889,7 +14084,7 @@ async function fetchSolanaTokenBalance(wallet) {
       const result = await postSolanaRpc(rpc, {
         jsonrpc: "2.0",
         id: Date.now(),
-        method: "getParsedAccountInfo",
+        method: "getAccountInfo",
         params: [
           wallet.address,
           { encoding: "jsonParsed" },
@@ -14003,7 +14198,7 @@ async function fetchSolanaTokenDiagnostics(wallet) {
       const result = await postSolanaRpc(rpc, {
         jsonrpc: "2.0",
         id: Date.now(),
-        method: "getParsedAccountInfo",
+        method: "getAccountInfo",
         params: [
           wallet.address,
           { encoding: "jsonParsed" },
@@ -14781,6 +14976,10 @@ function createDefaultOnboardingFlow() {
   return {
     startedAt: "",
     step: "welcome",
+    accountUserId: "",
+    accountEmail: "",
+    accountProvider: "",
+    accountCreatedAt: "",
     templateKey: "",
     templateSelectedAt: "",
     planCode: "",
@@ -14811,6 +15010,7 @@ function updateOnboardingFlow(patch = {}) {
   };
   saveOnboardingFlow(next);
   localStorage.setItem(ONBOARDING_STATUS_KEY, next.completedAt ? "complete" : "started");
+  queueCloudSync("Setup progress saved");
   return next;
 }
 
@@ -14823,13 +15023,21 @@ function isOnboardingFlowActive() {
   return Boolean(flow.startedAt && !flow.completedAt);
 }
 
+function hasOnboardingAccountFoundation(flow = loadOnboardingFlow()) {
+  return accountAuthenticated;
+}
+
+function shouldRequireOnboardingAccountStep(flow = loadOnboardingFlow()) {
+  return !isDemoModeActive() && !hasOnboardingAccountFoundation(flow);
+}
+
 function shouldForceOnboardingGate() {
   if (isDemoModeActive() || isOnboardingComplete()) return false;
   return !wallets.length || isOnboardingFlowActive();
 }
 
 function getOnboardingStepNumber(step = loadOnboardingFlow().step) {
-  const steps = ["welcome", "template", "plan", "wallet", "vault"];
+  const steps = ["welcome", "account", "template", "plan", "wallet", "vault"];
   return Math.max(steps.indexOf(step), 0) + 1;
 }
 
@@ -14837,8 +15045,8 @@ function renderOnboardingProgress(step = "welcome") {
   const active = getOnboardingStepNumber(step);
   return `
     <span class="onboarding-progress-label">Setup Progress</span>
-    <span class="onboarding-progress-dots" aria-label="Setup step ${active} of 5">
-      ${[1, 2, 3, 4, 5].map((item) => `<i class="${item === active ? "active" : ""}"></i>`).join("")}
+    <span class="onboarding-progress-dots" aria-label="Setup step ${active} of 6">
+      ${[1, 2, 3, 4, 5, 6].map((item) => `<i class="${item === active ? "active" : ""}"></i>`).join("")}
     </span>
   `;
 }
@@ -14916,7 +15124,7 @@ function normalizeOnboardingPercentages(buckets) {
 
 function getOnboardingTemplateBucketsForPlan(templateKey, planCode) {
   const templateBuckets = getAssignmentTemplateBuckets(null, templateKey);
-  return planCode === "free" ? normalizeOnboardingPercentages(templateBuckets) : templateBuckets;
+  return planCode === "free" && !isCreatorAccount() ? normalizeOnboardingPercentages(templateBuckets) : templateBuckets;
 }
 
 function applyOnboardingTemplateToWallet(walletId) {
@@ -14958,6 +15166,11 @@ function openCurrentOnboardingStep() {
   if (isOnboardingComplete() || isDemoModeActive()) return;
   const flow = loadOnboardingFlow();
   if (walletDialog.open && dialogContent.querySelector("[data-onboarding-lock='true']")) return;
+  if (flow.step !== "welcome" && flow.step !== "account" && shouldRequireOnboardingAccountStep(flow)) {
+    updateOnboardingFlow({ step: "account" });
+    return openOnboardingAccountDialog();
+  }
+  if (flow.step === "account") return openOnboardingAccountDialog();
   if (flow.step === "template") return openOnboardingTemplateDialog();
   if (flow.step === "plan") return openOnboardingPlansDialog();
   if (flow.step === "wallet") return openOnboardingWalletGuideDialog();
@@ -15060,29 +15273,29 @@ function openOnboardingWelcomeDialog({ testMode = false } = {}) {
             <article>
               <span class="welcome-vault-feature-icon chart" aria-hidden="true"></span>
               <span>
-                <strong>Choose a budget template.</strong>
-                <small>Start fast with templates built for your goals.</small>
+                <strong>Create your AllocaFi account.</strong>
+                <small>Save your dashboard, public wallet addresses, plan, and setup progress.</small>
               </span>
             </article>
             <article>
               <span class="welcome-vault-feature-icon wallet" aria-hidden="true"></span>
               <span>
                 <strong>Select a plan.</strong>
-                <small>Free or AllocaFi Core.</small>
+                <small>Activate Free or choose a paid onboarding route.</small>
               </span>
             </article>
             <article>
               <span class="welcome-vault-feature-icon lock" aria-hidden="true"></span>
               <span>
-                <strong>Add a USDC, USDT, or PYUSD wallet.</strong>
-                <small>You're always in control of your funds.</small>
+                <strong>Add public wallet addresses.</strong>
+                <small>Track USDC, USDT, or PYUSD without giving up control of funds.</small>
               </span>
             </article>
             <article>
               <span class="welcome-vault-feature-icon sign" aria-hidden="true"></span>
               <span>
-                <strong>Activate your encrypted Vault.</strong>
-                <small>Your wallet signature activates the encrypted data Vault. When you disconnect, your data stays encrypted until you connect again.</small>
+                <strong>Verify ownership only when needed.</strong>
+                <small>Wallet signatures protect Vault export, recovery, and paid wallet activation. Tracking starts with public addresses.</small>
               </span>
             </article>
           </div>
@@ -15097,37 +15310,130 @@ function openOnboardingWelcomeDialog({ testMode = false } = {}) {
         <article>
           <span class="welcome-vault-card-icon">1</span>
           <span>
-            <strong>Choose A Budget Template</strong>
-            <small>Start with a template.</small>
+            <strong>Create Account</strong>
+            <small>Email and password first.</small>
           </span>
         </article>
         <article>
           <span class="welcome-vault-card-icon">2</span>
           <span>
-            <strong>Subscription Plan</strong>
-            <small>Free or Core.</small>
+            <strong>Choose Plan</strong>
+            <small>Free or paid route.</small>
           </span>
         </article>
         <article>
           <span class="welcome-vault-card-icon">3</span>
           <span>
-            <strong>Wallet Signature Only</strong>
-            <small>Activates encrypted data vault.</small>
+            <strong>Add Wallet Addresses</strong>
+            <small>Public tracking first.</small>
           </span>
         </article>
       </section>
 
-      <button class="primary-button welcome-vault-cta" id="onboardingChooseTemplate" type="button">
-        <span>Choose Budget Template</span>
+      <button class="primary-button welcome-vault-cta" id="onboardingCreateAccount" type="button">
+        <span>Create AllocaFi Account</span>
         <span class="welcome-vault-cta-arrow" aria-hidden="true"></span>
       </button>
-      ${renderOnboardingFooter("welcome", "Next: select template.")}
+      ${renderOnboardingFooter("welcome", "Next: create account.")}
     </div>
   `);
 
-  dialogContent.querySelector("#onboardingChooseTemplate").addEventListener("click", () => {
-    updateOnboardingFlow({ step: "template", templateKey: "", templateSelectedAt: "" });
-    openOnboardingTemplateDialog();
+  dialogContent.querySelector("#onboardingCreateAccount").addEventListener("click", () => {
+    updateOnboardingFlow({ step: "account" });
+    openOnboardingAccountDialog();
+  });
+}
+
+function openOnboardingAccountDialog({ mode = "signup", testMode = false } = {}) {
+  const title = mode === "signup" ? "Create your account" : "Log in";
+  const existingEmail = loadOnboardingFlow().accountEmail || accountSession?.email || "";
+  const confirmPasswordField = mode === "signup"
+    ? `
+        <label>
+          Confirm password
+          <input id="onboardingAccountPasswordConfirm" type="password" autocomplete="new-password" placeholder="Re-enter password" />
+        </label>
+      `
+    : "";
+  updateOnboardingFlow({ step: "account", testMode });
+  openDialog(renderOnboardingShell({
+    step: "account",
+    kicker: "Account",
+    title,
+    copy: [
+      "Start with email and password so AllocaFi can save your plan, public wallet addresses, budget accounts, goals, and setup progress.",
+      "Wallet ownership verification stays separate and is only used later for protected Vault, recovery, or paid wallet actions.",
+    ],
+    body: `
+      <div class="send-grid onboarding-wallet-grid">
+        <label>
+          Email
+          <input id="onboardingAccountEmail" type="email" autocomplete="email" placeholder="you@example.com" value="${escapeHtml(existingEmail)}" />
+        </label>
+        <label>
+          Password
+          <input id="onboardingAccountPassword" type="password" autocomplete="${mode === "signup" ? "new-password" : "current-password"}" placeholder="Minimum 8 characters" />
+        </label>
+        ${confirmPasswordField}
+      </div>
+      <label class="inline-toggle">
+        <input id="onboardingAccountShowPassword" type="checkbox" />
+        Show password
+      </label>
+      <div id="onboardingAccountStatus" class="allocation-summary">
+        <strong>${mode === "signup" ? "Account first" : "Welcome back"}</strong>
+        <span>${mode === "signup" ? "Create an account, confirm your email, and sign in to save your setup." : "Log in to restore your saved AllocaFi data."}</span>
+      </div>
+    `,
+    actions: `
+      <button class="primary-button" id="onboardingSubmitAccount" type="button">${mode === "signup" ? "Create Account" : "Log In"}</button>
+      <button class="secondary-button" id="onboardingSwitchAccountMode" type="button">${mode === "signup" ? "Log In Instead" : "Create Account Instead"}</button>
+      <button class="ghost-button" id="onboardingBackWelcomeFromAccount" type="button">Back</button>
+    `,
+    nextInstruction: "Next: choose budget template.",
+  }));
+
+  dialogContent.querySelector("#onboardingBackWelcomeFromAccount")?.addEventListener("click", () => openOnboardingWelcomeDialog({ testMode }));
+  dialogContent.querySelector("#onboardingSwitchAccountMode")?.addEventListener("click", () => openOnboardingAccountDialog({ mode: mode === "signup" ? "login" : "signup", testMode }));
+  dialogContent.querySelector("#onboardingAccountShowPassword")?.addEventListener("change", (event) => {
+    const inputType = event.currentTarget.checked ? "text" : "password";
+    dialogContent.querySelector("#onboardingAccountPassword")?.setAttribute("type", inputType);
+    dialogContent.querySelector("#onboardingAccountPasswordConfirm")?.setAttribute("type", inputType);
+  });
+  dialogContent.querySelector("#onboardingSubmitAccount")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    const statusBox = dialogContent.querySelector("#onboardingAccountStatus");
+    const email = dialogContent.querySelector("#onboardingAccountEmail")?.value.trim().toLowerCase();
+    const password = dialogContent.querySelector("#onboardingAccountPassword")?.value || "";
+    const confirmPassword = dialogContent.querySelector("#onboardingAccountPasswordConfirm")?.value || "";
+    if (!email || !email.includes("@")) {
+      showToast("Enter a valid email");
+      return;
+    }
+    if (password.length < 8) {
+      showToast("Use at least 8 password characters");
+      return;
+    }
+    if (mode === "signup" && password !== confirmPassword) {
+      showToast("Passwords do not match");
+      return;
+    }
+    button.disabled = true;
+    button.textContent = mode === "signup" ? "Creating..." : "Logging in...";
+    if (statusBox) statusBox.innerHTML = `<strong>${mode === "signup" ? "Creating account" : "Logging in"}</strong><span>Saving the account foundation before plan and wallet setup.</span>`;
+    const result = await requestAccountAuth(mode, email, password);
+    button.disabled = false;
+    button.textContent = mode === "signup" ? "Create Account" : "Log In";
+    if (!result.ok) {
+      if (statusBox) statusBox.textContent = result.message;
+      showToast(result.message);
+      return;
+    }
+    try { await acceptAccountLogin(result.session); }
+    catch (error) {
+      if (statusBox) statusBox.textContent = error.message;
+      showToast(error.message);
+    }
   });
 }
 function openOnboardingTemplateDialog() {
@@ -15152,13 +15458,13 @@ function openOnboardingTemplateDialog() {
         ${renderBudgetTemplateChoices(previewWallet, { selectedKey: selectedTemplateKey, activeCategory: activeTemplateCategory, search: templateSearch, allowLockedTemplates: true, requireTemplateSelection: true, actionLabel: "Continue to Plan" })}
       </div>
       <div class="dialog-actions onboarding-flow-actions onboarding-template-back-row">
-        <button class="ghost-button" id="onboardingBackWelcomeFromTemplate" type="button">Back to Welcome</button>
+        <button class="ghost-button" id="onboardingBackAccountFromTemplate" type="button">Back to Account</button>
       </div>
       ${renderOnboardingFooter("template", "Next: choose plan.")}
     </div>
   `);
 
-  dialogContent.querySelector("#onboardingBackWelcomeFromTemplate")?.addEventListener("click", () => openOnboardingWelcomeDialog());
+  dialogContent.querySelector("#onboardingBackAccountFromTemplate")?.addEventListener("click", () => openOnboardingAccountDialog());
   const templateChoices = dialogContent.querySelector("#assignmentTemplateChoices");
   const renderTemplateLibrary = () => {
     templateChoices.innerHTML = renderBudgetTemplateChoices(previewWallet, {
@@ -15292,8 +15598,13 @@ function getOnboardingWalletDiagnosis(networkKey, address) {
 
 function openOnboardingWalletGuideDialog({ testMode = false, selectedPlanCode = "" } = {}) {
   const flow = loadOnboardingFlow();
+  if (!testMode && shouldRequireOnboardingAccountStep(flow)) {
+    updateOnboardingFlow({ step: "account" });
+    return openOnboardingAccountDialog();
+  }
   const planForScreen = selectedPlanCode || flow.selectedPlanCode || flow.planCode;
   const isFreePlan = planForScreen !== "premium";
+  const onboardingAccountEmail = flow.accountEmail || accountSession?.email || "";
   updateOnboardingFlow({ step: "wallet", testMode, planCode: planForScreen, selectedPlanCode: planForScreen });
   openDialog(`
     <div class="dialog-content onboarding-modal onboarding-flow-modal" data-onboarding-lock="true" data-onboarding-step="wallet">
@@ -15302,9 +15613,13 @@ function openOnboardingWalletGuideDialog({ testMode = false, selectedPlanCode = 
         <strong>AllocaFi</strong>
       </div>
       <section class="onboarding-flow-main">
-        <span class="subscription-kicker">Owner Wallet</span>
-        <h2>Add your Owner Wallet</h2>
-        <p class="wallet-note">${isFreePlan ? "Add a stablecoin public address. Free activates after this step and auto-allocates into 3 Virtual Budget Accounts." : "Start with the stablecoin wallet that funds your budget accounts. Core requires a signature-only verification step next."} Only USDC, USDT, or PYUSD can be used for initial setup.</p>
+        <span class="subscription-kicker">Wallet Tracking</span>
+        <h2>Add a public wallet address</h2>
+        <p class="wallet-note">${isFreePlan ? "Save one stablecoin public address to your AllocaFi account. Free activates after this step and auto-allocates into 3 Virtual Budget Accounts." : "Save the stablecoin public address that funds your budget accounts. Core verifies ownership with a safe signature-only step next."} Only USDC, USDT, or PYUSD can be used for initial setup.</p>
+        <div class="allocation-summary">
+          <strong>${onboardingAccountEmail ? "AllocaFi account ready" : "Create account first"}</strong>
+          <span>${onboardingAccountEmail ? `Signed in as ${escapeHtml(onboardingAccountEmail)}. This wallet address will be saved to that AllocaFi account.` : "Before wallet setup, create an AllocaFi account so saved wallet addresses, plan, budget accounts, and goals have an owner."}</span>
+        </div>
         <div class="send-grid onboarding-wallet-grid">
           <label>
             Stablecoin network
@@ -15321,20 +15636,28 @@ function openOnboardingWalletGuideDialog({ testMode = false, selectedPlanCode = 
           <span>PYUSD allowed</span>
         </div>
         <div id="onboardingAiCheck" class="allocation-summary">
-          <strong>${isFreePlan ? "Free activates limited tracking" : "Reserve assets are added later"}</strong>
-          <span>${isFreePlan ? "After this address is saved, AllocaFi will read the public wallet value and auto-allocate the chosen template down to 3 budget accounts." : "BTC, ETH, SOL, LTC, XRP, ADA, AVAX, HBAR, BNB, and POL become reserve asset wallets after Core activation."}</span>
+          <strong>${isFreePlan ? "Public address tracking" : "Verification comes next"}</strong>
+          <span>${isFreePlan ? "After this address is saved, AllocaFi will read the public wallet value and auto-allocate the chosen template down to 3 budget accounts." : "Wallet tracking starts with the public address. Ownership verification is only for Core activation and protected Vault actions."}</span>
         </div>
         <div class="dialog-actions onboarding-flow-actions">
-          <button class="primary-button" id="onboardingCheckWallet" type="button">${isFreePlan ? "Activate Free Plan" : "Continue with Owner Wallet"}</button>
+          <button class="primary-button" id="onboardingCheckWallet" type="button">${isFreePlan ? "Activate Free Plan" : "Save Address and Continue"}</button>
           ${testMode ? `<button class="secondary-button" id="onboardingUseDemoAddress" type="button">Use Demo Address</button>` : ""}
           <button class="ghost-button" id="onboardingBackPlans" type="button">Back</button>
         </div>
       </section>
-      ${renderOnboardingFooter("wallet", isFreePlan ? "Next: enter AllocaFi Free." : "Next: sign wallet for Core.")}
+      ${renderOnboardingFooter("wallet", isFreePlan ? "Next: enter AllocaFi Free." : "Next: verify wallet ownership for Core.")}
     </div>
   `);
 
-  dialogContent.querySelector("#onboardingBackPlans").addEventListener("click", () => openOnboardingPlansDialog({ testMode }));
+  dialogContent.querySelector("#onboardingBackPlans").addEventListener("click", () => {
+    const currentFlow = loadOnboardingFlow();
+    if (!testMode && shouldRequireOnboardingAccountStep(currentFlow)) {
+      updateOnboardingFlow({ step: "account" });
+      openOnboardingAccountDialog();
+      return;
+    }
+    openOnboardingPlansDialog({ testMode });
+  });
   dialogContent.querySelector("#onboardingUseDemoAddress")?.addEventListener("click", () => {
     dialogContent.querySelector("#onboardingNetwork").value = "solanaUsdc";
     dialogContent.querySelector("#onboardingAddress").value = "11111111111111111111111111111111";
@@ -15405,7 +15728,7 @@ async function saveOnboardingWallet({ testMode = false } = {}) {
 
   if (!ONBOARDING_ALLOWED_OWNER_ASSETS.has(network?.asset)) {
     checkBox.innerHTML = `
-      <strong>Stablecoin Owner Wallet required</strong>
+      <strong>Stablecoin public address required</strong>
       <span>Initial setup only accepts USDC, USDT, or PYUSD. Reserve assets are added after activation.</span>
     `;
     return;
@@ -15424,7 +15747,7 @@ async function saveOnboardingWallet({ testMode = false } = {}) {
   if (existingWallet) {
     existingWallet.ownerWallet = true;
     existingWallet.role = "Owner Wallet";
-    existingWallet.status = "Owner wallet connected";
+    existingWallet.status = "Public address saved";
     existingWallet.statusType = "live";
     existingWallet.error = "";
     existingWallet.updatedAt = new Date().toISOString();
@@ -15436,15 +15759,15 @@ async function saveOnboardingWallet({ testMode = false } = {}) {
   const now = new Date().toISOString();
   const wallet = {
     id: crypto.randomUUID(),
-    name: `Owner ${network.asset} Wallet`,
+    name: `${network.asset} Wallet`,
     role: "Owner Wallet",
     network: networkKey,
     address,
     budget: 0,
     manualBalance: 0,
     balance: 0,
-    note: "Primary stablecoin Owner Wallet added during onboarding.",
-    status: "Owner wallet connected",
+    note: "Primary stablecoin public wallet address added during onboarding.",
+    status: "Public address saved",
     statusType: "live",
     ownerWallet: true,
     demoMode: isDemoModeActive(),
@@ -17262,6 +17585,7 @@ closeWalletFormButton?.addEventListener("click", () => {
 
 populateNetworks();
 networkSelect.value = "solanaPyusd";
+await restoreAccountSession();
 try {
   render();
 } catch (error) {
