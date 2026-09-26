@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node server.js",
     "build": "node scripts/copy-web-assets.mjs",
-    "test": "node tests/budget-template-library.test.mjs && node tests/admin-core-routing.test.mjs && node tests/allocafi-connect.test.mjs && node tests/security.test.mjs && node tests/enterprise-dashboard.test.mjs && node tests/family-treasury.test.mjs && node tests/allocafi-pay.test.mjs && node tests/ledgercore.test.mjs && node tests/account-service.test.mjs && node tests/account-workspace.test.mjs && node tests/pyusd-balance.test.mjs && node tests/mobile-runtime.test.mjs && node tests/android-readiness.test.mjs",
+    "test": "node tests/budget-template-library.test.mjs && node tests/admin-core-routing.test.mjs && node tests/allocafi-connect.test.mjs && node tests/security.test.mjs && node tests/enterprise-dashboard.test.mjs && node tests/family-treasury.test.mjs && node tests/allocafi-pay.test.mjs && node tests/ledgercore.test.mjs && node tests/account-service.test.mjs && node tests/account-workspace.test.mjs && node tests/pyusd-balance.test.mjs && node tests/mobile-runtime.test.mjs",
     "test:android": "node tests/android-readiness.test.mjs",
     "android:add": "node scripts/copy-web-assets.mjs && cap add android",
     "android:sync": "node scripts/copy-web-assets.mjs && cap sync android",
