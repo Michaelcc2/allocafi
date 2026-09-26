@@ -52,12 +52,13 @@ async function listFiles(path) {
   }
 }
 
-const [app, server, accountService, migration, indexHtml, capacitorRaw, mobileRuntime, gitignore] = await Promise.all([
+const [app, server, accountService, migration, indexHtml, styles, capacitorRaw, mobileRuntime, gitignore] = await Promise.all([
   requiredText("app.js"),
   requiredText("server.js"),
   requiredText("account-service.mjs"),
   requiredText("database/migrations/20260905_account_snapshots.sql"),
   requiredText("index.html"),
+  requiredText("styles.css"),
   requiredText("capacitor.config.json"),
   requiredText("mobile-runtime.js", "mobile-runtime.js"),
   requiredText(".gitignore"),
@@ -117,6 +118,8 @@ check(capacitor.plugins?.CapacitorCookies?.enabled === true, "native cookie supp
 matches(app, /const NATIVE_API_ORIGIN = "https:\/\/allocafi-web\.onrender\.com"/, "native API calls must use the allowlisted HTTPS production backend");
 matches(app, /resolveRequestUrl/, "native requests must resolve bundled relative API paths");
 excludes(app, /const NATIVE_API_ORIGIN = "http:/, "native API origin must never use cleartext HTTP");
+matches(styles, /Mobile web scroll ownership and navigation stacking[\s\S]*?html\s*\{[\s\S]*?overflow-y:\s*auto\s*!important[\s\S]*?body\s*\{[\s\S]*?overflow:\s*visible\s*!important/, "mobile web must keep page scrolling on the document root instead of trapping touch input on body");
+matches(styles, /\.controls-reference-cover\s*\{\s*isolation:\s*auto\s*!important/, "mobile fixed navigation must escape the controls stacking context");
 matches(mobileRuntime, /allocafi-web\.onrender\.com/, "mobile runtime must explicitly allowlist the production App Link host");
 matches(mobileRuntime, /isAllowedAppUrl|isAllowedDeepLink/, "mobile runtime must validate incoming URLs before routing them");
 matches(mobileRuntime, /appUrlOpen[\s\S]{0,360}(?:isAllowedAppUrl|isAllowedDeepLink)/, "appUrlOpen must reject URLs outside the deep-link allowlist");

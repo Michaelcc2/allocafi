@@ -25188,3 +25188,48 @@ body.mobile-native {
 body.is-offline [data-requires-network="true"] {
   opacity: 0.62;
 }
+
+/* Mobile web scroll ownership and navigation stacking.
+   Keep the document root as the only page scroller so touch gestures are not
+   consumed by a full-content body, and let the fixed nav escape its section. */
+@media (max-width: 768px) {
+  html {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: auto !important;
+    touch-action: pan-y !important;
+  }
+
+  body {
+    height: auto !important;
+    min-height: 100dvh !important;
+    overflow: visible !important;
+    overscroll-behavior-y: auto !important;
+    touch-action: pan-y !important;
+  }
+
+  .app-shell {
+    min-height: 100dvh !important;
+    overflow-x: clip !important;
+    overflow-y: visible !important;
+    touch-action: pan-y !important;
+  }
+
+  .controls-reference-cover {
+    isolation: auto !important;
+  }
+
+  .controls-reference-cover .tab-nav {
+    touch-action: manipulation;
+  }
+
+  .tab-panel.active,
+  .accounts20-isolated-route-panel,
+  #accounts20IsolatedView,
+  .accounts20-shell {
+    overflow: visible !important;
+    touch-action: pan-y !important;
+  }
+}
