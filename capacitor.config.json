@@ -3,9 +3,28 @@
   "appName": "AllocaFi",
   "webDir": "www",
   "server": {
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "cleartext": false
   },
   "android": {
-    "webContentsDebuggingEnabled": true
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false,
+    "loggingBehavior": "none",
+    "backgroundColor": "#060815"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    },
+    "CapacitorCookies": {
+      "enabled": true
+    },
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 1200,
+      "backgroundColor": "#060815",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP"
+    }
   }
 }

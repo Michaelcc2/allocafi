@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AllocaFi</string>
+    <string name="title_activity_main">AllocaFi</string>
+    <string name="package_name">com.allocafi.app</string>
+    <string name="custom_url_scheme">com.allocafi.app</string>
+</resources>

@@ -5,19 +5,36 @@
   "description": "AllocaFi non-custodial Virtual Budget Accounts app.",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "start": "node server.js",
     "build": "node scripts/copy-web-assets.mjs",
-    "test": "node tests/budget-template-library.test.mjs && node tests/admin-core-routing.test.mjs && node tests/allocafi-connect.test.mjs && node tests/security.test.mjs && node tests/enterprise-dashboard.test.mjs && node tests/family-treasury.test.mjs && node tests/allocafi-pay.test.mjs && node tests/ledgercore.test.mjs && node tests/account-service.test.mjs && node tests/account-workspace.test.mjs",
-    "cap:add:android": "npm run build && npx cap add android",
-    "cap:sync": "npm run build && npx cap sync",
-    "cap:open:android": "npm run cap:sync && npx cap open android"
+    "test": "node tests/budget-template-library.test.mjs && node tests/admin-core-routing.test.mjs && node tests/allocafi-connect.test.mjs && node tests/security.test.mjs && node tests/enterprise-dashboard.test.mjs && node tests/family-treasury.test.mjs && node tests/allocafi-pay.test.mjs && node tests/ledgercore.test.mjs && node tests/account-service.test.mjs && node tests/account-workspace.test.mjs && node tests/pyusd-balance.test.mjs && node tests/mobile-runtime.test.mjs && node tests/android-readiness.test.mjs",
+    "test:android": "node tests/android-readiness.test.mjs",
+    "android:add": "node scripts/copy-web-assets.mjs && cap add android",
+    "android:sync": "node scripts/copy-web-assets.mjs && cap sync android",
+    "android:doctor": "cap doctor android",
+    "android:open": "node scripts/copy-web-assets.mjs && cap sync android && cap open android",
+    "android:debug": "node scripts/copy-web-assets.mjs && cap sync android && cd android && gradlew.bat assembleDebug",
+    "android:release": "node scripts/copy-web-assets.mjs && cap sync android && cd android && gradlew.bat bundleRelease",
+    "cap:add:android": "node scripts/copy-web-assets.mjs && cap add android",
+    "cap:sync": "node scripts/copy-web-assets.mjs && cap sync android",
+    "cap:open:android": "node scripts/copy-web-assets.mjs && cap sync android && cap open android"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",
-    "@capacitor/core": "^8.0.0"
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/browser": "^8.0.0",
+    "@capacitor/clipboard": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/keyboard": "^8.0.0",
+    "@capacitor/network": "^8.0.0",
+    "@capacitor/preferences": "^8.0.0",
+    "@capacitor/push-notifications": "^8.0.0",
+    "@capacitor/share": "^8.0.0",
+    "@capacitor/splash-screen": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.0.0"

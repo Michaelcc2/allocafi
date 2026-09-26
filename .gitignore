@@ -1,7 +1,8 @@
 node_modules/
+.pnpm-store/
 www/
-android/
 dist/
+artifacts/android/*.apk
 *.log
 .env
 .env.*

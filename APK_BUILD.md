@@ -1,41 +1,40 @@
 # Build AllocaFi APK
 
-## What you need on the computer
+## Installed toolchain
 
-1. Node.js
-2. Android Studio
-3. Internet access for the first `npm install`
+- Node.js 22 or newer and pnpm
+- Microsoft OpenJDK 21
+- Android Studio with Android SDK 36
 
 ## Build steps
 
-Open a terminal in this folder, then run:
+From the project root:
 
-```bash
-npm install
-npm run cap:add:android
+```powershell
+pnpm install
+pnpm run android:sync
+pnpm run test:android
+cd android
+.\gradlew.bat assembleDebug
 ```
 
-Then open Android Studio:
-
-```bash
-npm run cap:open:android
-```
-
-In Android Studio:
-
-1. Wait for Gradle sync to finish.
-2. Go to Build > Build Bundle(s) / APK(s) > Build APK(s).
-3. When it finishes, click Locate.
-
-The APK will usually be here:
+The generated debug APK is located at:
 
 ```text
 android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
+The verified local test build is also copied to:
+
+```text
+artifacts/android/allocafi-debug.apk
+```
+
+Android Studio may be opened with `pnpm run android:open`. The `android/` project is already generated and must not be recreated with `cap add`.
+
 ## Send to phone without USB
 
-Upload the APK to Google Drive, OneDrive, Dropbox, or email it to yourself.
+Move the APK to the phone using OneDrive, Google Drive, email, or another trusted file-transfer method.
 
 On Android:
 

@@ -7,6 +7,7 @@ const files = [
   "index.html",
   "styles.css",
   "app.js",
+  "mobile-runtime.js",
   "enterprise-dashboard-core.js",
   "family-treasury-core.js",
   "allocafi-pay-core.js",
@@ -14,9 +15,6 @@ const files = [
   "ledgercore-ui.js",
   "ledgercore-types.d.ts",
 ];
-const assetFiles = ["allocafi-logo.svg", "allocafi-mark.svg", "allocafi-hero-reference.png", "allocafi-controls-reference.png"];
-const assetDirs = ["reference-icons"];
-
 await mkdir(outDir, { recursive: true });
 await mkdir(resolve(outDir, "assets"), { recursive: true });
 
@@ -26,7 +24,8 @@ async function copyAssetDir(dir) {
   await mkdir(targetDir, { recursive: true });
   const entries = await readdir(sourceDir, { withFileTypes: true });
   await Promise.all(entries.map(async (entry) => {
-    if (entry.isDirectory()) return copyAssetDir(`${dir}/${entry.name}`);
+    const child = dir ? `${dir}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) return copyAssetDir(child);
     if (!entry.isFile()) return null;
     return copyFile(resolve(sourceDir, entry.name), resolve(targetDir, entry.name));
   }));
@@ -34,8 +33,7 @@ async function copyAssetDir(dir) {
 
 await Promise.all([
   ...files.map((file) => copyFile(resolve(root, file), resolve(outDir, file))),
-  ...assetFiles.map((file) => copyFile(resolve(root, "assets", file), resolve(outDir, "assets", file))),
-  ...assetDirs.map((dir) => copyAssetDir(dir)),
+  copyAssetDir(""),
 ]);
 
 console.log("Copied AllocaFi web app to www");

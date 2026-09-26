@@ -92,7 +92,7 @@ assert.match(ledgerTypes, /interface LedgerTransaction/, "LedgerCore should defi
 assert.match(ledgerTypes, /interface LedgerCoreSettings/, "LedgerCore should define settings data model");
 assert.match(ledgerCore, /Possible tax deductible expense .{1,3} review before export\./, "LedgerCore should use the required tax review wording");
 assert.doesNotMatch(`${app}\n${ledgerCore}`, /Guaranteed tax write-off/i, "LedgerCore must not promise guaranteed write-offs");
-assert.match(packageJson, /"node": ">=20"/, "package should declare a modern Node runtime");
+assert.match(packageJson, /"node": ">=(?:2[2-9]|[3-9]\d)"/, "package should declare Node 22 or newer for Capacitor 8");
 assert.match(app, /const STABLECOIN_LOGOS = \{[\s\S]*?PYUSD:[\s\S]*?USDT:[\s\S]*?USDC:[\s\S]*?USDS:[\s\S]*?DAI:/, "Stablecoin logos should be centralized for accurate rendering");
 assert.match(app, /name: "Sky Dollar"/, "USDS should use Sky Dollar reference metadata");
 assert.match(app, /logoImage: `\$\{STABLECOIN_LOGO_ASSET_PATH\}\/usdt-reference\.png`/, "USDT should render from its saved reference image asset");

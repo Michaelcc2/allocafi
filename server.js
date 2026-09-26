@@ -233,7 +233,7 @@ const subscriptionPlans = [
 const supportedSubscriptionStablecoins = ["USDC", "USDT", "PYUSD"];
 const supportedSubscriptionChains = ["Solana", "Ethereum", "Base", "Polygon"];
 const supportedSubscriptionWallets = ["Trust Wallet", "Phantom", "MetaMask", "Coinbase Wallet", "WalletConnect"];
-const appRouteFallbacks = new Set(["/business", "/enterprise", "/enterprise/dashboard", "/family", "/family/treasury"]);
+const appRouteFallbacks = new Set(["/auth/recovery", "/business", "/enterprise", "/enterprise/dashboard", "/family", "/family/treasury"]);
 const nestedAdvancedAssetPattern = /^\/(?:enterprise|family)\/(app\.js|styles\.css|enterprise-dashboard-core\.js|family-treasury-core\.js|assets\/.+)$/;
 
 function send(res, status, body, type = "text/plain; charset=utf-8") {

@@ -64,7 +64,9 @@ export function createAccountService({ env = process.env, fetcher = fetch, readB
       if (req.method !== "GET") {
         const origin = req.headers.origin;
         const expected = env.ALLOCAFI_PUBLIC_ORIGIN || `http://127.0.0.1:${env.PORT || 8765}`;
-        if ((origin && origin !== expected) || req.headers["sec-fetch-site"] === "cross-site") {
+        const allowedOrigins = new Set([expected, "https://localhost"]);
+        const nativeRequest = origin === "https://localhost";
+        if ((origin && !allowedOrigins.has(origin)) || (req.headers["sec-fetch-site"] === "cross-site" && !nativeRequest)) {
           return sendJson(res, 403, { message: "Request origin is not allowed." });
         }
       }
@@ -88,13 +90,30 @@ export function createAccountService({ env = process.env, fetcher = fetch, readB
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || (path !== "/api/auth/password-reset" && (typeof body.password !== "string" || body.password.length < 8))) {
           return sendJson(res, 400, { message: "Enter a valid email and a password of at least 8 characters." });
         }
+        const isPasswordReset = path.endsWith("password-reset");
         const authPath = path.endsWith("signup") ? "/auth/v1/signup" : path.endsWith("login") ? "/auth/v1/token?grant_type=password" : "/auth/v1/recover";
-        const data = await api(authPath, { method: "POST", body: { email, ...(path.endsWith("password-reset") ? {} : { password: body.password }) } });
+        const publicOrigin = (env.ALLOCAFI_PUBLIC_ORIGIN || `http://127.0.0.1:${env.PORT || 8765}`).replace(/\/+$/, "");
+        const data = await api(authPath, {
+          method: "POST",
+          body: isPasswordReset
+            ? { email, redirect_to: `${publicOrigin}/auth/recovery` }
+            : { email, password: body.password },
+        });
         if (path.endsWith("password-reset")) return sendJson(res, 200, { ok: true });
         const session = data.session || data;
         if (!session.access_token) return sendJson(res, 200, { verificationRequired: true, message: "Check your email to confirm your account, then log in." });
         setSession(res, session);
         return sendJson(res, 200, { session: accountIdentity(data.user || session.user) });
+      }
+      if (path === "/api/auth/password-update" && req.method === "POST") {
+        const body = await readBody(req);
+        const recoveryToken = String(body.recoveryToken || "").trim();
+        const password = typeof body.password === "string" ? body.password : "";
+        if (recoveryToken.length < 20 || password.length < 8) {
+          return sendJson(res, 400, { message: "Use the recovery link and a password of at least 8 characters." });
+        }
+        await api("/auth/v1/user", { token: recoveryToken, method: "PUT", body: { password } });
+        return sendJson(res, 200, { ok: true, message: "Password updated. Log in with your new password." });
       }
       if (path === "/api/sync/snapshot" && ["GET", "POST"].includes(req.method)) {
         const { user, token } = await authenticate(req, res);

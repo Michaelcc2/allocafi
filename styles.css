@@ -24767,3 +24767,424 @@ body {
 .accounts20-sort-option.active::after {
   content: "";
 }
+
+/* Android responsive foundation 2026-09-26.
+   Accounts 2.0 surfaces are intentionally excluded from this layer. */
+:root {
+  --android-bottom-nav-height: 72px;
+  --android-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --android-safe-left: env(safe-area-inset-left, 0px);
+  --android-safe-right: env(safe-area-inset-right, 0px);
+  --android-safe-top: env(safe-area-inset-top, 0px);
+}
+
+html {
+  min-height: 100%;
+  min-height: 100dvh;
+  scroll-padding-bottom: calc(var(--android-bottom-nav-height) + var(--android-safe-bottom) + 20px);
+}
+
+body {
+  min-height: 100%;
+  min-height: 100dvh;
+  overflow-x: clip;
+  overscroll-behavior-y: none;
+}
+
+@media (pointer: coarse) {
+  .controls-reference-cover button,
+  .tab-panel:not([data-panel="accounts"]) button,
+  .tab-panel:not([data-panel="accounts"]) .import-button,
+  .wallet-dialog:not(:has([class*="accounts20"])) button,
+  .wallet-dialog:not(:has([class*="accounts20"])) .import-button {
+    min-height: 48px;
+  }
+
+  .tab-panel:not([data-panel="accounts"]) input,
+  .tab-panel:not([data-panel="accounts"]) select,
+  .wallet-dialog:not(:has([class*="accounts20"])) input,
+  .wallet-dialog:not(:has([class*="accounts20"])) select {
+    min-height: 48px;
+  }
+}
+
+.controls-reference-cover button:focus-visible,
+.tab-panel:not([data-panel="accounts"]) :is(button, input, select, textarea, .import-button):focus-visible,
+.wallet-dialog:not(:has([class*="accounts20"])) :is(button, input, select, textarea, .import-button):focus-visible {
+  outline: 3px solid rgba(32, 240, 208, 0.9);
+  outline-offset: 3px;
+}
+
+.wallet-dialog:not(:has([class*="accounts20"])) {
+  max-height: calc(100dvh - var(--android-safe-top) - var(--android-safe-bottom) - 16px);
+  overflow: hidden;
+}
+
+.wallet-dialog:not(:has([class*="accounts20"])) .dialog-panel {
+  max-height: calc(100dvh - var(--android-safe-top) - var(--android-safe-bottom) - 16px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.wallet-dialog:not(:has([class*="accounts20"])) .dialog-close {
+  min-height: 44px;
+  right: max(10px, var(--android-safe-right));
+  top: max(10px, var(--android-safe-top));
+  width: 44px;
+}
+
+.wallet-dialog:not(:has([class*="accounts20"])) .dialog-content h2 {
+  overflow-wrap: anywhere;
+  padding-right: 46px;
+}
+
+.wallet-form-collapsed.open {
+  max-height: calc(100dvh - var(--android-safe-top) - var(--android-safe-bottom) - 24px);
+  overscroll-behavior: contain;
+}
+
+.tab-panel:not([data-panel="accounts"]) :is(.send-status, .wallet-status-banner, .status-pill),
+.wallet-dialog:not(:has([class*="accounts20"])) :is(.send-status, .wallet-status-banner, .status-pill) {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.tab-panel:not([data-panel="accounts"]) :is(.send-status.error, .wallet-status-banner.error),
+.wallet-dialog:not(:has([class*="accounts20"])) :is(.send-status.error, .wallet-status-banner.error) {
+  border-left: 4px solid var(--danger);
+}
+
+.tab-panel:not([data-panel="accounts"]) :is(.send-status.loading, .wallet-status-banner.loading, .status-pill.loading),
+.wallet-dialog:not(:has([class*="accounts20"])) :is(.send-status.loading, .wallet-status-banner.loading, .status-pill.loading) {
+  border-left: 4px solid var(--teal);
+}
+
+@media (min-width: 769px) and (max-width: 1180px) {
+  .app-shell {
+    padding-left: max(18px, var(--android-safe-left));
+    padding-right: max(18px, var(--android-safe-right));
+    padding-top: max(18px, var(--android-safe-top));
+  }
+
+  .controls-reference-cover .toolbar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .controls-reference-cover .tab-nav {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .tab-panel:not([data-panel="accounts"]) .dialog-actions {
+    flex-wrap: wrap;
+  }
+
+  .tab-panel:not([data-panel="accounts"]) .dialog-actions > * {
+    flex: 1 1 180px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 920px) {
+  [data-panel="wallets"] .wallet-workspace,
+  .tab-panel:not([data-panel="accounts"]) .vault-layout {
+    grid-template-columns: 1fr;
+  }
+
+  [data-panel="wallets"] .wallet-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    padding-bottom: calc(var(--android-bottom-nav-height) + var(--android-safe-bottom) + 28px);
+    padding-left: max(10px, var(--android-safe-left));
+    padding-right: max(10px, var(--android-safe-right));
+    padding-top: max(10px, var(--android-safe-top));
+  }
+
+  .summary-band.reference-cover {
+    aspect-ratio: 1800 / 735 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+
+  .summary-band.reference-cover .hero-reference-art {
+    height: 100% !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    transform: none !important;
+    width: 100% !important;
+  }
+
+  .controls-reference-cover .tab-nav {
+    align-items: stretch;
+    backdrop-filter: blur(22px) saturate(1.2);
+    background: rgba(5, 10, 26, 0.96);
+    border: 1px solid rgba(132, 153, 193, 0.22);
+    border-radius: 18px;
+    bottom: max(8px, var(--android-safe-bottom));
+    box-shadow: 0 18px 52px rgba(0, 0, 0, 0.48), 0 0 28px rgba(23, 103, 255, 0.14);
+    gap: 3px;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    left: max(8px, var(--android-safe-left));
+    margin: 0;
+    padding: 5px;
+    position: fixed;
+    right: max(8px, var(--android-safe-right));
+    top: auto;
+    width: auto;
+    z-index: 80;
+  }
+
+  .controls-reference-cover .tab-nav::before {
+    display: none;
+  }
+
+  .controls-reference-cover .tab-button {
+    border-radius: 13px;
+    font-size: 0.7rem;
+    gap: 2px;
+    line-height: 1.05;
+    min-height: 60px;
+    min-width: 0;
+    overflow: hidden;
+    padding: 6px 3px;
+    white-space: normal;
+  }
+
+  .controls-reference-cover .tab-button .fin-icon {
+    border-radius: 10px;
+    height: 30px;
+    padding: 4px;
+    width: 34px;
+  }
+
+  .controls-reference-cover .tab-button.active {
+    background: linear-gradient(180deg, rgba(255, 63, 175, 0.16), rgba(23, 103, 255, 0.12));
+  }
+
+  .controls-reference-cover .toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .controls-reference-cover .toolbar > button {
+    gap: 8px;
+    grid-template-columns: 42px minmax(0, 1fr);
+    min-height: 76px;
+    padding: 10px;
+  }
+
+  .controls-reference-cover .toolbar > button .fin-icon {
+    border-radius: 12px;
+    height: 42px;
+    padding: 6px;
+    width: 42px;
+  }
+
+  .controls-reference-cover .toolbar > button .control-label {
+    align-self: center;
+    font-size: 0.9rem;
+  }
+
+  .controls-reference-cover .toolbar > #openSubscriptionPayments {
+    grid-column: 1 / -1;
+  }
+
+  .tab-panel:not([data-panel="accounts"]) :is(input, select, textarea),
+  .wallet-dialog:not(:has([class*="accounts20"])) :is(input, select, textarea) {
+    font-size: 16px;
+  }
+
+  .tab-panel:not([data-panel="accounts"]) .panel-heading .dialog-actions,
+  .wallet-dialog:not(:has([class*="accounts20"])) .dialog-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .tab-panel:not([data-panel="accounts"]) .panel-heading .dialog-actions > :only-child,
+  .wallet-dialog:not(:has([class*="accounts20"])) .dialog-actions > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .wallet-dialog:not(:has([class*="accounts20"])) {
+    max-width: calc(100vw - var(--android-safe-left) - var(--android-safe-right) - 12px);
+  }
+
+  .wallet-dialog:not(:has([class*="accounts20"])) .dialog-panel {
+    border-radius: 16px;
+    gap: 14px;
+    padding: 18px 16px max(18px, var(--android-safe-bottom));
+  }
+
+  .toast {
+    bottom: calc(var(--android-bottom-nav-height) + var(--android-safe-bottom) + 18px);
+    max-width: calc(100vw - var(--android-safe-left) - var(--android-safe-right) - 24px);
+    z-index: 90;
+  }
+}
+
+@media (max-width: 420px) {
+  .controls-reference-cover .toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .controls-reference-cover .toolbar > button {
+    grid-template-columns: 36px minmax(0, 1fr);
+    min-height: 70px;
+    padding: 8px;
+  }
+
+  .controls-reference-cover .toolbar > button .fin-icon {
+    height: 36px;
+    width: 36px;
+  }
+
+  .controls-reference-cover .toolbar > button .control-label {
+    font-size: 0.82rem;
+    overflow-wrap: anywhere;
+  }
+
+  .tab-panel:not([data-panel="accounts"]) .panel-heading .dialog-actions,
+  .wallet-dialog:not(:has([class*="accounts20"])) .dialog-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .tab-panel:not([data-panel="accounts"]) .panel-heading .dialog-actions > *,
+  .wallet-dialog:not(:has([class*="accounts20"])) .dialog-actions > * {
+    grid-column: 1;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) and (max-height: 520px) {
+  :root {
+    --android-bottom-nav-height: 62px;
+  }
+
+  .controls-reference-cover .tab-nav {
+    left: 50%;
+    max-width: 620px;
+    right: auto;
+    transform: translateX(-50%);
+    width: calc(100vw - var(--android-safe-left) - var(--android-safe-right) - 16px);
+  }
+
+  .controls-reference-cover .tab-button {
+    grid-template-columns: 28px minmax(0, 1fr);
+    min-height: 50px;
+    padding: 4px 8px;
+  }
+
+  .controls-reference-cover .tab-button .fin-icon {
+    height: 28px;
+    width: 28px;
+  }
+
+  .wallet-dialog:not(:has([class*="accounts20"])) .dialog-panel,
+  .wallet-form-collapsed.open {
+    max-height: calc(100dvh - var(--android-safe-top) - var(--android-safe-bottom) - 8px);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 960px) and (orientation: landscape) and (max-height: 520px) {
+  :root {
+    --android-bottom-nav-height: 62px;
+  }
+
+  .app-shell {
+    padding-bottom: calc(var(--android-bottom-nav-height) + var(--android-safe-bottom) + 18px);
+  }
+
+  .controls-reference-cover .tab-nav {
+    backdrop-filter: blur(22px) saturate(1.2);
+    background: rgba(5, 10, 26, 0.96);
+    border: 1px solid rgba(132, 153, 193, 0.22);
+    border-radius: 18px;
+    bottom: max(6px, var(--android-safe-bottom));
+    box-shadow: 0 18px 52px rgba(0, 0, 0, 0.48);
+    gap: 3px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    left: 50%;
+    margin: 0;
+    max-width: 720px;
+    padding: 5px;
+    position: fixed;
+    right: auto;
+    top: auto;
+    transform: translateX(-50%);
+    width: calc(100vw - var(--android-safe-left) - var(--android-safe-right) - 16px);
+    z-index: 80;
+  }
+
+  .controls-reference-cover .tab-nav::before {
+    display: none;
+  }
+
+  .controls-reference-cover .tab-button {
+    border-radius: 12px;
+    display: grid;
+    font-size: 0.72rem;
+    gap: 6px;
+    grid-template-columns: 28px minmax(0, 1fr);
+    min-height: 50px;
+    min-width: 0;
+    overflow: hidden;
+    padding: 4px 8px;
+    white-space: normal;
+  }
+
+  .controls-reference-cover .tab-button .fin-icon {
+    height: 28px;
+    margin: 0;
+    width: 28px;
+  }
+
+  .controls-reference-cover .tab-button::after {
+    display: none;
+  }
+
+  .toast {
+    bottom: calc(var(--android-bottom-nav-height) + var(--android-safe-bottom) + 14px);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .controls-reference-cover .tab-nav,
+  .wallet-dialog:not(:has([class*="accounts20"])) .dialog-panel {
+    backdrop-filter: none;
+    background: #08101f;
+  }
+}
+/* Native shell state and safe-area support. */
+.connection-banner {
+  position: sticky;
+  top: 0;
+  z-index: 10000;
+  width: 100%;
+  padding: calc(8px + env(safe-area-inset-top)) 16px 8px;
+  border-bottom: 1px solid #f1be4b;
+  background: #382807;
+  color: #fff4d3;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+body.mobile-native {
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+}
+
+body.is-offline [data-requires-network="true"] {
+  opacity: 0.62;
+}

@@ -1,4 +1,12 @@
 const STORAGE_KEY = "wallet-buckets-v1";
+const { createMobileRuntime } = await import("./mobile-runtime.js");
+const NATIVE_API_ORIGIN = "https://allocafi-web.onrender.com";
+const IS_NATIVE_APP = Boolean(globalThis.Capacitor?.isNativePlatform?.());
+
+function resolveRequestUrl(value) {
+  if (!IS_NATIVE_APP || typeof value !== "string" || !value.startsWith("/api/")) return value;
+  return `${NATIVE_API_ORIGIN}${value}`;
+}
 const {
   ENTERPRISE_MOCK_DATA,
   ENTERPRISE_ROLES,
@@ -1011,7 +1019,7 @@ ensureUnifiedFinanceShell();
 function moveAdvancedSectionsIntoSettings() {
   const settingsPanel = document.querySelector('[data-panel="settings"] .dashboard-panel');
   if (!settingsPanel || document.querySelector("#advancedSystemsView")) return;
-  const advancedIds = ["pay", "ledgercore", "allocafi-connect", "accounts1", "accounts20-isolated", "asset-reserve-isolated", "unified", "banks", "monthly", "family", "business", "rewards", "ai", "admin"];
+  const advancedIds = ["pay", "ledgercore", "allocafi-connect", "accounts1", "accounts20-isolated", "asset-reserve-isolated", "unified", "banks", "monthly", "rewards", "ai", "admin"];
 
   advancedIds.forEach((id) => {
     document.querySelector(`[data-tab="${id}"]`)?.remove();
@@ -1218,6 +1226,7 @@ const saveWalletConnectProjectButton = document.querySelector("#saveWalletConnec
 const solanaRpcUrlInput = document.querySelector("#solanaRpcUrl");
 const saveSolanaRpcUrlButton = document.querySelector("#saveSolanaRpcUrl");
 const toast = document.querySelector("#toast");
+const connectionBanner = document.querySelector("#connectionBanner");
 const template = document.querySelector("#walletCardTemplate");
 const walletDialog = document.querySelector("#walletDialog");
 const dialogContent = document.querySelector("#dialogContent");
@@ -1250,6 +1259,22 @@ const legalCoreHistoricalPriceFetches = new Set();
 let goals = loadGoals();
 let addressBook = loadAddressBook();
 let financeData = loadFinanceData();
+const localAdminLaunch = ["127.0.0.1", "localhost"].includes(location.hostname)
+  && new URLSearchParams(location.search).get("local-admin") === "1";
+
+// The desktop launcher can opt into the owner-only local Admin mode. This is
+// deliberately limited to the loopback server; it never enables admin access
+// on a deployed site or requires a cloud account.
+if (localAdminLaunch) {
+  financeData.adminControls = {
+    ...(financeData.adminControls || {}),
+    adminPowerEnabled: true,
+    fullAppUnlocked: true,
+    showPayModule: true,
+  };
+  localStorage.setItem(UNIFIED_FINANCE_KEY, JSON.stringify(financeData));
+  localStorage.setItem(ONBOARDING_STATUS_KEY, "complete");
+}
 let enterpriseDashboardRange = "This Month";
 let enterpriseDashboardRole = ENTERPRISE_MOCK_DATA.businessProfile.activeRole;
 let enterpriseDashboardQuery = "";
@@ -1312,7 +1337,7 @@ window.allocafiHealth = () => ({
 function fetchWithTimeout(url, options = {}, timeoutMs = 9000) {
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
-  return fetch(url, {
+  return fetch(resolveRequestUrl(url), {
     ...options,
     signal: controller.signal,
   }).finally(() => window.clearTimeout(timeout));
@@ -2617,7 +2642,7 @@ async function runAllocafiAiPrompt(prompt, options = {}) {
   let result = buildLocalAllocafiAiResponse(prompt, classification, snapshot);
   if (!shouldUseLocalAllocafiAiEngine()) {
     try {
-      const response = await fetch("/api/ai/chat", {
+      const response = await fetch(resolveRequestUrl("/api/ai/chat"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt, classification: classification.classification, budgetSnapshot: snapshot }),
@@ -2951,7 +2976,7 @@ function storeAccountSnapshot(snapshot, revision) {
 }
 
 async function accountRequest(path, options = {}) {
-  const response = await fetchWithTimeout(path, { credentials: "same-origin", ...options,
+  const response = await fetchWithTimeout(path, { credentials: "include", ...options,
     headers: { ...(path === "/api/sync/snapshot" && accountSession?.userId ? { "X-Allocafi-User": accountSession.userId } : {}), ...options.headers },
   }, 30000);
   const data = await response.json().catch(() => ({}));
@@ -3105,6 +3130,7 @@ async function requestAccountAuth(mode, email, password) {
   try {
     const response = await fetchWithTimeout(endpoint, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     }, 9000);
@@ -3195,6 +3221,7 @@ async function sendPasswordReset() {
   try {
     const response = await fetchWithTimeout("/api/auth/password-reset", {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     }, 7000);
@@ -3206,6 +3233,76 @@ async function sendPasswordReset() {
     // Fall through to local preview message.
   }
   showToast("Password reset is ready once Supabase env keys are added");
+}
+
+function extractPasswordRecoveryToken(value = location.href) {
+  try {
+    const url = new URL(value, location.origin);
+    const fragment = new URLSearchParams(url.hash.replace(/^#/, ""));
+    if (fragment.get("type") !== "recovery") return "";
+    return fragment.get("access_token") || "";
+  } catch {
+    return "";
+  }
+}
+
+function openPasswordRecoveryDialog(recoveryToken) {
+  if (!recoveryToken) return false;
+  dialogContent.innerHTML = `
+    <h2>Choose a new password</h2>
+    <p class="wallet-note">Use at least 8 characters. This recovery link is removed from the address bar and is never saved to device storage.</p>
+    <label>
+      New password
+      <input id="recoveryPassword" type="password" autocomplete="new-password" placeholder="Minimum 8 characters" />
+    </label>
+    <label>
+      Confirm new password
+      <input id="recoveryPasswordConfirm" type="password" autocomplete="new-password" placeholder="Re-enter password" />
+    </label>
+    <label class="inline-toggle">
+      <input id="recoveryShowPassword" type="checkbox" />
+      Show password
+    </label>
+    <div class="dialog-actions">
+      <button id="completePasswordRecovery" class="primary-button" type="button">Update password</button>
+    </div>
+  `;
+  if (!walletDialog.open) walletDialog.showModal();
+  dialogContent.querySelector("#recoveryShowPassword")?.addEventListener("change", (event) => {
+    const type = event.currentTarget.checked ? "text" : "password";
+    dialogContent.querySelector("#recoveryPassword")?.setAttribute("type", type);
+    dialogContent.querySelector("#recoveryPasswordConfirm")?.setAttribute("type", type);
+  });
+  dialogContent.querySelector("#completePasswordRecovery")?.addEventListener("click", async (event) => {
+    const password = dialogContent.querySelector("#recoveryPassword")?.value || "";
+    const confirmation = dialogContent.querySelector("#recoveryPasswordConfirm")?.value || "";
+    if (password.length < 8) { showToast("Use at least 8 password characters"); return; }
+    if (password !== confirmation) { showToast("Passwords do not match"); return; }
+    event.currentTarget.disabled = true;
+    try {
+      await accountRequest("/api/auth/password-update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recoveryToken, password }),
+      });
+      walletDialog.close();
+      showToast("Password updated. Log in with your new password.");
+      openAccountAuthDialog("login");
+    } catch (error) {
+      event.currentTarget.disabled = false;
+      showToast(error.message || "Password recovery link is invalid or expired");
+    }
+  });
+  return true;
+}
+
+function handlePasswordRecoveryUrl(value = location.href) {
+  const token = extractPasswordRecoveryToken(value);
+  if (!token) return false;
+  if (value === location.href && location.hash) {
+    history.replaceState(history.state, "", `${location.pathname}${location.search}`);
+  }
+  return openPasswordRecoveryDialog(token);
 }
 
 async function logoutAccount() {
@@ -3661,8 +3758,7 @@ function getRouteTab(pathname = window.location.pathname, hash = window.location
   if (["#asset-reserve-isolated", "#asset-reserve", "#settings-asset-reserve"].includes(normalizedHash)) return ASSET_RESERVE_ISOLATED_TAB;
   if (["#pay", "#allocafi-pay", "#settings-pay"].includes(normalizedHash)) return canAccessAllocaFiPayModule() ? "pay" : null;
   const normalized = String(pathname || "").replace(/\/+$/, "") || "/";
-  if (["/business", "/enterprise", "/enterprise/dashboard"].includes(normalized)) return "business";
-  if (["/family", "/family/treasury"].includes(normalized)) return "family";
+  if (["/business", "/enterprise", "/enterprise/dashboard", "/family", "/family/treasury"].includes(normalized)) return null;
   return null;
 }
 
@@ -9712,6 +9808,16 @@ function renderAccountCloudPanel() {
   const section = document.querySelector("#productionAccountView");
   if (section && section.parentElement?.firstElementChild !== section) section.parentElement?.prepend(section);
   const modeStatus = document.querySelector("#cloudModeStatus");
+  if (localAdminLaunch) {
+    if (modeStatus) modeStatus.textContent = "Local admin";
+    accountCloudView.innerHTML = `
+      <div>
+        <strong>Local Admin workspace</strong>
+        <p>This desktop workspace does not require an account or sign-in. Your budgets and settings remain stored in this browser on this device.</p>
+      </div>
+    `;
+    return;
+  }
   if (modeStatus) modeStatus.textContent = accountAuthenticated ? "Signed in" : cloudProviderStatus?.services?.auth ? "Online" : "Device only";
   const signedIn = accountAuthenticated;
   const status = accountProfile.syncError || (loadCloudSyncQueue().length ? "Changes waiting to save" : accountProfile.lastSyncedAt ? `Saved ${new Date(accountProfile.lastSyncedAt).toLocaleString()}` : "Ready to save");
@@ -16691,7 +16797,7 @@ function createVault2Manifest() {
 
 
 async function createVaultExportChallenge(ownerWallet, exportType) {
-  const response = await fetch("/api/vault/export/challenge", {
+  const response = await fetch(resolveRequestUrl("/api/vault/export/challenge"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ownerWallet: ownerWallet.address, chain: ownerWallet.chain, exportType }),
@@ -16777,7 +16883,7 @@ async function requestSecureVaultExport(exportType) {
   const encryptedVault = exportType === "full_vault_backup"
     ? { ciphertext: "encrypted-client-side-package", encryption: { method: "AES-256-GCM" } }
     : undefined;
-  const response = await fetch("/api/vault/export", {
+  const response = await fetch(resolveRequestUrl("/api/vault/export"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -17585,6 +17691,26 @@ closeWalletFormButton?.addEventListener("click", () => {
 
 populateNetworks();
 networkSelect.value = "solanaPyusd";
+const mobileRuntime = createMobileRuntime({
+  isModalOpen: () => Boolean(document.querySelector("dialog[open]")),
+  closeModal: () => document.querySelector("dialog[open]")?.close(),
+  isAtRoot: () => !location.hash || ["#home", "#dashboard"].includes(location.hash),
+  navigateBack: () => history.back(),
+});
+window.allocafiMobile = mobileRuntime;
+document.body.classList.toggle("mobile-native", mobileRuntime.isNative);
+mobileRuntime.onNetworkChange(({ connected }) => {
+  document.body.classList.toggle("is-offline", !connected);
+  if (connectionBanner) connectionBanner.hidden = connected;
+});
+mobileRuntime.onAppUrl(({ url }) => {
+  handlePasswordRecoveryUrl(url);
+});
+mobileRuntime.onNotificationReceived((notification) => {
+  showToast(notification?.title || "AllocaFi update");
+});
+await mobileRuntime.start();
+const openedPasswordRecovery = handlePasswordRecoveryUrl();
 await restoreAccountSession();
 try {
   render();
@@ -17600,7 +17726,7 @@ window.addEventListener("popstate", activateRouteTab);
 await hydrateClientConfig();
 refreshCloudProviderStatus();
 refreshPrices();
-setTimeout(maybeOpenFirstRunOnboarding, 450);
+if (!openedPasswordRecovery) setTimeout(maybeOpenFirstRunOnboarding, 450);
 
 
 
